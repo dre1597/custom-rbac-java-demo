@@ -1,4 +1,6 @@
-package org.example.customrbacjavademo.domain;
+package org.example.customrbacjavademo.domain.entities;
+
+import org.example.customrbacjavademo.domain.dto.NewUserDto;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -36,12 +38,8 @@ public class User {
     this.updatedAt = updatedAt;
   }
 
-  public static User newUser(
-      final String name,
-      final String password,
-      final UserStatus status
-  ) {
-    var user = new User(name, password, status);
+  public static User newUser(final NewUserDto dto) {
+    var user = new User(dto.name(), dto.password(), dto.status());
     user.validate();
     return user;
   }

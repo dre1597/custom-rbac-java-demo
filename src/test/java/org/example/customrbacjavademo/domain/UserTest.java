@@ -1,5 +1,8 @@
 package org.example.customrbacjavademo.domain;
 
+import org.example.customrbacjavademo.domain.dto.NewUserDto;
+import org.example.customrbacjavademo.domain.entities.User;
+import org.example.customrbacjavademo.domain.entities.UserStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -9,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
   @Test
   void shouldCreateUser() {
-    var user = User.newUser("any_name", "any_password", UserStatus.ACTIVE);
+    var user = User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE));
 
     assertNotNull(user.getId());
     assertEquals("any_name", user.getName());
@@ -28,9 +31,7 @@ class UserTest {
     var exception = assertThrows(
         IllegalArgumentException.class,
         () -> User.newUser(
-            "null".equals(name) ? null : name,
-            "null".equals(password) ? null : password,
-            UserStatus.ACTIVE
+            NewUserDto.of("null".equals(name) ? null : name, "null".equals(password) ? null : password, UserStatus.ACTIVE)
         )
     );
     assertEquals(expectedMessage, exception.getMessage());
