@@ -2,9 +2,11 @@ package org.example.customrbacjavademo.domain.entities;
 
 import org.example.customrbacjavademo.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
+import org.example.customrbacjavademo.domain.exceptions.ValidationException;
 import org.example.customrbacjavademo.domain.services.PasswordService;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class User {
@@ -38,14 +40,20 @@ public class User {
   }
 
   private void validate(final String name, final String password, final UserStatus status) {
+    var errors = new ArrayList<String>();
+
     if (name == null || name.isBlank()) {
-      throw new IllegalArgumentException("name is required");
+      errors.add("name is required");
     }
     if (password == null || password.isBlank()) {
-      throw new IllegalArgumentException("password is required");
+      errors.add("password is required");
     }
     if (status == null) {
-      throw new IllegalArgumentException("status is required");
+      errors.add("status is required");
+    }
+
+    if (!errors.isEmpty()) {
+      throw new ValidationException(errors);
     }
   }
 

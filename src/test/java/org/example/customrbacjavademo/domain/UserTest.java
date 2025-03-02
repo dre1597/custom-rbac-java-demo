@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
 import org.example.customrbacjavademo.domain.entities.User;
 import org.example.customrbacjavademo.domain.entities.UserStatus;
+import org.example.customrbacjavademo.domain.exceptions.ValidationException;
 import org.example.customrbacjavademo.domain.mocks.UserTestMocks;
 import org.example.customrbacjavademo.domain.services.PasswordService;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ class UserTest {
       "any_name, null, ACTIVE, password is required",
       "any_name, '', ACTIVE, password is required",
       "any_name, any_password, null, status is required",
+      "null, null, null, 'name is required, password is required, status is required'",
   })
   void shouldNotCreateUserWithInvalidInput(
       final String name,
@@ -47,7 +49,7 @@ class UserTest {
     var newUserDto = new NewUserDto(actualName, actualPassword, actualStatus);
 
     var exception = assertThrows(
-        IllegalArgumentException.class,
+        ValidationException.class,
         () -> User.newUser(newUserDto)
     );
 
