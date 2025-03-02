@@ -1,8 +1,9 @@
-package org.example.customrbacjavademo.domain.entities;
+package org.example.customrbacjavademo.apps.user.domain.entities;
 
-import org.example.customrbacjavademo.domain.dto.NewRoleDto;
-import org.example.customrbacjavademo.domain.dto.UpdateRoleDto;
-import org.example.customrbacjavademo.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.apps.user.domain.dto.NewRoleDto;
+import org.example.customrbacjavademo.apps.user.domain.dto.UpdateRoleDto;
+import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 
 import java.time.Instant;
 import java.util.ArrayList;

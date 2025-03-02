@@ -1,6 +1,6 @@
-package org.example.customrbacjavademo.domain.dto;
+package org.example.customrbacjavademo.apps.user.domain.dto;
 
-import org.example.customrbacjavademo.domain.entities.UserStatus;
+import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 
 public record NewUserDto(
     String name,

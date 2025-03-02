@@ -1,9 +1,10 @@
-package org.example.customrbacjavademo.domain.entities;
+package org.example.customrbacjavademo.apps.user.domain.entities;
 
-import org.example.customrbacjavademo.domain.dto.NewRoleDto;
-import org.example.customrbacjavademo.domain.dto.UpdateRoleDto;
-import org.example.customrbacjavademo.domain.exceptions.ValidationException;
-import org.example.customrbacjavademo.domain.mocks.RoleTestMocks;
+import org.example.customrbacjavademo.apps.user.domain.dto.NewRoleDto;
+import org.example.customrbacjavademo.apps.user.domain.dto.UpdateRoleDto;
+import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
+import org.example.customrbacjavademo.apps.user.domain.mocks.RoleTestMocks;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.domain.services;
+package org.example.customrbacjavademo.apps.user.domain.services;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

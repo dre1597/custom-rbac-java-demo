@@ -1,6 +1,6 @@
-package org.example.customrbacjavademo.domain.dto;
+package org.example.customrbacjavademo.apps.user.domain.dto;
 
-import org.example.customrbacjavademo.domain.entities.RoleStatus;
+import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
 
 public record UpdateRoleDto(
     String name,

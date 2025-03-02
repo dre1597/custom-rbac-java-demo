@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.domain.exceptions;
+package org.example.customrbacjavademo.common.domain.exceptions;
 
 import java.util.List;
 

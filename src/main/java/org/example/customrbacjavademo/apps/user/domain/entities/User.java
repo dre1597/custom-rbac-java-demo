@@ -1,9 +1,10 @@
-package org.example.customrbacjavademo.domain.entities;
+package org.example.customrbacjavademo.apps.user.domain.entities;
 
-import org.example.customrbacjavademo.domain.dto.NewUserDto;
-import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
-import org.example.customrbacjavademo.domain.exceptions.ValidationException;
-import org.example.customrbacjavademo.domain.services.PasswordService;
+import org.example.customrbacjavademo.apps.user.domain.dto.NewUserDto;
+import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
+import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
+import org.example.customrbacjavademo.apps.user.domain.services.PasswordService;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 
 import java.time.Instant;
 import java.util.ArrayList;
