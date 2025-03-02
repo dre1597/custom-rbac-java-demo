@@ -1,6 +1,7 @@
 package org.example.customrbacjavademo.domain.entities;
 
 import org.example.customrbacjavademo.domain.dto.NewUserDto;
+import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -42,6 +43,14 @@ public class User {
     var user = new User(dto.name(), dto.password(), dto.status());
     user.validate();
     return user;
+  }
+
+  public User update(final UpdateUserDto dto) {
+    name = dto.name();
+    password = dto.password();
+    updatedAt = Instant.now();
+    this.validate();
+    return this;
   }
 
   private void validate() {
