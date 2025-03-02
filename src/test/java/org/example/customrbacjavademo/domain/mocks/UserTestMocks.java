@@ -5,7 +5,11 @@ import org.example.customrbacjavademo.domain.entities.User;
 import org.example.customrbacjavademo.domain.entities.UserStatus;
 
 public class UserTestMocks {
-  public static User createTestUser() {
+  public static User createActiveTestUser() {
     return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE));
+  }
+
+  public static User createInactiveTestUser() {
+    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.INACTIVE));
   }
 }

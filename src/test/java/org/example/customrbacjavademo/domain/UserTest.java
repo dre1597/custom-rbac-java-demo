@@ -41,7 +41,7 @@ class UserTest {
 
   @Test
   void shouldUpdateUser() {
-    var user =  UserTestMocks.createTestUser();
+    var user =  UserTestMocks.createActiveTestUser();
 
     var updatedUser = user.update(UpdateUserDto.of("updated_name", "updated_password"));
 
@@ -56,7 +56,7 @@ class UserTest {
       "updated_name, null, password is required",
   })
   void shouldNotUpdateUserWithInvalidInput(final String name, final String password, final String expectedMessage) {
-    var user =  UserTestMocks.createTestUser();
+    var user =  UserTestMocks.createActiveTestUser();
 
     var exception = assertThrows(
         IllegalArgumentException.class,
@@ -65,5 +65,23 @@ class UserTest {
         )
     );
     assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  @Test
+  void shouldActivateUser() {
+    var user =  UserTestMocks.createInactiveTestUser();
+
+    var activatedUser = user.activate();
+
+    assertEquals(UserStatus.ACTIVE, activatedUser.getStatus());
+  }
+
+  @Test
+  void shouldDeactivateUser() {
+    var user =  UserTestMocks.createActiveTestUser();
+
+    var deactivatedUser = user.deactivate();
+
+    assertEquals(UserStatus.INACTIVE, deactivatedUser.getStatus());
   }
 }

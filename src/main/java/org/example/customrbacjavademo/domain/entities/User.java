@@ -10,7 +10,7 @@ public class User {
   private UUID id = UUID.randomUUID();
   private String name;
   private String password;
-  private UserStatus status = UserStatus.ACTIVE;
+  private UserStatus status;
   private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
 
@@ -21,6 +21,7 @@ public class User {
   ) {
     this.name = name;
     this.password = password;
+    this.status = status;
   }
 
   private User(
@@ -60,6 +61,16 @@ public class User {
     if (password == null || password.isBlank()) {
       throw new IllegalArgumentException("password is required");
     }
+  }
+
+  public User activate() {
+    status = UserStatus.ACTIVE;
+    return this;
+  }
+
+  public User deactivate() {
+    status = UserStatus.INACTIVE;
+    return this;
   }
 
   public UUID getId() {
