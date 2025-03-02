@@ -7,6 +7,7 @@ import org.example.customrbacjavademo.domain.services.PasswordService;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class User {
@@ -33,8 +34,9 @@ public class User {
   }
 
   public User update(final UpdateUserDto dto) {
-    this.validate(dto.name(), this.password, this.status);
+    this.validate(dto.name(), this.password, dto.status());
     name = dto.name().trim();
+    status = dto.status();
     updatedAt = Instant.now();
     return this;
   }
@@ -59,19 +61,9 @@ public class User {
 
   public User updatePassword(final String newPassword) {
     if (newPassword == null || newPassword.isBlank()) {
-      throw new IllegalArgumentException("password is required");
+      throw new ValidationException(List.of("password is required"));
     }
     this.password = PasswordService.encryptPassword(newPassword);
-    return this;
-  }
-
-  public User activate() {
-    status = UserStatus.ACTIVE;
-    return this;
-  }
-
-  public User deactivate() {
-    status = UserStatus.INACTIVE;
     return this;
   }
 

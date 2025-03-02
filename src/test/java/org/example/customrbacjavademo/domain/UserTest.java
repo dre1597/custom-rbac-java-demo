@@ -42,9 +42,9 @@ class UserTest {
       final String status,
       final String expectedMessage
   ) {
-    String actualName = "null".equals(name) ? null : name;
-    String actualPassword = "null".equals(password) ? null : password;
-    UserStatus actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
+    var actualName = "null".equals(name) ? null : name;
+    var actualPassword = "null".equals(password) ? null : password;
+    var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
 
     var newUserDto = new NewUserDto(actualName, actualPassword, actualStatus);
 
@@ -60,44 +60,32 @@ class UserTest {
   void shouldUpdateUser() {
     var user = UserTestMocks.createActiveTestUser();
 
-    var updatedUser = user.update(UpdateUserDto.of("updated_name"));
+    var updatedUser = user.update(UpdateUserDto.of("updated_name", UserStatus.INACTIVE));
 
     assertEquals("updated_name", updatedUser.getName());
-    assertEquals(user.getStatus(), updatedUser.getStatus());
+    assertEquals(UserStatus.INACTIVE, updatedUser.getStatus());
   }
 
   @ParameterizedTest
   @CsvSource({
-      "null, name is required",
+      "null, ACTIVE, name is required",
+      "'', ACTIVE, name is required",
+      "any_name, null, status is required",
+      "null, null, 'name is required, status is required'",
   })
-  void shouldNotUpdateUserWithInvalidInput(final String name, final String expectedMessage) {
+  void shouldNotUpdateUserWithInvalidInput(final String name, final String status, final String expectedMessage) {
     var user = UserTestMocks.createActiveTestUser();
+
+    var actualName = "null".equals(name) ? null : name;
+    var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
+
+    var updateUserDto = UpdateUserDto.of(actualName, actualStatus);
 
     var exception = assertThrows(
-        IllegalArgumentException.class,
-        () -> user.update(
-            UpdateUserDto.of("null".equals(name) ? null : name)
-        )
+        ValidationException.class,
+        () -> user.update(updateUserDto)
     );
     assertEquals(expectedMessage, exception.getMessage());
-  }
-
-  @Test
-  void shouldActivateUser() {
-    var user = UserTestMocks.createInactiveTestUser();
-
-    var activatedUser = user.activate();
-
-    assertEquals(UserStatus.ACTIVE, activatedUser.getStatus());
-  }
-
-  @Test
-  void shouldDeactivateUser() {
-    var user = UserTestMocks.createActiveTestUser();
-
-    var deactivatedUser = user.deactivate();
-
-    assertEquals(UserStatus.INACTIVE, deactivatedUser.getStatus());
   }
 
   @Test
@@ -114,19 +102,19 @@ class UserTest {
     var user = UserTestMocks.createActiveTestUser();
 
     var exception = assertThrows(
-        IllegalArgumentException.class,
+        ValidationException.class,
         () -> user.updatePassword(null)
     );
     assertEquals("password is required", exception.getMessage());
 
     exception = assertThrows(
-        IllegalArgumentException.class,
+        ValidationException.class,
         () -> user.updatePassword("")
     );
     assertEquals("password is required", exception.getMessage());
 
     exception = assertThrows(
-        IllegalArgumentException.class,
+        ValidationException.class,
         () -> user.updatePassword(" ")
     );
     assertEquals("password is required", exception.getMessage());
