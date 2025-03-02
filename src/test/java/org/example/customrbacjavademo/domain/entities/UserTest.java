@@ -1,9 +1,7 @@
-package org.example.customrbacjavademo.domain;
+package org.example.customrbacjavademo.domain.entities;
 
 import org.example.customrbacjavademo.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
-import org.example.customrbacjavademo.domain.entities.User;
-import org.example.customrbacjavademo.domain.entities.UserStatus;
 import org.example.customrbacjavademo.domain.exceptions.ValidationException;
 import org.example.customrbacjavademo.domain.mocks.UserTestMocks;
 import org.example.customrbacjavademo.domain.services.PasswordService;
