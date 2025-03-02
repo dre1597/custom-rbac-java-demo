@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.domain.entities;
 
 import org.example.customrbacjavademo.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.domain.dto.UpdateUserDto;
+import org.example.customrbacjavademo.domain.services.PasswordService;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,24 +21,8 @@ public class User {
       final UserStatus status
   ) {
     this.name = name;
-    this.password = password;
+    this.password = PasswordService.encryptPassword(password);
     this.status = status;
-  }
-
-  private User(
-      final UUID id,
-      final String name,
-      final String password,
-      final UserStatus status,
-      final Instant createdAt,
-      final Instant updatedAt
-  ) {
-    this.id = id;
-    this.name = name;
-    this.password = password;
-    this.status = status;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
   }
 
   public static User newUser(final NewUserDto dto) {
@@ -48,7 +33,6 @@ public class User {
 
   public User update(final UpdateUserDto dto) {
     name = dto.name();
-    password = dto.password();
     updatedAt = Instant.now();
     this.validate();
     return this;
@@ -61,6 +45,14 @@ public class User {
     if (password == null || password.isBlank()) {
       throw new IllegalArgumentException("password is required");
     }
+  }
+
+  public User updatePassword(final String newPassword) {
+    if (newPassword == null || newPassword.isBlank()) {
+      throw new IllegalArgumentException("password is required");
+    }
+    this.password = PasswordService.encryptPassword(newPassword);
+    return this;
   }
 
   public User activate() {
