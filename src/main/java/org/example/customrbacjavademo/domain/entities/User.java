@@ -8,11 +8,11 @@ import java.time.Instant;
 import java.util.UUID;
 
 public class User {
-  private UUID id = UUID.randomUUID();
+  private final UUID id = UUID.randomUUID();
+  private final Instant createdAt = Instant.now();
   private String name;
   private String password;
   private UserStatus status;
-  private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
 
   private User(
