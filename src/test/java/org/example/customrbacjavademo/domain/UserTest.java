@@ -28,21 +28,35 @@ class UserTest {
 
   @ParameterizedTest
   @CsvSource({
-      "null, any_password, name is required",
+      "null, any_password, ACTIVE, name is required",
+      "'', any_password, ACTIVE, name is required",
+      "any_name, null, ACTIVE, password is required",
+      "any_name, '', ACTIVE, password is required",
+      "any_name, any_password, null, status is required",
   })
-  void shouldNotCreateUserWithInvalidInput(final String name, final String password, final String expectedMessage) {
+  void shouldNotCreateUserWithInvalidInput(
+      final String name,
+      final String password,
+      final String status,
+      final String expectedMessage
+  ) {
+    String actualName = "null".equals(name) ? null : name;
+    String actualPassword = "null".equals(password) ? null : password;
+    UserStatus actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
+
+    var newUserDto = new NewUserDto(actualName, actualPassword, actualStatus);
+
     var exception = assertThrows(
         IllegalArgumentException.class,
-        () -> User.newUser(
-            NewUserDto.of("null".equals(name) ? null : name, "null".equals(password) ? null : password, UserStatus.ACTIVE)
-        )
+        () -> User.newUser(newUserDto)
     );
+
     assertEquals(expectedMessage, exception.getMessage());
   }
 
   @Test
   void shouldUpdateUser() {
-    var user =  UserTestMocks.createActiveTestUser();
+    var user = UserTestMocks.createActiveTestUser();
 
     var updatedUser = user.update(UpdateUserDto.of("updated_name"));
 
@@ -55,7 +69,7 @@ class UserTest {
       "null, name is required",
   })
   void shouldNotUpdateUserWithInvalidInput(final String name, final String expectedMessage) {
-    var user =  UserTestMocks.createActiveTestUser();
+    var user = UserTestMocks.createActiveTestUser();
 
     var exception = assertThrows(
         IllegalArgumentException.class,
@@ -68,7 +82,7 @@ class UserTest {
 
   @Test
   void shouldActivateUser() {
-    var user =  UserTestMocks.createInactiveTestUser();
+    var user = UserTestMocks.createInactiveTestUser();
 
     var activatedUser = user.activate();
 
@@ -77,7 +91,7 @@ class UserTest {
 
   @Test
   void shouldDeactivateUser() {
-    var user =  UserTestMocks.createActiveTestUser();
+    var user = UserTestMocks.createActiveTestUser();
 
     var deactivatedUser = user.deactivate();
 
@@ -86,7 +100,7 @@ class UserTest {
 
   @Test
   void shouldUpdatePasswordAndKeepItEncrypted() {
-    var user =  UserTestMocks.createActiveTestUser();
+    var user = UserTestMocks.createActiveTestUser();
 
     var updatedUser = user.updatePassword("updated_password");
 
@@ -95,7 +109,7 @@ class UserTest {
 
   @Test
   void shouldNotUpdatePasswordWithInvalidInput() {
-    var user =  UserTestMocks.createActiveTestUser();
+    var user = UserTestMocks.createActiveTestUser();
 
     var exception = assertThrows(
         IllegalArgumentException.class,

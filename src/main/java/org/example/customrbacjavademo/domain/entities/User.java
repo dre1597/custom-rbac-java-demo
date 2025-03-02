@@ -20,30 +20,32 @@ public class User {
       final String password,
       final UserStatus status
   ) {
-    this.name = name;
-    this.password = PasswordService.encryptPassword(password);
+    this.validate(name, password, status);
+    this.name = name.trim();
+    this.password = PasswordService.encryptPassword(password.trim());
     this.status = status;
   }
 
   public static User newUser(final NewUserDto dto) {
-    var user = new User(dto.name(), dto.password(), dto.status());
-    user.validate();
-    return user;
+    return new User(dto.name(), dto.password(), dto.status());
   }
 
   public User update(final UpdateUserDto dto) {
-    name = dto.name();
+    this.validate(dto.name(), this.password, this.status);
+    name = dto.name().trim();
     updatedAt = Instant.now();
-    this.validate();
     return this;
   }
 
-  private void validate() {
+  private void validate(final String name, final String password, final UserStatus status) {
     if (name == null || name.isBlank()) {
       throw new IllegalArgumentException("name is required");
     }
     if (password == null || password.isBlank()) {
       throw new IllegalArgumentException("password is required");
+    }
+    if (status == null) {
+      throw new IllegalArgumentException("status is required");
     }
   }
 
