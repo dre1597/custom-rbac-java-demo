@@ -51,6 +51,26 @@ public class Permission {
     this.status = status;
   }
 
+  public static Permission with(
+      final UUID id,
+      final PermissionName name,
+      final PermissionScope scope,
+      final String description,
+      final PermissionStatus status,
+      final Instant createdAt,
+      final Instant updatedAt
+  ) {
+    return new Permission(
+        id,
+        name,
+        scope,
+        description,
+        status,
+        createdAt,
+        updatedAt
+    );
+  }
+
   public static Permission newPermission(final NewPermissionDto dto) {
     return new Permission(dto.name(), dto.scope(), dto.description(), dto.status());
   }
