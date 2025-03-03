@@ -6,6 +6,7 @@ import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 
 public class UserTestMocks {
   public static User createActiveTestUser() {
-    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE));
+    var role = RoleTestMocks.createActiveTestRole();
+    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE, role.getId()));
   }
 }

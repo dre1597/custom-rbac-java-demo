@@ -18,31 +18,35 @@ public class User {
   private String password;
   private UserStatus status;
   private Instant updatedAt = Instant.now();
+  private UUID roleId;
 
   private User(
       final String name,
       final String password,
-      final UserStatus status
+      final UserStatus status,
+      final UUID roleId
   ) {
-    this.validate(name, password, status);
+    this.validate(name, password, status, roleId);
     this.name = name.trim();
     this.password = PasswordService.encryptPassword(password.trim());
     this.status = status;
+    this.roleId = roleId;
   }
 
   public static User newUser(final NewUserDto dto) {
-    return new User(dto.name(), dto.password(), dto.status());
+    return new User(dto.name(), dto.password(), dto.status(), dto.roleId());
   }
 
   public User update(final UpdateUserDto dto) {
-    this.validate(dto.name(), this.password, dto.status());
+    this.validate(dto.name(), this.password, dto.status(), dto.roleId());
     name = dto.name().trim();
     status = dto.status();
+    roleId = dto.roleId();
     updatedAt = Instant.now();
     return this;
   }
 
-  private void validate(final String name, final String password, final UserStatus status) {
+  private void validate(final String name, final String password, final UserStatus status, final UUID roleId) {
     var errors = new ArrayList<String>();
 
     if (name == null || name.isBlank()) {
@@ -53,6 +57,10 @@ public class User {
     }
     if (status == null) {
       errors.add("status is required");
+    }
+
+    if (roleId == null) {
+      errors.add("roleId is required");
     }
 
     if (!errors.isEmpty()) {
@@ -82,6 +90,10 @@ public class User {
 
   public UserStatus getStatus() {
     return status;
+  }
+
+  public UUID getRoleId() {
+    return roleId;
   }
 
   public Instant getCreatedAt() {
