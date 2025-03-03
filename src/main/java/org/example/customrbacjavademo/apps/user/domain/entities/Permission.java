@@ -12,15 +12,38 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class Permission {
-  private final UUID id = UUID.randomUUID();
-  private final Instant createdAt = Instant.now();
+  private UUID id = UUID.randomUUID();
   private PermissionName name;
   private PermissionScope scope;
   private String description;
   private PermissionStatus status;
+  private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
 
-  public Permission(final PermissionName name, final PermissionScope scope, final String description, final PermissionStatus status) {
+  private Permission(
+      final UUID id,
+      final PermissionName name,
+      final PermissionScope scope,
+      final String description,
+      final PermissionStatus status,
+      final Instant createdAt,
+      final Instant updatedAt
+  ) {
+    this.id = id;
+    this.name = name;
+    this.scope = scope;
+    this.description = description;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
+
+  private Permission(
+      final PermissionName name,
+      final PermissionScope scope,
+      final String description,
+      final PermissionStatus status
+  ) {
     this.validate(name, scope, description, status);
     this.name = name;
     this.scope = scope;
