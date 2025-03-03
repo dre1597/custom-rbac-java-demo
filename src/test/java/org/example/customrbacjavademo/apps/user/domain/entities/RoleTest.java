@@ -61,11 +61,19 @@ class RoleTest {
 
   @Test
   void shouldNotCreateRoleWithoutPermissions() {
-    var dto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
+    var nullDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
 
     var exception = assertThrows(
         ValidationException.class,
-        () -> Role.newRole(dto)
+        () -> Role.newRole(nullDto)
+    );
+
+    assertEquals("at least one permissionId is required", exception.getMessage());
+
+    var emptyListDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
+    exception = assertThrows(
+        ValidationException.class,
+        () -> Role.newRole(emptyListDto)
     );
 
     assertEquals("at least one permissionId is required", exception.getMessage());
@@ -115,10 +123,18 @@ class RoleTest {
   @Test
   void shouldNotUpdateRoleWithoutPermissions() {
     var role = RoleTestMocks.createActiveTestRole();
-    var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
+    var nullDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
     var exception = assertThrows(
         ValidationException.class,
-        () -> role.update(dto)
+        () -> role.update(nullDto)
+    );
+
+    assertEquals("at least one permissionId is required", exception.getMessage());
+
+    var emptyListDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
+    exception = assertThrows(
+        ValidationException.class,
+        () -> role.update(emptyListDto)
     );
 
     assertEquals("at least one permissionId is required", exception.getMessage());

@@ -34,6 +34,7 @@ class PermissionTest {
       "null, USER, any_description, ACTIVE, name is required",
       "READ, null, any_description, ACTIVE, scope is required",
       "READ, USER, null, ACTIVE, description is required",
+      "READ, USER, '', ACTIVE, description is required",
       "READ, USER, any_description, null, status is required",
       "null, null, null, null, 'name is required, scope is required, description is required, status is required'",
   })
@@ -72,6 +73,7 @@ class PermissionTest {
       "null, USER, any_description, ACTIVE, name is required",
       "READ, null, any_description, ACTIVE, scope is required",
       "READ, USER, null, ACTIVE, description is required",
+      "READ, USER, '', ACTIVE, description is required",
       "READ, USER, any_description, null, status is required",
       "null, null, null, null, 'name is required, scope is required, description is required, status is required'",
   })
