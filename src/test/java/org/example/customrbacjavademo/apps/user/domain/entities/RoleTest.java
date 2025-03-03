@@ -19,7 +19,6 @@ class RoleTest {
   void shouldCreateRole() {
     var permissions = List.of(PermissionTestMocks.createActiveTestPermission());
     var dto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissions);
-
     var role = Role.newRole(dto);
 
     assertNotNull(role.getId());
@@ -50,12 +49,11 @@ class RoleTest {
     var actualDescription = "null".equals(description) ? null : description;
     var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
     var permissions = List.of(PermissionTestMocks.createActiveTestPermission());
-
-    var newRoleDto = NewRoleDto.of(actualName, actualDescription, actualStatus, permissions);
+    var dto = NewRoleDto.of(actualName, actualDescription, actualStatus, permissions);
 
     var exception = assertThrows(
         ValidationException.class,
-        () -> Role.newRole(newRoleDto)
+        () -> Role.newRole(dto)
     );
 
     assertEquals(expectedMessage, exception.getMessage());
@@ -77,12 +75,12 @@ class RoleTest {
   void shouldUpdateRole() {
     var role = RoleTestMocks.createActiveTestRole();
     var permissions = List.of(PermissionTestMocks.createActiveTestPermission());
+    var dto = UpdateRoleDto.of("updated_name", "updated_description", RoleStatus.INACTIVE, permissions);
+    var updatedRole = role.update(dto);
 
-    var updatedRole = role.update(UpdateRoleDto.of("updated_name", "updated_description", RoleStatus.INACTIVE, permissions));
-
-    assertEquals("updated_name", updatedRole.getName());
-    assertEquals("updated_description", updatedRole.getDescription());
-    assertEquals(RoleStatus.INACTIVE, role.getStatus());
+    assertEquals(dto.name(), updatedRole.getName());
+    assertEquals(dto.description(), updatedRole.getDescription());
+    assertEquals(dto.status(), role.getStatus());
   }
 
   @ParameterizedTest
@@ -101,16 +99,14 @@ class RoleTest {
       final String expectedMessage
   ) {
     var role = RoleTestMocks.createActiveTestRole();
-
     var actualName = "null".equals(name) ? null : name;
     var actualDescription = "null".equals(description) ? null : description;
     var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
-
-    var updateRoleDto = UpdateRoleDto.of(actualName, actualDescription, actualStatus, role.getPermissions());
+    var dto = UpdateRoleDto.of(actualName, actualDescription, actualStatus, role.getPermissions());
 
     var exception = assertThrows(
         ValidationException.class,
-        () -> role.update(updateRoleDto)
+        () -> role.update(dto)
     );
 
     assertEquals(expectedMessage, exception.getMessage());

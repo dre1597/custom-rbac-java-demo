@@ -16,12 +16,13 @@ class UserTest {
   @Test
   void shouldCreateUser() {
     var password = "any_password";
-    var user = User.newUser(NewUserDto.of("any_name", password, UserStatus.ACTIVE));
+    var dto = NewUserDto.of("any_name", password, UserStatus.ACTIVE);
+    var user = User.newUser(dto);
 
     assertNotNull(user.getId());
-    assertEquals("any_name", user.getName());
+    assertEquals(dto.name(), user.getName());
     assertTrue(PasswordService.matches(password, user.getPassword()));
-    assertEquals(UserStatus.ACTIVE, user.getStatus());
+    assertEquals(dto.status(), user.getStatus());
     assertNotNull(user.getCreatedAt());
     assertNotNull(user.getUpdatedAt());
   }
@@ -45,11 +46,11 @@ class UserTest {
     var actualPassword = "null".equals(password) ? null : password;
     var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
 
-    var newUserDto = new NewUserDto(actualName, actualPassword, actualStatus);
+    var dto = new NewUserDto(actualName, actualPassword, actualStatus);
 
     var exception = assertThrows(
         ValidationException.class,
-        () -> User.newUser(newUserDto)
+        () -> User.newUser(dto)
     );
 
     assertEquals(expectedMessage, exception.getMessage());
@@ -58,11 +59,11 @@ class UserTest {
   @Test
   void shouldUpdateUser() {
     var user = UserTestMocks.createActiveTestUser();
+    var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE);
+    var updatedUser = user.update(dto);
 
-    var updatedUser = user.update(UpdateUserDto.of("updated_name", UserStatus.INACTIVE));
-
-    assertEquals("updated_name", updatedUser.getName());
-    assertEquals(UserStatus.INACTIVE, updatedUser.getStatus());
+    assertEquals(dto.name(), updatedUser.getName());
+    assertEquals(dto.status(), updatedUser.getStatus());
   }
 
   @ParameterizedTest
@@ -78,11 +79,11 @@ class UserTest {
     var actualName = "null".equals(name) ? null : name;
     var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
 
-    var updateUserDto = UpdateUserDto.of(actualName, actualStatus);
+    var dto = UpdateUserDto.of(actualName, actualStatus);
 
     var exception = assertThrows(
         ValidationException.class,
-        () -> user.update(updateUserDto)
+        () -> user.update(dto)
     );
     assertEquals(expectedMessage, exception.getMessage());
   }
