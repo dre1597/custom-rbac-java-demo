@@ -6,7 +6,7 @@ import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 
-public class PermissionMapper {
+public final class PermissionMapper {
   private PermissionMapper() {
   }
 
