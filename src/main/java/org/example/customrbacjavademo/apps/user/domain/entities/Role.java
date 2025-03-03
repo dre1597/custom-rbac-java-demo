@@ -17,31 +17,31 @@ public class Role {
   private String description;
   private RoleStatus status;
   private Instant updatedAt = Instant.now();
-  private List<Permission> permissions;
+  private List<UUID> permissionIds;
 
   private Role(
       final String name,
       final String description,
       final RoleStatus status,
-      final List<Permission> permissions
+      final List<UUID> permissionIds
   ) {
-    this.validate(name, description, status, permissions);
+    this.validate(name, description, status, permissionIds);
     this.name = name;
     this.description = description;
     this.status = status;
-    this.permissions = permissions;
+    this.permissionIds = permissionIds;
   }
 
   public static Role newRole(final NewRoleDto dto) {
-    return new Role(dto.name(), dto.description(), dto.status(), dto.permissions());
+    return new Role(dto.name(), dto.description(), dto.status(), dto.permissionIds());
   }
 
   public Role update(final UpdateRoleDto dto) {
-    this.validate(dto.name(), dto.description(), dto.status(), dto.permissions());
+    this.validate(dto.name(), dto.description(), dto.status(), dto.permissionIds());
     this.name = dto.name();
     this.description = dto.description();
     this.status = dto.status();
-    this.permissions = dto.permissions();
+    this.permissionIds = dto.permissionIds();
     this.updatedAt = Instant.now();
     return this;
   }
@@ -50,7 +50,7 @@ public class Role {
       final String name,
       final String description,
       final RoleStatus status,
-      final List<Permission> permissions
+      final List<UUID> permissionIds
   ) {
     var errors = new ArrayList<String>();
 
@@ -66,8 +66,8 @@ public class Role {
       errors.add("status is required");
     }
 
-    if (permissions == null || permissions.isEmpty()) {
-      errors.add("at least one permission is required");
+    if (permissionIds == null || permissionIds.isEmpty()) {
+      errors.add("at least one permissionId is required");
     }
 
     if (!errors.isEmpty()) {
@@ -99,7 +99,7 @@ public class Role {
     return updatedAt;
   }
 
-  public List<Permission> getPermissions() {
-    return permissions;
+  public List<UUID> getPermissionIds() {
+    return permissionIds;
   }
 }
