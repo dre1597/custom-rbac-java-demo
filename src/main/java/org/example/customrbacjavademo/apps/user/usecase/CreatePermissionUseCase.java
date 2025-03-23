@@ -19,9 +19,11 @@ public class CreatePermissionUseCase {
 
   public void execute(final NewPermissionDto dto) {
     var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
+
     if (exists) {
       throw new AlreadyExistsException("Permission already exists");
     }
+    
     var entity = Permission.newPermission(dto);
     repository.save(PermissionMapper.entityToJpa(entity));
   }
