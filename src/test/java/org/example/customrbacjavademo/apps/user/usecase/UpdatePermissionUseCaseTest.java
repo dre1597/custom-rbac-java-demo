@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -79,5 +80,61 @@ class UpdatePermissionUseCaseTest {
 
     var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id, dto));
     assertEquals("Permission already exists", exception.getMessage());
+  }
+
+  @Test
+  void shouldUpdateWhenOnlyNameChanged() {
+    var id = UUID.randomUUID();
+    var dto = UpdatePermissionDto.of(PermissionName.CREATE, PermissionScope.USER, "old_description", PermissionStatus.ACTIVE);
+    var existingPermission = new PermissionJpaEntity(
+        id,
+        PermissionName.READ.name(),
+        PermissionScope.USER.name(),
+        "old_description",
+        PermissionStatus.ACTIVE.name(),
+        Instant.now(),
+        Instant.now()
+    );
+
+    when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
+    when(repository.existsByNameAndScope(dto.name().toString(), existingPermission.getScope()))
+        .thenReturn(false);
+
+    useCase.execute(id, dto);
+
+    var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
+    verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
+    var capturedPermission = permissionJpaEntityCaptor.getValue();
+
+    assertEquals(dto.name().toString(), capturedPermission.getName());
+    assertEquals(existingPermission.getScope(), capturedPermission.getScope());
+  }
+
+  @Test
+  void shouldUpdateWhenOnlyScopeChanged() {
+    var id = UUID.randomUUID();
+    var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.PROFILE, "new_description", PermissionStatus.ACTIVE);
+    var existingPermission = new PermissionJpaEntity(
+        id,
+        PermissionName.READ.name(),
+        PermissionScope.USER.name(),
+        "old_description",
+        PermissionStatus.ACTIVE.name(),
+        Instant.now(),
+        Instant.now()
+    );
+
+    when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
+    when(repository.existsByNameAndScope(existingPermission.getName(), dto.scope().toString()))
+        .thenReturn(false);
+
+    useCase.execute(id, dto);
+
+    var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
+    verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
+    var capturedPermission = permissionJpaEntityCaptor.getValue();
+
+    assertEquals(existingPermission.getName(), capturedPermission.getName());
+    assertEquals(dto.scope().toString(), capturedPermission.getScope());
   }
 }
