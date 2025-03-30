@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 
 public final class PermissionMapper {
@@ -24,6 +25,18 @@ public final class PermissionMapper {
 
   public static PermissionJpaEntity entityToJpa(final Permission entity) {
     return new PermissionJpaEntity(
+        entity.getId(),
+        entity.getName().name(),
+        entity.getScope().name(),
+        entity.getDescription(),
+        entity.getStatus().name(),
+        entity.getCreatedAt(),
+        entity.getUpdatedAt()
+    );
+  }
+
+  public static PermissionResponse entityToResponse(final Permission entity) {
+    return new PermissionResponse(
         entity.getId(),
         entity.getName().name(),
         entity.getScope().name(),
