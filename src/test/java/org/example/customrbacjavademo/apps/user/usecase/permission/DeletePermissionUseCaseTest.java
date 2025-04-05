@@ -1,8 +1,8 @@
-package org.example.customrbacjavademo.apps.user.usecase;
+package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.mappers.PermissionMapper;
+import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

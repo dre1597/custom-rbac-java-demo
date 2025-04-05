@@ -1,9 +1,9 @@
-package org.example.customrbacjavademo.apps.user.usecase;
+package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.mappers.PermissionMapper;
+import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class CreatePermissionUseCase {
     if (exists) {
       throw new AlreadyExistsException("Permission already exists");
     }
-    
+
     var entity = Permission.newPermission(dto);
     repository.save(PermissionMapper.entityToJpa(entity));
   }

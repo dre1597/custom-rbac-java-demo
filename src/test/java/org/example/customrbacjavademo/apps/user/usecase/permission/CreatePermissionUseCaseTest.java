@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.apps.user.usecase;
+package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;

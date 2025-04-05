@@ -1,8 +1,8 @@
-package org.example.customrbacjavademo.apps.user.usecase;
+package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.mappers.PermissionMapper;
+import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;

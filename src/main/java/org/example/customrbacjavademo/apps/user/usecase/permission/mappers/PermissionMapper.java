@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.apps.user.usecase.mappers;
+package org.example.customrbacjavademo.apps.user.usecase.permission.mappers;
 
 import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;

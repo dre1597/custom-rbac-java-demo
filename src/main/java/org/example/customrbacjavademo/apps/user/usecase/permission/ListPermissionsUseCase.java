@@ -1,8 +1,8 @@
-package org.example.customrbacjavademo.apps.user.usecase;
+package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.mappers.PermissionMapper;
+import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.helpers.Pagination;
 import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
 import org.example.customrbacjavademo.common.domain.utils.SpecificationUtils;
