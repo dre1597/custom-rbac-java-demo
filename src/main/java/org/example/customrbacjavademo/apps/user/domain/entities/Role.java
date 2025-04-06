@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class Role {
-  private final UUID id = UUID.randomUUID();
-  private final Instant createdAt = Instant.now();
+  private UUID id = UUID.randomUUID();
   private String name;
   private String description;
   private RoleStatus status;
+  private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
   private List<UUID> permissionIds;
 
@@ -30,6 +30,45 @@ public class Role {
     this.description = description;
     this.status = status;
     this.permissionIds = permissionIds;
+  }
+
+  private Role(
+      final UUID id,
+      final String name,
+      final String description,
+      final RoleStatus status,
+      final Instant createdAt,
+      final Instant updatedAt,
+      final List<UUID> permissionIds
+  ) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.permissionIds = permissionIds;
+  }
+
+
+  public static Role with(
+      final UUID id,
+      final String name,
+      final String description,
+      final RoleStatus status,
+      final Instant createdAt,
+      final Instant updatedAt,
+      final List<UUID> permissionIds
+  ) {
+    return new Role(
+        id,
+        name,
+        description,
+        status,
+        createdAt,
+        updatedAt,
+        permissionIds
+    );
   }
 
   public static Role newRole(final NewRoleDto dto) {
