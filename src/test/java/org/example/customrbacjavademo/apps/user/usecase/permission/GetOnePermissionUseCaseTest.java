@@ -36,13 +36,13 @@ class GetOnePermissionUseCaseTest {
 
     verify(repository, times(1)).findById(id);
     assertNotNull(result);
-    assertEquals(permission.getId(), result.getId());
-    assertEquals(permission.getName(), result.getName());
-    assertEquals(permission.getScope(), result.getScope());
-    assertEquals(permission.getDescription(), result.getDescription());
-    assertEquals(permission.getStatus(), result.getStatus());
-    assertEquals(permission.getCreatedAt(), result.getCreatedAt());
-    assertEquals(permission.getUpdatedAt(), result.getUpdatedAt());
+    assertEquals(permission.getId(), result.id());
+    assertEquals(permission.getName().name(), result.name());
+    assertEquals(permission.getScope().name(), result.scope());
+    assertEquals(permission.getDescription(), result.description());
+    assertEquals(permission.getStatus().name(), result.status());
+    assertEquals(permission.getCreatedAt(), result.createdAt());
+    assertEquals(permission.getUpdatedAt(), result.updatedAt());
   }
 
   @Test

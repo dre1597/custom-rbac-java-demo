@@ -1,6 +1,6 @@
 package org.example.customrbacjavademo.apps.user.usecase.permission;
 
-import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
@@ -17,9 +17,9 @@ public class GetOnePermissionUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public Permission execute(final UUID id) {
+  public PermissionResponse execute(final UUID id) {
     return repository.findById(id)
-        .map(PermissionMapper::jpaToEntity)
+        .map(PermissionMapper::jpaToResponse)
         .orElseThrow(() -> new NotFoundException("Permission not found"));
   }
 }
