@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    networks:
+      - rbac-java-demo
+
+volumes:
+  data-postgres:
+    driver: local
+
+networks:
+  rbac-java-demo:

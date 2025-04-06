@@ -5,7 +5,7 @@ import java.util.List;
 public class ValidationException extends RuntimeException {
   private final List<String> errors;
 
-  public ValidationException(List<String> errors) {
+  public ValidationException(final List<String> errors) {
     super(String.join(", ", errors));
     this.errors = errors;
   }
