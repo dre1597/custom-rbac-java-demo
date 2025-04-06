@@ -7,11 +7,16 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 
 import java.util.List;
+import java.util.UUID;
 
 public class RoleTestMocks {
   public static Role createActiveTestRole() {
     final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
 
+    return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
+  }
+
+  public static Role createActiveTestRole(final List<UUID> permissionIds) {
     return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
   }
 
