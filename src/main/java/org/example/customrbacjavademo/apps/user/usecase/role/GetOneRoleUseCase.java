@@ -1,6 +1,6 @@
 package org.example.customrbacjavademo.apps.user.usecase.role;
 
-import org.example.customrbacjavademo.apps.user.domain.entities.Role;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleDetailsResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
@@ -17,9 +17,9 @@ public class GetOneRoleUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public Role execute(final UUID id) {
-    return repository.findById(id)
-        .map(RoleMapper::jpaToEntity)
+  public RoleDetailsResponse execute(final UUID id) {
+    return repository.findWithPermissionsById(id)
+        .map(RoleMapper::jpaToDetailsResponse)
         .orElseThrow(() -> new NotFoundException("Role not found"));
   }
 }

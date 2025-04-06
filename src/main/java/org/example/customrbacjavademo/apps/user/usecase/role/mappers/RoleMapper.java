@@ -2,9 +2,11 @@ package org.example.customrbacjavademo.apps.user.usecase.role.mappers;
 
 import org.example.customrbacjavademo.apps.user.domain.entities.Role;
 import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleDetailsResponse;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
+import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 
 public final class RoleMapper {
   private RoleMapper() {
@@ -54,6 +56,22 @@ public final class RoleMapper {
         entity.getStatus().toString(),
         entity.getCreatedAt(),
         entity.getUpdatedAt()
+    );
+  }
+
+  public static RoleDetailsResponse jpaToDetailsResponse(final RoleJpaEntity jpa) {
+    final var permissions = jpa.getPermissions().stream()
+        .map(PermissionMapper::jpaToResponse)
+        .toList();
+
+    return new RoleDetailsResponse(
+        jpa.getId(),
+        jpa.getName(),
+        jpa.getDescription(),
+        jpa.getStatus(),
+        jpa.getCreatedAt(),
+        jpa.getUpdatedAt(),
+        permissions
     );
   }
 }

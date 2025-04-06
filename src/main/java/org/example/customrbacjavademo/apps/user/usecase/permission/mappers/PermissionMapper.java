@@ -46,4 +46,16 @@ public final class PermissionMapper {
         entity.getUpdatedAt()
     );
   }
+
+  public static PermissionResponse jpaToResponse(final PermissionJpaEntity jpa) {
+    return new PermissionResponse(
+        jpa.getId(),
+        jpa.getName(),
+        jpa.getScope(),
+        jpa.getDescription(),
+        jpa.getStatus(),
+        jpa.getCreatedAt(),
+        jpa.getUpdatedAt()
+    );
+  }
 }
