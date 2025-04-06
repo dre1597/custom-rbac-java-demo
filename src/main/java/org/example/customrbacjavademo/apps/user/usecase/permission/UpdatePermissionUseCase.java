@@ -22,18 +22,19 @@ public class UpdatePermissionUseCase {
     final var permissionOnDatabase = repository.findById(id).orElseThrow(() -> new NotFoundException("Permission not found"));
     final var permission = PermissionMapper.jpaToEntity(permissionOnDatabase);
 
-    permission.update(dto);
 
-    final var hasTheSameName = dto.name().equals(permission.getName());
-    final var hasTheSameScope = dto.scope().equals(permission.getScope());
+    final var isChangingName = !dto.name().equals(permission.getName());
+    final var isChangingScope = !dto.scope().equals(permission.getScope());
 
-    if (hasTheSameName && hasTheSameScope) {
+    if (isChangingName || isChangingScope) {
       final var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
 
       if (exists) {
         throw new AlreadyExistsException("Permission already exists");
       }
     }
+
+    permission.update(dto);
     repository.save(PermissionMapper.entityToJpa(permission));
   }
 }

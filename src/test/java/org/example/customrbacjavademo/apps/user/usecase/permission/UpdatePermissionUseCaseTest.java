@@ -40,7 +40,6 @@ class UpdatePermissionUseCaseTest {
     final var permission = PermissionTestMocks.createActiveTestPermission();
 
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
-    when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString())).thenReturn(false);
 
     useCase.execute(id, dto);
 
@@ -70,10 +69,10 @@ class UpdatePermissionUseCaseTest {
 
   @Test
   void shouldNotUpdateToDuplicateNameAndScope() {
-    final var id = UUID.randomUUID();
-    final var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.USER, "new_description", PermissionStatus.ACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.CREATE, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
 
     final var permission = PermissionTestMocks.createActiveTestPermission();
+    final var id = permission.getId();
 
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
     when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString())).thenReturn(true);
@@ -97,8 +96,6 @@ class UpdatePermissionUseCaseTest {
     );
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
-    when(repository.existsByNameAndScope(dto.name().toString(), existingPermission.getScope()))
-        .thenReturn(false);
 
     useCase.execute(id, dto);
 
@@ -125,8 +122,6 @@ class UpdatePermissionUseCaseTest {
     );
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
-    when(repository.existsByNameAndScope(existingPermission.getName(), dto.scope().toString()))
-        .thenReturn(false);
 
     useCase.execute(id, dto);
 
