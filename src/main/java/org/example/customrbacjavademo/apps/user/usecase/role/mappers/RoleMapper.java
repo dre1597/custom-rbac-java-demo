@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.apps.user.usecase.role.mappers;
 
 import org.example.customrbacjavademo.apps.user.domain.entities.Role;
 import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
 
@@ -42,6 +43,17 @@ public final class RoleMapper {
         entity.getCreatedAt(),
         entity.getUpdatedAt(),
         permissions
+    );
+  }
+
+  public static RoleResponse entityToResponse(final Role entity) {
+    return new RoleResponse(
+        entity.getId(),
+        entity.getName(),
+        entity.getDescription(),
+        entity.getStatus().toString(),
+        entity.getCreatedAt(),
+        entity.getUpdatedAt()
     );
   }
 }
