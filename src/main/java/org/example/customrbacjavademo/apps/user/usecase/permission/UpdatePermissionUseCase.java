@@ -24,11 +24,11 @@ public class UpdatePermissionUseCase {
 
     permission.update(dto);
 
-    var hasTheSameName = dto.name().equals(permission.getName());
-    var hasTheSameScope = dto.scope().equals(permission.getScope());
+    final var hasTheSameName = dto.name().equals(permission.getName());
+    final var hasTheSameScope = dto.scope().equals(permission.getScope());
 
     if (hasTheSameName && hasTheSameScope) {
-      var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
+      final var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
 
       if (exists) {
         throw new AlreadyExistsException("Permission already exists");

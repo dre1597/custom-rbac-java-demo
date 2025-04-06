@@ -47,7 +47,7 @@ public class User {
   }
 
   private void validate(final String name, final String password, final UserStatus status, final UUID roleId) {
-    var errors = new ArrayList<String>();
+    final var errors = new ArrayList<String>();
 
     if (name == null || name.isBlank()) {
       errors.add("name is required");

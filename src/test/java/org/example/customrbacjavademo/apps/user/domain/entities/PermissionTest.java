@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class PermissionTest {
   @Test
   void shouldCreatePermission() {
-    var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
-    var newPermission = Permission.newPermission(dto);
+    final var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var newPermission = Permission.newPermission(dto);
 
     assertNotNull(newPermission.getId());
     assertEquals(dto.name(), newPermission.getName());
@@ -45,20 +45,20 @@ class PermissionTest {
       final String status,
       final String expectedMessage
   ) {
-    var actualName = "null".equals(name) ? null : PermissionName.valueOf(name);
-    var actualScope = "null".equals(scope) ? null : PermissionScope.valueOf(scope);
-    var actualDescription = "null".equals(description) ? null : description;
-    var actualStatus = "null".equals(status) ? null : PermissionStatus.valueOf(status);
+    final var actualName = "null".equals(name) ? null : PermissionName.valueOf(name);
+    final var actualScope = "null".equals(scope) ? null : PermissionScope.valueOf(scope);
+    final var actualDescription = "null".equals(description) ? null : description;
+    final var actualStatus = "null".equals(status) ? null : PermissionStatus.valueOf(status);
 
-    var dro = NewPermissionDto.of(actualName, actualScope, actualDescription, actualStatus);
-    var exception = org.junit.jupiter.api.Assertions.assertThrows(ValidationException.class, () -> Permission.newPermission(dro));
+    final var dto = NewPermissionDto.of(actualName, actualScope, actualDescription, actualStatus);
+    final var exception = org.junit.jupiter.api.Assertions.assertThrows(ValidationException.class, () -> Permission.newPermission(dto));
     assertEquals(expectedMessage, exception.getMessage());
   }
 
   @Test
   void shouldUpdateRole() {
-    var permission = PermissionTestMocks.createActiveTestPermission();
-    var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var permission = PermissionTestMocks.createActiveTestPermission();
+    final var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
 
     permission.update(dto);
     assertEquals(dto.name(), permission.getName());
@@ -84,14 +84,14 @@ class PermissionTest {
       final String status,
       final String expectedMessage
   ) {
-    var permission = PermissionTestMocks.createActiveTestPermission();
-    var actualName = "null".equals(name) ? null : PermissionName.valueOf(name);
-    var actualScope = "null".equals(scope) ? null : PermissionScope.valueOf(scope);
-    var actualDescription = "null".equals(description) ? null : description;
-    var actualStatus = "null".equals(status) ? null : PermissionStatus.valueOf(status);
+    final var permission = PermissionTestMocks.createActiveTestPermission();
+    final var actualName = "null".equals(name) ? null : PermissionName.valueOf(name);
+    final var actualScope = "null".equals(scope) ? null : PermissionScope.valueOf(scope);
+    final var actualDescription = "null".equals(description) ? null : description;
+    final var actualStatus = "null".equals(status) ? null : PermissionStatus.valueOf(status);
 
-    var dto = UpdatePermissionDto.of(actualName, actualScope, actualDescription, actualStatus);
-    var exception = org.junit.jupiter.api.Assertions.assertThrows(ValidationException.class, () -> permission.update(dto));
+    final var dto = UpdatePermissionDto.of(actualName, actualScope, actualDescription, actualStatus);
+    final var exception = org.junit.jupiter.api.Assertions.assertThrows(ValidationException.class, () -> permission.update(dto));
     assertEquals(expectedMessage, exception.getMessage());
   }
 }

@@ -26,8 +26,8 @@ class GetOnePermissionUseCaseTest {
 
   @Test
   void shouldGetPermissionById() {
-    var id = UUID.randomUUID();
-    var permission = PermissionTestMocks.createActiveTestPermission();
+    final var id = UUID.randomUUID();
+    final var permission = PermissionTestMocks.createActiveTestPermission();
 
     when(repository.findById(id))
         .thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
@@ -47,12 +47,12 @@ class GetOnePermissionUseCaseTest {
 
   @Test
   void shouldThrowNotFoundExceptionWhenPermissionDoesNotExist() {
-    var id = UUID.randomUUID();
+    final var id = UUID.randomUUID();
 
     when(repository.findById(id))
         .thenReturn(Optional.empty());
 
-    var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id));
 
     verify(repository, times(1)).findById(id);
     assertEquals("Permission not found", exception.getMessage());

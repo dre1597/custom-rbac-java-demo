@@ -13,35 +13,35 @@ import static org.mockito.Mockito.when;
 class SpecificationUtilsTest {
   @Test
   void shouldCreateLikeSpecification() {
-    var prop = "name";
-    var term = "test";
-    var spec = SpecificationUtils.like(prop, term);
+    final var prop = "name";
+    final var term = "test";
+    final var spec = SpecificationUtils.like(prop, term);
 
-    var root = mock(Root.class);
-    var query = mock(CriteriaQuery.class);
-    var cb = mock(CriteriaBuilder.class);
-    var expression = mock(Expression.class);
-    var predicate = mock(Predicate.class);
+    final var root = mock(Root.class);
+    final var query = mock(CriteriaQuery.class);
+    final var cb = mock(CriteriaBuilder.class);
+    final var expression = mock(Expression.class);
+    final var predicate = mock(Predicate.class);
 
     when(cb.upper(root.get(prop))).thenReturn(expression);
     when(cb.like(expression, "%" + term.toUpperCase() + "%")).thenReturn(predicate);
 
-    var result = spec.toPredicate(root, query, cb);
+    final var result = spec.toPredicate(root, query, cb);
     assertEquals(result, predicate);
   }
 
   @Test
   void shouldCreateLikeMultipleSpecification() {
-    var props = List.of("name", "description");
-    var term = "test";
-    var spec = SpecificationUtils.likeMultiple(props, term);
+    final var props = List.of("name", "description");
+    final var term = "test";
+    final var spec = SpecificationUtils.likeMultiple(props, term);
 
-    var root = mock(Root.class);
-    var query = mock(CriteriaQuery.class);
-    var cb = mock(CriteriaBuilder.class);
-    var expressionName = mock(Expression.class);
-    var expressionDescription = mock(Expression.class);
-    var predicate = mock(Predicate.class);
+    final var root = mock(Root.class);
+    final var query = mock(CriteriaQuery.class);
+    final var cb = mock(CriteriaBuilder.class);
+    final var expressionName = mock(Expression.class);
+    final var expressionDescription = mock(Expression.class);
+    final var predicate = mock(Predicate.class);
 
     when(cb.upper(root.get("name"))).thenReturn(expressionName);
     when(cb.upper(root.get("description"))).thenReturn(expressionDescription);
@@ -49,10 +49,7 @@ class SpecificationUtilsTest {
     when(cb.like(expressionDescription, "%" + term.toUpperCase() + "%")).thenReturn(predicate);
     when(cb.or(any(Predicate[].class))).thenReturn(predicate);
 
-    var result = spec.toPredicate(root, query, cb);
+    final var result = spec.toPredicate(root, query, cb);
     assertEquals(result, predicate);
-  }
-
-  private static class MyEntity {
   }
 }

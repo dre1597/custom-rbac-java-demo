@@ -16,8 +16,8 @@ public final class SpecificationUtils {
 
   public static <T> Specification<T> likeMultiple(final List<String> props, final String term) {
     return (root, query, cb) -> {
-      var pattern = like(term.toUpperCase());
-      var predicates = new ArrayList<Predicate>();
+      final var pattern = like(term.toUpperCase());
+      final var predicates = new ArrayList<Predicate>();
       for (var prop : props) {
         predicates.add(cb.like(cb.upper(root.get(prop)), pattern));
       }

@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class SearchQueryTest {
   @Test
   void shouldCreateSearchQueryWithGivenValues() {
-    var query = new SearchQuery(1, 10, "test", "name", "asc");
+    final var query = new SearchQuery(1, 10, "test", "name", "asc");
 
     assertEquals(1, query.page());
     assertEquals(10, query.perPage());
@@ -18,7 +18,7 @@ class SearchQueryTest {
 
   @Test
   void shouldCreateSearchQueryWithDefaultValues() {
-    var query = new SearchQuery(0, 0, "", "", "");
+    final var query = new SearchQuery(0, 0, "", "", "");
 
     assertEquals(0, query.page());
     assertEquals(0, query.perPage());

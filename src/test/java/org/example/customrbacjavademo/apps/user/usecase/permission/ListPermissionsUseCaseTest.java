@@ -37,10 +37,10 @@ class ListPermissionsUseCaseTest {
 
   @Test
   void shouldReturnPaginatedPermissionsWithoutSearchTerm() {
-    var searchQuery = new SearchQuery(0, 10, "", "name", "asc");
-    var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+    final var searchQuery = new SearchQuery(0, 10, "", "name", "asc");
+    final var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
 
-    var permissionEntities = List.of(
+    final var permissionEntities = List.of(
         new PermissionJpaEntity(
             UUID.randomUUID(),
             PermissionName.READ.name(),
@@ -61,24 +61,24 @@ class ListPermissionsUseCaseTest {
         )
     );
 
-    var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
+    final var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
 
     when(repository.findAll(where(null), pageRequest)).thenReturn(page);
 
-    var result = useCase.execute(searchQuery);
+    final var result = useCase.execute(searchQuery);
 
     assertEquals(0, result.currentPage());
     assertEquals(10, result.perPage());
     assertEquals(2, result.total());
     assertEquals(2, result.items().size());
 
-    var firstPermission = result.items().getFirst();
+    final var firstPermission = result.items().getFirst();
     assertEquals(PermissionName.READ.name(), firstPermission.name());
     assertEquals(PermissionScope.USER.name(), firstPermission.scope());
     assertEquals("any_description", firstPermission.description());
     assertEquals(PermissionStatus.ACTIVE.name(), firstPermission.status());
 
-    var secondPermission = result.items().get(1);
+    final var secondPermission = result.items().get(1);
     assertEquals(PermissionName.CREATE.name(), secondPermission.name());
     assertEquals(PermissionScope.PROFILE.name(), secondPermission.scope());
     assertEquals("other_description", secondPermission.description());
@@ -87,10 +87,10 @@ class ListPermissionsUseCaseTest {
 
   @Test
   void shouldReturnPaginatedPermissionsWithSearchTerms() {
-    var searchQuery = new SearchQuery(0, 10, "read", "name", "ASC");
-    var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+    final var searchQuery = new SearchQuery(0, 10, "read", "name", "ASC");
+    final var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
 
-    var permissionEntities = List.of(
+    final var permissionEntities = List.of(
         new PermissionJpaEntity(
             UUID.randomUUID(),
             PermissionName.READ.name(),
@@ -102,18 +102,18 @@ class ListPermissionsUseCaseTest {
         )
     );
 
-    var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
+    final var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
 
     when(repository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
 
-    var result = useCase.execute(searchQuery);
+    final var result = useCase.execute(searchQuery);
 
     assertEquals(0, result.currentPage());
     assertEquals(10, result.perPage());
     assertEquals(1, result.total());
     assertEquals(1, result.items().size());
 
-    var permission = result.items().getFirst();
+    final var permission = result.items().getFirst();
     assertEquals(PermissionName.READ.name(), permission.name());
     assertEquals(PermissionScope.USER.name(), permission.scope());
     assertEquals("any_description", permission.description());
@@ -122,14 +122,14 @@ class ListPermissionsUseCaseTest {
 
   @Test
   void shouldReturnEmptyPaginatedPermissionsWhenNoResults() {
-    var searchQuery = new SearchQuery(0, 10, "nonexistent", "name", "ASC");
-    var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+    final var searchQuery = new SearchQuery(0, 10, "nonexistent", "name", "ASC");
+    final var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
 
-    var page = new PageImpl<>(List.of(), pageRequest, 0);
+    final var page = new PageImpl<>(List.of(), pageRequest, 0);
 
     when(repository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
 
-    var result = useCase.execute(searchQuery);
+    final var result = useCase.execute(searchQuery);
 
     assertEquals(0, result.currentPage());
     assertEquals(10, result.perPage());
@@ -139,10 +139,10 @@ class ListPermissionsUseCaseTest {
 
   @Test
   void shouldSearchByScopeWhenTermsMatchScope() {
-    var searchQuery = new SearchQuery(0, 10, "user", "name", "ASC");
-    var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
+    final var searchQuery = new SearchQuery(0, 10, "user", "name", "ASC");
+    final var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
 
-    var permissionEntities = List.of(
+    final var permissionEntities = List.of(
         new PermissionJpaEntity(
             UUID.randomUUID(),
             PermissionName.READ.name(),
@@ -154,11 +154,11 @@ class ListPermissionsUseCaseTest {
         )
     );
 
-    var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
+    final var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
 
     when(repository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
 
-    var result = useCase.execute(searchQuery);
+    final var result = useCase.execute(searchQuery);
 
     assertEquals(1, result.items().size());
     assertEquals(PermissionScope.USER.name(), result.items().getFirst().scope());
@@ -169,7 +169,7 @@ class ListPermissionsUseCaseTest {
     var searchQuery = new SearchQuery(0, 10, "any_description", "name", "ASC");
     var pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "name"));
 
-    var permissionEntities = List.of(
+    final var permissionEntities = List.of(
         new PermissionJpaEntity(
             UUID.randomUUID(),
             PermissionName.READ.name(),
@@ -181,11 +181,11 @@ class ListPermissionsUseCaseTest {
         )
     );
 
-    var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
+    final var page = new PageImpl<>(permissionEntities, pageRequest, permissionEntities.size());
 
     when(repository.findAll(any(Specification.class), eq(pageRequest))).thenReturn(page);
 
-    var result = useCase.execute(searchQuery);
+    final var result = useCase.execute(searchQuery);
 
     assertEquals(1, result.items().size());
     assertEquals("any_description", result.items().getFirst().description());

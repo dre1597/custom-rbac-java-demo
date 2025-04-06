@@ -28,16 +28,16 @@ class CreatePermissionUseCaseTest {
 
   @Test
   void shouldCreatePermission() {
-    var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
 
     when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString()))
         .thenReturn(false);
 
     useCase.execute(dto);
 
-    var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
+    final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
     verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
-    var capturedPermission = permissionJpaEntityCaptor.getValue();
+    final var capturedPermission = permissionJpaEntityCaptor.getValue();
 
     assertNotNull(capturedPermission.getId());
     assertEquals(dto.name().toString(), capturedPermission.getName());
@@ -50,12 +50,12 @@ class CreatePermissionUseCaseTest {
 
   @Test
   void shouldNotCreatePermissionWithSameNameAndScopeTogether() {
-    var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
 
     when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString()))
         .thenReturn(true);
 
-    var exception = org.junit.jupiter.api.Assertions.assertThrows(AlreadyExistsException.class, () -> useCase.execute(dto));
+    final var exception = org.junit.jupiter.api.Assertions.assertThrows(AlreadyExistsException.class, () -> useCase.execute(dto));
     assertEquals("Permission already exists", exception.getMessage());
   }
 }

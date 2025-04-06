@@ -34,18 +34,18 @@ class CreateRoleUseCaseTest {
 
   @Test
   void shouldCreateRole() {
-    var permissionId1 = UUID.randomUUID();
-    var permissionId2 = UUID.randomUUID();
-    var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(permissionId1, permissionId2));
+    final var permissionId1 = UUID.randomUUID();
+    final var permissionId2 = UUID.randomUUID();
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(permissionId1, permissionId2));
 
     when(repository.existsByName(dto.name())).thenReturn(false);
     when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
 
     useCase.execute(dto);
 
-    var roleCaptor = ArgumentCaptor.forClass(RoleJpaEntity.class);
+    final var roleCaptor = ArgumentCaptor.forClass(RoleJpaEntity.class);
     verify(repository, times(1)).save(roleCaptor.capture());
-    var savedRole = roleCaptor.getValue();
+    final var savedRole = roleCaptor.getValue();
 
     assertEquals(dto.name(), savedRole.getName());
     assertEquals(dto.description(), savedRole.getDescription());
@@ -58,7 +58,7 @@ class CreateRoleUseCaseTest {
 
   @Test
   void shouldNotCreateRoleIfNameAlreadyExists() {
-    var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(UUID.randomUUID()));
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(UUID.randomUUID()));
 
     when(repository.existsByName(dto.name())).thenReturn(true);
 
@@ -70,14 +70,14 @@ class CreateRoleUseCaseTest {
 
   @Test
   void shouldThrowIfSomePermissionsAreInvalid() {
-    var validId = UUID.randomUUID();
-    var invalidId = UUID.randomUUID();
-    var dto = new NewRoleDto("any_name", "any_descriptions", RoleStatus.ACTIVE, List.of(validId, invalidId));
+    final var validId = UUID.randomUUID();
+    final var invalidId = UUID.randomUUID();
+    final var dto = new NewRoleDto("any_name", "any_descriptions", RoleStatus.ACTIVE, List.of(validId, invalidId));
 
     when(repository.existsByName(dto.name())).thenReturn(false);
     when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(1L);
 
-    var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(dto));
+    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(dto));
 
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
     verify(repository, never()).save(any());

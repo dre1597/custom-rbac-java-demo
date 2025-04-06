@@ -8,7 +8,7 @@ import java.util.List;
 
 public class RoleTestMocks {
   public static Role createActiveTestRole() {
-    var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
+    final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
 
     return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
   }

@@ -25,8 +25,8 @@ class DeletePermissionUseCaseTest {
 
   @Test
   void shouldDeletePermission() {
-    var id = UUID.randomUUID();
-    var permission = PermissionTestMocks.createActiveTestPermission();
+    final var id = UUID.randomUUID();
+    final var permission = PermissionTestMocks.createActiveTestPermission();
 
     when(repository.findById(id))
         .thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
@@ -38,7 +38,7 @@ class DeletePermissionUseCaseTest {
 
   @Test
   void shouldDoNothingWhenMangaDoesNotExist() {
-    var id = UUID.randomUUID();
+    final var id = UUID.randomUUID();
     when(repository.findById(id)).thenReturn(Optional.empty());
 
     useCase.execute(id);

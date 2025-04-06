@@ -52,7 +52,7 @@ public class Role {
       final RoleStatus status,
       final List<UUID> permissionIds
   ) {
-    var errors = new ArrayList<String>();
+    final var errors = new ArrayList<String>();
 
     if (name == null || name.isBlank()) {
       errors.add("name is required");

@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class PaginationTest {
   @Test
   void shouldMapItemsCorrectly() {
-    var pagination = new Pagination<Integer>(1, 10, 100, List.of(1, 2, 3));
-    Function<Integer, String> mapper = Object::toString;
-    Pagination<String> mappedPagination = pagination.map(mapper);
+    final var pagination = new Pagination<>(1, 10, 100, List.of(1, 2, 3));
+    final Function<Integer, String> mapper = Object::toString;
+    final var mappedPagination = pagination.map(mapper);
 
     assertEquals(1, mappedPagination.currentPage());
     assertEquals(10, mappedPagination.perPage());
@@ -22,9 +22,9 @@ class PaginationTest {
 
   @Test
   void shouldHandleEmptyItemsList() {
-    var pagination = new Pagination<Integer>(1, 10, 0, List.of());
-    Function<Integer, String> mapper = Object::toString;
-    var mappedPagination = pagination.map(mapper);
+    final var pagination = new Pagination<Integer>(1, 10, 0, List.of());
+    final Function<Integer, String> mapper = Object::toString;
+    final var mappedPagination = pagination.map(mapper);
 
     assertEquals(1, mappedPagination.currentPage());
     assertEquals(10, mappedPagination.perPage());

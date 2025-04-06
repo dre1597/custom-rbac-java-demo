@@ -86,7 +86,7 @@ public class Permission {
   }
 
   private void validate(final PermissionName name, final PermissionScope scope, final String description, final PermissionStatus status) {
-    var errors = new ArrayList<String>();
+    final var errors = new ArrayList<String>();
 
     if (name == null) {
       errors.add("name is required");

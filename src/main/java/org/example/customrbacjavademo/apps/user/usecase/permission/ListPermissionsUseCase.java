@@ -48,7 +48,7 @@ public class ListPermissionsUseCase {
   }
 
   private Specification<PermissionJpaRepository> assembleSpecification(final String terms) {
-    var fields = List.of("name", "scope", "description");
+    final var fields = List.of("name", "scope", "description");
     return SpecificationUtils.likeMultiple(fields, terms);
   }
 }

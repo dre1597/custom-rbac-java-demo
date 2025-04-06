@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserTest {
   @Test
   void shouldCreateUser() {
-    var password = "any_password";
-    var role = RoleTestMocks.createActiveTestRole();
-    var dto = NewUserDto.of("any_name", password, UserStatus.ACTIVE, role.getId());
-    var user = User.newUser(dto);
+    final var password = "any_password";
+    final var role = RoleTestMocks.createActiveTestRole();
+    final var dto = NewUserDto.of("any_name", password, UserStatus.ACTIVE, role.getId());
+    final var user = User.newUser(dto);
 
     assertNotNull(user.getId());
     assertEquals(dto.name(), user.getName());
@@ -49,14 +49,14 @@ class UserTest {
       final String roleId,
       final String expectedMessage
   ) {
-    var actualName = "null".equals(name) ? null : name;
-    var actualPassword = "null".equals(password) ? null : password;
-    var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
-    var actualRoleId = "null".equals(roleId) ? null : UUID.fromString(roleId);
+    final var actualName = "null".equals(name) ? null : name;
+    final var actualPassword = "null".equals(password) ? null : password;
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
+    final var actualRoleId = "null".equals(roleId) ? null : UUID.fromString(roleId);
 
-    var dto = new NewUserDto(actualName, actualPassword, actualStatus, actualRoleId);
+    final var dto = new NewUserDto(actualName, actualPassword, actualStatus, actualRoleId);
 
-    var exception = assertThrows(
+    final var exception = assertThrows(
         ValidationException.class,
         () -> User.newUser(dto)
     );
@@ -66,10 +66,10 @@ class UserTest {
 
   @Test
   void shouldUpdateUser() {
-    var user = UserTestMocks.createActiveTestUser();
-    var newRole = RoleTestMocks.createActiveTestRole();
-    var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE, newRole.getId());
-    var updatedUser = user.update(dto);
+    final var user = UserTestMocks.createActiveTestUser();
+    final var newRole = RoleTestMocks.createActiveTestRole();
+    final var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE, newRole.getId());
+    final var updatedUser = user.update(dto);
 
     assertEquals(dto.name(), updatedUser.getName());
     assertEquals(dto.status(), updatedUser.getStatus());
@@ -85,15 +85,15 @@ class UserTest {
       "null, null, null, 'name is required, status is required, roleId is required'",
   })
   void shouldNotUpdateUserWithInvalidInput(final String name, final String status, final String roleId, final String expectedMessage) {
-    var user = UserTestMocks.createActiveTestUser();
+    final var user = UserTestMocks.createActiveTestUser();
 
-    var actualName = "null".equals(name) ? null : name;
-    var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
-    var actualRoleId = "null".equals(String.valueOf(roleId)) ? null : UUID.fromString(roleId);
+    final var actualName = "null".equals(name) ? null : name;
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
+    final var actualRoleId = "null".equals(String.valueOf(roleId)) ? null : UUID.fromString(roleId);
 
-    var dto = UpdateUserDto.of(actualName, actualStatus, actualRoleId);
+    final var dto = UpdateUserDto.of(actualName, actualStatus, actualRoleId);
 
-    var exception = assertThrows(
+    final var exception = assertThrows(
         ValidationException.class,
         () -> user.update(dto)
     );
@@ -102,16 +102,16 @@ class UserTest {
 
   @Test
   void shouldUpdatePasswordAndKeepItEncrypted() {
-    var user = UserTestMocks.createActiveTestUser();
+    final var user = UserTestMocks.createActiveTestUser();
 
-    var updatedUser = user.updatePassword("updated_password");
+    final var updatedUser = user.updatePassword("updated_password");
 
     assertTrue(PasswordService.matches("updated_password", updatedUser.getPassword()));
   }
 
   @Test
   void shouldNotUpdatePasswordWithInvalidInput() {
-    var user = UserTestMocks.createActiveTestUser();
+    final var user = UserTestMocks.createActiveTestUser();
 
     var exception = assertThrows(
         ValidationException.class,

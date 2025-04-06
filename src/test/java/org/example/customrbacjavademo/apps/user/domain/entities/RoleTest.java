@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class RoleTest {
   @Test
   void shouldCreateRole() {
-    var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
-    var dto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds);
-    var role = Role.newRole(dto);
+    final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
+    final var dto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds);
+    final var role = Role.newRole(dto);
 
     assertNotNull(role.getId());
     assertEquals(dto.name(), role.getName());
@@ -45,13 +45,13 @@ class RoleTest {
       final String status,
       final String expectedMessage
   ) {
-    var actualName = "null".equals(name) ? null : name;
-    var actualDescription = "null".equals(description) ? null : description;
-    var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
-    var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
-    var dto = NewRoleDto.of(actualName, actualDescription, actualStatus, permissionIds);
+    final var actualName = "null".equals(name) ? null : name;
+    final var actualDescription = "null".equals(description) ? null : description;
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
+    final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
+    final var dto = NewRoleDto.of(actualName, actualDescription, actualStatus, permissionIds);
 
-    var exception = assertThrows(
+    final var exception = assertThrows(
         ValidationException.class,
         () -> Role.newRole(dto)
     );
@@ -61,7 +61,7 @@ class RoleTest {
 
   @Test
   void shouldNotCreateRoleWithoutPermissions() {
-    var nullDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
+    final var nullDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
 
     var exception = assertThrows(
         ValidationException.class,
@@ -70,7 +70,7 @@ class RoleTest {
 
     assertEquals("at least one permissionId is required", exception.getMessage());
 
-    var emptyListDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
+    final var emptyListDto = NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
     exception = assertThrows(
         ValidationException.class,
         () -> Role.newRole(emptyListDto)
@@ -81,10 +81,10 @@ class RoleTest {
 
   @Test
   void shouldUpdateRole() {
-    var role = RoleTestMocks.createActiveTestRole();
-    var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
-    var dto = UpdateRoleDto.of("updated_name", "updated_description", RoleStatus.INACTIVE, permissionIds);
-    var updatedRole = role.update(dto);
+    final var role = RoleTestMocks.createActiveTestRole();
+    final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
+    final var dto = UpdateRoleDto.of("updated_name", "updated_description", RoleStatus.INACTIVE, permissionIds);
+    final var updatedRole = role.update(dto);
 
     assertEquals(dto.name(), updatedRole.getName());
     assertEquals(dto.description(), updatedRole.getDescription());
@@ -106,11 +106,11 @@ class RoleTest {
       final String status,
       final String expectedMessage
   ) {
-    var role = RoleTestMocks.createActiveTestRole();
-    var actualName = "null".equals(name) ? null : name;
-    var actualDescription = "null".equals(description) ? null : description;
-    var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
-    var dto = UpdateRoleDto.of(actualName, actualDescription, actualStatus, role.getPermissionIds());
+    final var role = RoleTestMocks.createActiveTestRole();
+    final var actualName = "null".equals(name) ? null : name;
+    final var actualDescription = "null".equals(description) ? null : description;
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
+    final var dto = UpdateRoleDto.of(actualName, actualDescription, actualStatus, role.getPermissionIds());
 
     var exception = assertThrows(
         ValidationException.class,
@@ -122,8 +122,8 @@ class RoleTest {
 
   @Test
   void shouldNotUpdateRoleWithoutPermissions() {
-    var role = RoleTestMocks.createActiveTestRole();
-    var nullDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
+    final var role = RoleTestMocks.createActiveTestRole();
+    final var nullDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, null);
     var exception = assertThrows(
         ValidationException.class,
         () -> role.update(nullDto)
@@ -131,7 +131,7 @@ class RoleTest {
 
     assertEquals("at least one permissionId is required", exception.getMessage());
 
-    var emptyListDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
+    final var emptyListDto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, List.of());
     exception = assertThrows(
         ValidationException.class,
         () -> role.update(emptyListDto)
