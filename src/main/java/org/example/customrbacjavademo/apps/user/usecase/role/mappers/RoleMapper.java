@@ -74,4 +74,15 @@ public final class RoleMapper {
         permissions
     );
   }
+
+  public static RoleResponse jpaToResponse(final RoleJpaEntity jpa) {
+    return new RoleResponse(
+        jpa.getId(),
+        jpa.getName(),
+        jpa.getDescription(),
+        jpa.getStatus(),
+        jpa.getCreatedAt(),
+        jpa.getUpdatedAt()
+    );
+  }
 }
