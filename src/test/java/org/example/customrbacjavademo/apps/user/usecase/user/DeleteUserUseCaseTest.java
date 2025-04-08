@@ -2,14 +2,12 @@ package org.example.customrbacjavademo.apps.user.usecase.user;
 
 import org.example.customrbacjavademo.apps.user.domain.mocks.UserTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -27,8 +25,7 @@ class DeleteUserUseCaseTest {
     final var id = UUID.randomUUID();
     final var user = UserTestMocks.createActiveTestUser();
 
-    when(repository.findById(id))
-        .thenReturn(Optional.of(UserMapper.entityToJpa(user)));
+    when(repository.existsById(id)).thenReturn(true);
 
     useCase.execute(id);
 
@@ -38,7 +35,8 @@ class DeleteUserUseCaseTest {
   @Test
   void shouldDoNothingWhenUserDoesNotExist() {
     final var id = UUID.randomUUID();
-    when(repository.findById(id)).thenReturn(Optional.empty());
+
+    when(repository.existsById(id)).thenReturn(false);
 
     useCase.execute(id);
 

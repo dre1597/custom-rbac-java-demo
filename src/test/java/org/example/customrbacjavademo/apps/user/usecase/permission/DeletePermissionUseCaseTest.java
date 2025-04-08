@@ -1,15 +1,12 @@
 package org.example.customrbacjavademo.apps.user.usecase.permission;
 
-import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,10 +23,8 @@ class DeletePermissionUseCaseTest {
   @Test
   void shouldDeletePermission() {
     final var id = UUID.randomUUID();
-    final var permission = PermissionTestMocks.createActiveTestPermission();
 
-    when(repository.findById(id))
-        .thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
+    when(repository.existsById(id)).thenReturn(true);
 
     useCase.execute(id);
 
@@ -39,7 +34,7 @@ class DeletePermissionUseCaseTest {
   @Test
   void shouldDoNothingWhenMangaDoesNotExist() {
     final var id = UUID.randomUUID();
-    when(repository.findById(id)).thenReturn(Optional.empty());
+    when(repository.existsById(id)).thenReturn(false);
 
     useCase.execute(id);
 

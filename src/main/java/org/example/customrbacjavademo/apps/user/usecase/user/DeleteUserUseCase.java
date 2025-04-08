@@ -15,7 +15,10 @@ public class DeleteUserUseCase {
   }
 
   public void execute(final UUID id) {
-    repository.findById(id)
-        .ifPresent(user -> repository.deleteById(id));
+    final var exists = repository.existsById(id);
+
+    if (exists) {
+      repository.deleteById(id);
+    }
   }
 }

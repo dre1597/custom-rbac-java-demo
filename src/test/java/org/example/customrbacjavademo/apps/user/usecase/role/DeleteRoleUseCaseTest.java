@@ -1,15 +1,12 @@
 package org.example.customrbacjavademo.apps.user.usecase.role;
 
-import org.example.customrbacjavademo.apps.user.domain.mocks.RoleTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
-import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -25,10 +22,8 @@ class DeleteRoleUseCaseTest {
   @Test
   void shouldDeleteRole() {
     final var id = UUID.randomUUID();
-    final var role = RoleTestMocks.createActiveTestRole();
 
-    when(repository.findById(id))
-        .thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
+    when(repository.existsById(id)).thenReturn(true);
 
     useCase.execute(id);
 
@@ -38,8 +33,9 @@ class DeleteRoleUseCaseTest {
   @Test
   void shouldDoNothingWhenRoleDoesNotExist() {
     final var id = UUID.randomUUID();
-    when(repository.findById(id)).thenReturn(Optional.empty());
 
+    when(repository.existsById(id)).thenReturn(false);
+    
     useCase.execute(id);
 
     verify(repository, never()).deleteById(id);
