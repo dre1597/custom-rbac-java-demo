@@ -3,13 +3,11 @@ package org.example.customrbacjavademo.apps.user.infra.persistence;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-@Entity(name = "roles")
+@Entity(name = "users")
 @Table
-public class RoleJpaEntity {
+public class UserJpaEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -18,7 +16,7 @@ public class RoleJpaEntity {
   private String name;
 
   @Column
-  private String description;
+  private String password;
 
   @Column
   private String status;
@@ -29,36 +27,29 @@ public class RoleJpaEntity {
   @Column
   private Instant updatedAt = Instant.now();
 
-  @ManyToMany
-  @JoinTable(
-      name = "role_permissions",
-      joinColumns = @JoinColumn(name = "role_id"),
-      inverseJoinColumns = @JoinColumn(name = "permission_id")
-  )
-  private List<PermissionJpaEntity> permissions = new ArrayList<>();
+  @ManyToOne
+  @JoinColumn(name = "role_id")
+  private RoleJpaEntity role;
 
-  @OneToMany(mappedBy = "role")
-  private List<UserJpaEntity> users = new ArrayList<>();
-
-  public RoleJpaEntity() {
+  public UserJpaEntity() {
   }
 
-  public RoleJpaEntity(
+  public UserJpaEntity(
       final UUID id,
       final String name,
-      final String description,
+      final String password,
       final String status,
       final Instant createdAt,
       final Instant updatedAt,
-      final List<PermissionJpaEntity> permissions
+      final RoleJpaEntity role
   ) {
     this.id = id;
     this.name = name;
-    this.description = description;
+    this.password = password;
     this.status = status;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.permissions = permissions;
+    this.role = role;
   }
 
   public UUID getId() {
@@ -77,12 +68,12 @@ public class RoleJpaEntity {
     this.name = name;
   }
 
-  public String getDescription() {
-    return description;
+  public String getPassword() {
+    return password;
   }
 
-  public void setDescription(final String description) {
-    this.description = description;
+  public void setPassword(final String password) {
+    this.password = password;
   }
 
   public String getStatus() {
@@ -109,11 +100,11 @@ public class RoleJpaEntity {
     this.updatedAt = updatedAt;
   }
 
-  public List<PermissionJpaEntity> getPermissions() {
-    return permissions;
+  public RoleJpaEntity getRole() {
+    return role;
   }
 
-  public void setPermissions(final List<PermissionJpaEntity> permissions) {
-    this.permissions = permissions;
+  public void setRole(final RoleJpaEntity role) {
+    this.role = role;
   }
 }
