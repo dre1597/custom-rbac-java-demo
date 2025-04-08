@@ -5,5 +5,5 @@
 - Finish CRUD Permissions.
 - Finish CRUD Roles.
 - Finish CRUD Users.
-- JWT Authentication sem Spring Security.
-- JWT Authentication com Sprint Security.
+- JWT Authentication using Spring Security.
+- JWT Authentication using Sprint Security.
