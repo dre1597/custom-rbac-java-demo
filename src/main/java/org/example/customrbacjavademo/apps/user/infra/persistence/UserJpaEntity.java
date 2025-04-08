@@ -72,10 +72,6 @@ public class UserJpaEntity {
     return password;
   }
 
-  public void setPassword(final String password) {
-    this.password = password;
-  }
-
   public String getStatus() {
     return status;
   }

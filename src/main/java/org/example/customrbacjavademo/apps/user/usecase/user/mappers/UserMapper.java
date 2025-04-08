@@ -7,6 +7,9 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 
 public final class UserMapper {
+  private UserMapper() {
+  }
+
   public static UserJpaEntity entityToJpa(final User entity) {
     final var role = entity.getRoleId();
     final var roleJpa = new RoleJpaEntity();
