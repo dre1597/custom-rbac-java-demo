@@ -36,7 +36,6 @@ public class UpdateRoleUseCase {
 
     final var role = RoleMapper.jpaToEntity(roleOnDatabase);
 
-
     final var isChangingName = !dto.name().equals(role.getName());
 
     if (isChangingName) {

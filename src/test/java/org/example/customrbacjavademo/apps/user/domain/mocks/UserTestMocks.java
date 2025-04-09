@@ -6,10 +6,16 @@ import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 
+import java.util.UUID;
+
 public class UserTestMocks {
   public static User createActiveTestUser() {
     final var role = RoleTestMocks.createActiveTestRole();
     return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE, role.getId()));
+  }
+
+  public static User createActiveTestUser(final UUID roleId) {
+    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE, roleId));
   }
 
   public static UserJpaEntity createActiveTestUserJpa() {

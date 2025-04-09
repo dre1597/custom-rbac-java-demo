@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class User {
-  private final UUID id = UUID.randomUUID();
-  private final Instant createdAt = Instant.now();
+  private UUID id = UUID.randomUUID();
+  private Instant createdAt = Instant.now();
   private String name;
   private String password;
   private UserStatus status;
@@ -31,6 +31,44 @@ public class User {
     this.password = PasswordService.encryptPassword(password.trim());
     this.status = status;
     this.roleId = roleId;
+  }
+
+  private User(
+      final UUID id,
+      final String name,
+      final String password,
+      final UserStatus status,
+      final Instant createdAt,
+      final Instant updatedAt,
+      final UUID roleId
+  ) {
+    this.id = id;
+    this.name = name;
+    this.password = password;
+    this.status = status;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.roleId = roleId;
+  }
+
+  public static User with(
+      final UUID id,
+      final String name,
+      final String password,
+      final UserStatus status,
+      final Instant createdAt,
+      final Instant updatedAt,
+      final UUID roleId
+  ) {
+    return new User(
+        id,
+        name,
+        password,
+        status,
+        createdAt,
+        updatedAt,
+        roleId
+    );
   }
 
   public static User newUser(final NewUserDto dto) {
