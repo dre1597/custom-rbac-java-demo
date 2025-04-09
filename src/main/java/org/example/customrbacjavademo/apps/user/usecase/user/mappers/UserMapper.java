@@ -3,6 +3,7 @@ package org.example.customrbacjavademo.apps.user.usecase.user.mappers;
 import org.example.customrbacjavademo.apps.user.domain.entities.User;
 import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserDetailsResponse;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserResponse;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
@@ -38,6 +39,17 @@ public final class UserMapper {
         entity.getCreatedAt(),
         entity.getUpdatedAt(),
         roleJpa
+    );
+  }
+
+  public static UserResponse entityToResponse(final User entity) {
+    return new UserResponse(
+        entity.getId(),
+        entity.getName(),
+        entity.getStatus().toString(),
+        entity.getCreatedAt(),
+        entity.getUpdatedAt(),
+        entity.getRoleId()
     );
   }
 
