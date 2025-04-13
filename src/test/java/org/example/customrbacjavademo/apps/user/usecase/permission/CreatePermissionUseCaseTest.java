@@ -28,9 +28,14 @@ class CreatePermissionUseCaseTest {
 
   @Test
   void shouldCreatePermission() {
-    final var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var dto = NewPermissionDto.of(
+        PermissionName.READ.name(),
+        PermissionScope.USER.name(),
+        "any_description",
+        PermissionStatus.ACTIVE.name()
+    );
 
-    when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString()))
+    when(repository.existsByNameAndScope(dto.name(), dto.scope()))
         .thenReturn(false);
 
     useCase.execute(dto);
@@ -40,19 +45,24 @@ class CreatePermissionUseCaseTest {
     final var capturedPermission = permissionJpaEntityCaptor.getValue();
 
     assertNotNull(capturedPermission.getId());
-    assertEquals(dto.name().toString(), capturedPermission.getName());
-    assertEquals(dto.scope().toString(), capturedPermission.getScope());
+    assertEquals(dto.name(), capturedPermission.getName());
+    assertEquals(dto.scope(), capturedPermission.getScope());
     assertEquals(dto.description(), capturedPermission.getDescription());
-    assertEquals(dto.status().toString(), capturedPermission.getStatus());
+    assertEquals(dto.status(), capturedPermission.getStatus());
     assertNotNull(capturedPermission.getCreatedAt());
     assertNotNull(capturedPermission.getUpdatedAt());
   }
 
   @Test
   void shouldNotCreatePermissionWithSameNameAndScopeTogether() {
-    final var dto = NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var dto = NewPermissionDto.of(
+        PermissionName.READ.name(),
+        PermissionScope.USER.name(),
+        "any_description",
+        PermissionStatus.ACTIVE.name()
+    );
 
-    when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString()))
+    when(repository.existsByNameAndScope(dto.name(), dto.scope()))
         .thenReturn(true);
 
     final var exception = org.junit.jupiter.api.Assertions.assertThrows(AlreadyExistsException.class, () -> useCase.execute(dto));

@@ -35,7 +35,7 @@ class UpdatePermissionUseCaseTest {
   @Test
   void shouldUpdatePermission() {
     final var id = UUID.randomUUID();
-    final var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.INACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.READ.toString(), PermissionScope.USER.toString(), "any_description", PermissionStatus.INACTIVE.toString());
 
     final var permission = PermissionTestMocks.createActiveTestPermission();
 
@@ -48,10 +48,10 @@ class UpdatePermissionUseCaseTest {
     final var capturedPermission = permissionJpaEntityCaptor.getValue();
 
     assertNotNull(capturedPermission.getId());
-    assertEquals(dto.name().toString(), capturedPermission.getName());
-    assertEquals(dto.scope().toString(), capturedPermission.getScope());
+    assertEquals(dto.name(), capturedPermission.getName());
+    assertEquals(dto.scope(), capturedPermission.getScope());
     assertEquals(dto.description(), capturedPermission.getDescription());
-    assertEquals(dto.status().toString(), capturedPermission.getStatus());
+    assertEquals(dto.status(), capturedPermission.getStatus());
     assertNotNull(capturedPermission.getCreatedAt());
     assertNotNull(capturedPermission.getUpdatedAt());
   }
@@ -59,7 +59,7 @@ class UpdatePermissionUseCaseTest {
   @Test
   void shouldNotUpdateNonExistentPermission() {
     final var id = UUID.randomUUID();
-    final var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.USER, "new_description", PermissionStatus.INACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.READ.name(), PermissionScope.USER.name(), "new_description", PermissionStatus.INACTIVE.name());
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
@@ -69,13 +69,13 @@ class UpdatePermissionUseCaseTest {
 
   @Test
   void shouldNotUpdateToDuplicateNameAndScope() {
-    final var dto = UpdatePermissionDto.of(PermissionName.CREATE, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.CREATE.name(), PermissionScope.USER.name(), "any_description", PermissionStatus.ACTIVE.name());
 
     final var permission = PermissionTestMocks.createActiveTestPermission();
     final var id = permission.getId();
 
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
-    when(repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString())).thenReturn(true);
+    when(repository.existsByNameAndScope(dto.name(), dto.scope())).thenReturn(true);
 
     final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id, dto));
     assertEquals("Permission already exists", exception.getMessage());
@@ -84,7 +84,7 @@ class UpdatePermissionUseCaseTest {
   @Test
   void shouldUpdateWhenOnlyNameChanged() {
     final var id = UUID.randomUUID();
-    final var dto = UpdatePermissionDto.of(PermissionName.CREATE, PermissionScope.USER, "old_description", PermissionStatus.ACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.CREATE.name(), PermissionScope.USER.name(), "old_description", PermissionStatus.ACTIVE.name());
     final var existingPermission = new PermissionJpaEntity(
         id,
         PermissionName.READ.name(),
@@ -103,14 +103,14 @@ class UpdatePermissionUseCaseTest {
     verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
     final var capturedPermission = permissionJpaEntityCaptor.getValue();
 
-    assertEquals(dto.name().toString(), capturedPermission.getName());
+    assertEquals(dto.name(), capturedPermission.getName());
     assertEquals(existingPermission.getScope(), capturedPermission.getScope());
   }
 
   @Test
   void shouldUpdateWhenOnlyScopeChanged() {
     final var id = UUID.randomUUID();
-    final var dto = UpdatePermissionDto.of(PermissionName.READ, PermissionScope.PROFILE, "new_description", PermissionStatus.ACTIVE);
+    final var dto = UpdatePermissionDto.of(PermissionName.READ.name(), PermissionScope.PROFILE.name(), "new_description", PermissionStatus.ACTIVE.name());
     final var existingPermission = new PermissionJpaEntity(
         id,
         PermissionName.READ.name(),
@@ -130,6 +130,6 @@ class UpdatePermissionUseCaseTest {
     final var capturedPermission = permissionJpaEntityCaptor.getValue();
 
     assertEquals(existingPermission.getName(), capturedPermission.getName());
-    assertEquals(dto.scope().toString(), capturedPermission.getScope());
+    assertEquals(dto.scope(), capturedPermission.getScope());
   }
 }

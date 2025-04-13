@@ -6,6 +6,7 @@ import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,16 +40,16 @@ public class Permission {
   }
 
   private Permission(
-      final PermissionName name,
-      final PermissionScope scope,
+      final String name,
+      final String scope,
       final String description,
-      final PermissionStatus status
+      final String status
   ) {
     this.validate(name, scope, description, status);
-    this.name = name;
-    this.scope = scope;
+    this.name = PermissionName.valueOf(name);
+    this.scope = PermissionScope.valueOf(scope);
     this.description = description;
-    this.status = status;
+    this.status = PermissionStatus.valueOf(status);
   }
 
   public static Permission with(
@@ -77,28 +78,37 @@ public class Permission {
 
   public Permission update(final UpdatePermissionDto dto) {
     this.validate(dto.name(), dto.scope(), dto.description(), dto.status());
-    this.name = dto.name();
-    this.scope = dto.scope();
+    this.name = PermissionName.valueOf(dto.name());
+    this.scope = PermissionScope.valueOf(dto.scope());
     this.description = dto.description();
-    this.status = dto.status();
+    this.status = PermissionStatus.valueOf(dto.status());
     this.updatedAt = Instant.now();
     return this;
   }
 
-  private void validate(final PermissionName name, final PermissionScope scope, final String description, final PermissionStatus status) {
+  private void validate(final String name, final String scope, final String description, final String status) {
     final var errors = new ArrayList<String>();
 
     if (name == null) {
       errors.add("name is required");
+    } else if (EnumValidator.isInvalidEnum(name, PermissionName.class)) {
+      errors.add("name must be one of " + EnumValidator.enumValuesAsString(PermissionName.class));
     }
+
     if (scope == null) {
       errors.add("scope is required");
+    } else if (status != null && EnumValidator.isInvalidEnum(scope, PermissionScope.class)) {
+      errors.add("scope must be one of " + EnumValidator.enumValuesAsString(PermissionScope.class));
     }
+
     if (description == null || description.isBlank()) {
       errors.add("description is required");
     }
+
     if (status == null) {
       errors.add("status is required");
+    } else if (EnumValidator.isInvalidEnum(status, PermissionStatus.class)) {
+      errors.add("status must be one of " + EnumValidator.enumValuesAsString(PermissionStatus.class));
     }
 
     if (!errors.isEmpty()) {

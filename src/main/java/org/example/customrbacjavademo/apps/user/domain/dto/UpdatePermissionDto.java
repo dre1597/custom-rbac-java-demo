@@ -1,16 +1,12 @@
 package org.example.customrbacjavademo.apps.user.domain.dto;
 
-import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
-import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
-import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
-
 public record UpdatePermissionDto(
-    PermissionName name,
-    PermissionScope scope,
+    String name,
+    String scope,
     String description,
-    PermissionStatus status
+    String status
 ) {
-  public static UpdatePermissionDto of(final PermissionName name, final PermissionScope scope, final String description, final PermissionStatus status) {
+  public static UpdatePermissionDto of(final String name, final String scope, final String description, final String status) {
     return new UpdatePermissionDto(name, scope, description, status);
   }
 }

@@ -8,6 +8,6 @@ import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 
 public class PermissionTestMocks {
   public static Permission createActiveTestPermission() {
-    return Permission.newPermission(NewPermissionDto.of(PermissionName.READ, PermissionScope.USER, "any_description", PermissionStatus.ACTIVE));
+    return Permission.newPermission(NewPermissionDto.of(PermissionName.READ.name(), PermissionScope.USER.name(), "any_description", PermissionStatus.ACTIVE.name()));
   }
 }
