@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
   @ExceptionHandler(value = NotFoundException.class)
-  public ResponseEntity<?> handleNotFoundException(final NotFoundException exception) {
+  public ResponseEntity<String> handleNotFoundException(final NotFoundException exception) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
   }
 
   @ExceptionHandler(value = AlreadyExistsException.class)
-  public ResponseEntity<?> handleAlreadyExistsException(final AlreadyExistsException exception) {
+  public ResponseEntity<String> handleAlreadyExistsException(final AlreadyExistsException exception) {
     return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
   }
 
   @ExceptionHandler(value = ValidationException.class)
-  public ResponseEntity<?> handleValidationException(final ValidationException exception) {
+  public ResponseEntity<String> handleValidationException(final ValidationException exception) {
     return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(exception.getMessage());
   }
 }

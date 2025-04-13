@@ -23,11 +23,11 @@ public class UpdatePermissionUseCase {
     final var permission = PermissionMapper.jpaToEntity(permissionOnDatabase);
 
 
-    final var isChangingName = !dto.name().equals(permission.getName());
-    final var isChangingScope = !dto.scope().equals(permission.getScope());
+    final var isChangingName = !dto.name().equals(permission.getName().name());
+    final var isChangingScope = !dto.scope().equals(permission.getScope().name());
 
     if (isChangingName || isChangingScope) {
-      final var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
+      final var exists = repository.existsByNameAndScope(dto.name(), dto.scope());
 
       if (exists) {
         throw new AlreadyExistsException("Permission already exists");

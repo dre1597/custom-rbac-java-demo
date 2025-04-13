@@ -18,7 +18,7 @@ public class CreatePermissionUseCase {
   }
 
   public void execute(final NewPermissionDto dto) {
-    final var exists = repository.existsByNameAndScope(dto.name().toString(), dto.scope().toString());
+    final var exists = repository.existsByNameAndScope(dto.name(), dto.scope());
 
     if (exists) {
       throw new AlreadyExistsException("Permission already exists");

@@ -18,7 +18,7 @@ public class PermissionController implements PermissionAPI {
   }
 
   @Override
-  public ResponseEntity<Void> createPermission(final CreatePermissionRequest input) {
+  public ResponseEntity<Void> create(final CreatePermissionRequest input) {
     final var dto = NewPermissionDto.from(input);
 
     createPermissionUseCase.execute(dto);

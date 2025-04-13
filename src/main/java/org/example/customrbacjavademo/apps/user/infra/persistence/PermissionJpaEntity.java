@@ -10,30 +10,23 @@ import java.util.UUID;
 @Entity(name = "permissions")
 @Table
 public class PermissionJpaEntity {
+  @ManyToMany(mappedBy = "permissions")
+  private final List<RoleJpaEntity> roles = new ArrayList<>();
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-
   @Column(nullable = false)
   private String name;
-
   @Column(nullable = false)
   private String scope;
-
   @Column(nullable = false)
   private String description;
-
   @Column(nullable = false)
   private String status;
-
   @Column
   private Instant createdAt = Instant.now();
-
   @Column
   private Instant updatedAt = Instant.now();
-
-  @ManyToMany(mappedBy = "permissions")
-  private List<RoleJpaEntity> roles = new ArrayList<>();
 
   public PermissionJpaEntity(
       final UUID id,

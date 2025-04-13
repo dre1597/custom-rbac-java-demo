@@ -27,16 +27,16 @@ class PermissionControllerTest {
   void shouldCreatePermission() {
     final var input = new CreatePermissionRequest("READ", "USER", "ACTIVE", "any_description");
 
-    final var response = controller.createPermission(input);
+    final var response = controller.create(input);
 
     final var capturedPermissionDto = ArgumentCaptor.forClass(NewPermissionDto.class);
     verify(createPermissionUseCase).execute(capturedPermissionDto.capture());
 
     final var dto = capturedPermissionDto.getValue();
-    assertEquals(input.name(), dto.name().toString());
-    assertEquals(input.scope(), dto.scope().toString());
+    assertEquals(input.name(), dto.name());
+    assertEquals(input.scope(), dto.scope());
     assertEquals(input.description(), dto.description());
-    assertEquals(input.status(), dto.status().toString());
+    assertEquals(input.status(), dto.status());
 
     assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
     assertNull(response.getBody());

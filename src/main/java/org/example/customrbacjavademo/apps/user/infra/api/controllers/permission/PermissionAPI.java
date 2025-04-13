@@ -25,5 +25,5 @@ public interface PermissionAPI {
       @ApiResponse(responseCode = "422", description = "Permission validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
-  ResponseEntity<Void> createPermission(@RequestBody final CreatePermissionRequest input);
+  ResponseEntity<Void> create(@RequestBody final CreatePermissionRequest input);
 }

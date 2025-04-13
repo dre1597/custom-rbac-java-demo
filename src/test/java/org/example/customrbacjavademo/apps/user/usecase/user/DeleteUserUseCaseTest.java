@@ -23,7 +23,7 @@ class DeleteUserUseCaseTest {
   @Test
   void shouldDeleteUser() {
     final var id = UUID.randomUUID();
-    final var user = UserTestMocks.createActiveTestUser();
+    UserTestMocks.createActiveTestUser();
 
     when(repository.existsById(id)).thenReturn(true);
 
