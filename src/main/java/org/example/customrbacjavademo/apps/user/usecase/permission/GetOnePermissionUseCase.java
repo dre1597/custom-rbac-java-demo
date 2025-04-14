@@ -4,10 +4,10 @@ import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.Permissi
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class GetOnePermissionUseCase {
@@ -18,7 +18,7 @@ public class GetOnePermissionUseCase {
   }
 
   public PermissionResponse execute(final String id) {
-    return repository.findById(UUID.fromString(id))
+    return repository.findById(UUIDValidator.parseOrThrow(id))
         .map(PermissionMapper::jpaToResponse)
         .orElseThrow(() -> new NotFoundException("Permission not found"));
   }

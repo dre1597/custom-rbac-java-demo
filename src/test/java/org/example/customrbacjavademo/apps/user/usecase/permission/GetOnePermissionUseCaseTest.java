@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -58,4 +59,12 @@ class GetOnePermissionUseCaseTest {
     assertEquals("Permission not found", exception.getMessage());
   }
 
+  @Test
+  void shouldThrowValidationExceptionWhenIdIsNotAValidUUID() {
+    final var id = "invalid_uuid";
+
+    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id));
+
+    assertEquals("Invalid UUID: invalid_uuid", exception.getMessage());
+  }
 }
