@@ -17,8 +17,8 @@ public class GetOnePermissionUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public PermissionResponse execute(final UUID id) {
-    return repository.findById(id)
+  public PermissionResponse execute(final String id) {
+    return repository.findById(UUID.fromString(id))
         .map(PermissionMapper::jpaToResponse)
         .orElseThrow(() -> new NotFoundException("Permission not found"));
   }

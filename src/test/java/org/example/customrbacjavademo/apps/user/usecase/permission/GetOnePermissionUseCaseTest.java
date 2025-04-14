@@ -32,7 +32,7 @@ class GetOnePermissionUseCaseTest {
     when(repository.findById(id))
         .thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
 
-    var result = useCase.execute(id);
+    var result = useCase.execute(id.toString());
 
     verify(repository, times(1)).findById(id);
     assertNotNull(result);
@@ -52,7 +52,7 @@ class GetOnePermissionUseCaseTest {
     when(repository.findById(id))
         .thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString()));
 
     verify(repository, times(1)).findById(id);
     assertEquals("Permission not found", exception.getMessage());
