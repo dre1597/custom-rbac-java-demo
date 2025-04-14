@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,9 +36,24 @@ public interface PermissionAPI {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permission found successfully"),
       @ApiResponse(responseCode = "404", description = "Permission not found error"),
+      @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<PermissionResponse> getById(@PathVariable String id);
+
+  @PutMapping(
+      value = "/{id}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(summary = "Update a permission by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Permission updated successfully"),
+      @ApiResponse(responseCode = "404", description = "Permission not found error"),
+      @ApiResponse(responseCode = "422", description = "Permission validation error"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  ResponseEntity<Void> update(@PathVariable String id, @RequestBody final UpdatePermissionRequest input);
 
   @DeleteMapping(
       value = "/{id}",
@@ -47,7 +63,7 @@ public interface PermissionAPI {
   @Operation(summary = "Delete a permission by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Permission deleted successfully"),
-      @ApiResponse(responseCode = "200", description = "Permission not found error"),
+      @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<Void> delete(@PathVariable String id);

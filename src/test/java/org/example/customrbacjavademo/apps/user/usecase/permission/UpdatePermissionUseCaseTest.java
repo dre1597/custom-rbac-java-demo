@@ -10,6 +10,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -41,7 +42,7 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
     verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
@@ -63,8 +64,17 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Permission not found", exception.getMessage());
+  }
+
+  @Test
+  void shouldNotUpdateWithInvalidId() {
+    final var id = "invalid_uuid";
+    final var dto = UpdatePermissionDto.of(PermissionName.READ.name(), PermissionScope.USER.name(), "new_description", PermissionStatus.INACTIVE.name());
+
+    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id, dto));
+    assertEquals("Invalid UUID: " + id, exception.getMessage());
   }
 
   @Test
@@ -77,7 +87,7 @@ class UpdatePermissionUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
     when(repository.existsByNameAndScope(dto.name(), dto.scope())).thenReturn(true);
 
-    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Permission already exists", exception.getMessage());
   }
 
@@ -97,7 +107,7 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
     verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());
@@ -123,7 +133,7 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
     verify(repository, times(1)).save(permissionJpaEntityCaptor.capture());

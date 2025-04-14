@@ -5,10 +5,10 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class UpdatePermissionUseCase {
@@ -18,8 +18,9 @@ public class UpdatePermissionUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public void execute(final UUID id, final UpdatePermissionDto dto) {
-    final var permissionOnDatabase = repository.findById(id).orElseThrow(() -> new NotFoundException("Permission not found"));
+  public void execute(final String id, final UpdatePermissionDto dto) {
+    final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    final var permissionOnDatabase = repository.findById(idAsUUID).orElseThrow(() -> new NotFoundException("Permission not found"));
     final var permission = PermissionMapper.jpaToEntity(permissionOnDatabase);
 
 

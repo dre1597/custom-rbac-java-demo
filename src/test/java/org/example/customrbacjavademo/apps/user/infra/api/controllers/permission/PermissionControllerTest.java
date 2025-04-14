@@ -1,11 +1,14 @@
 package org.example.customrbacjavademo.apps.user.infra.api.controllers.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
+import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.usecase.permission.CreatePermissionUseCase;
 import org.example.customrbacjavademo.apps.user.usecase.permission.DeletePermissionUseCase;
 import org.example.customrbacjavademo.apps.user.usecase.permission.GetOnePermissionUseCase;
+import org.example.customrbacjavademo.apps.user.usecase.permission.UpdatePermissionUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +30,9 @@ class PermissionControllerTest {
 
   @Mock
   private GetOnePermissionUseCase getOnePermissionUseCase;
+
+  @Mock
+  private UpdatePermissionUseCase updatePermissionUseCase;
 
   @Mock
   private DeletePermissionUseCase deletePermissionUseCase;
@@ -72,6 +78,24 @@ class PermissionControllerTest {
     verify(getOnePermissionUseCase).execute(id.toString());
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(expected, response.getBody());
+  }
+
+  @Test
+  void shouldUpdatePermission() {
+    var id = UUID.randomUUID().toString();
+    var input = new UpdatePermissionRequest(
+        "CREATE",
+        "USER",
+        "INACTIVE",
+        "updated_description"
+    );
+
+    var dto = UpdatePermissionDto.from(input);
+
+    var response = controller.update(id, input);
+
+    verify(updatePermissionUseCase).execute(id, dto);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 
   @Test

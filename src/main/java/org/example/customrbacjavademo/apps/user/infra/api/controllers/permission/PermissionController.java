@@ -1,11 +1,15 @@
 package org.example.customrbacjavademo.apps.user.infra.api.controllers.permission;
 
+import jakarta.validation.Valid;
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
+import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.usecase.permission.CreatePermissionUseCase;
 import org.example.customrbacjavademo.apps.user.usecase.permission.DeletePermissionUseCase;
 import org.example.customrbacjavademo.apps.user.usecase.permission.GetOnePermissionUseCase;
+import org.example.customrbacjavademo.apps.user.usecase.permission.UpdatePermissionUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,15 +20,18 @@ import java.util.Objects;
 public class PermissionController implements PermissionAPI {
   private final CreatePermissionUseCase createPermissionUseCase;
   private final GetOnePermissionUseCase getOnePermissionUseCase;
+  private final UpdatePermissionUseCase updatePermissionUseCase;
   private final DeletePermissionUseCase deletePermissionUseCase;
 
   public PermissionController(
       final CreatePermissionUseCase createPermissionUseCase,
       final GetOnePermissionUseCase getOnePermissionUseCase,
+      final UpdatePermissionUseCase updatePermissionUseCase,
       final DeletePermissionUseCase deletePermissionUseCase
   ) {
     this.createPermissionUseCase = Objects.requireNonNull(createPermissionUseCase);
     this.getOnePermissionUseCase = Objects.requireNonNull(getOnePermissionUseCase);
+    this.updatePermissionUseCase = Objects.requireNonNull(updatePermissionUseCase);
     this.deletePermissionUseCase = Objects.requireNonNull(deletePermissionUseCase);
   }
 
@@ -40,6 +47,13 @@ public class PermissionController implements PermissionAPI {
   @Override
   public ResponseEntity<PermissionResponse> getById(final String id) {
     return ResponseEntity.ok(getOnePermissionUseCase.execute(id));
+  }
+
+  @Override
+  public ResponseEntity<Void> update(final String id, @Valid final UpdatePermissionRequest input) {
+    final var dto = UpdatePermissionDto.from(input);
+    updatePermissionUseCase.execute(id, dto);
+    return ResponseEntity.ok().build();
   }
 
   @Override
