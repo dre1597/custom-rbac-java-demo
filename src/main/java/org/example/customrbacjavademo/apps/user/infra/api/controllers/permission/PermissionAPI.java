@@ -38,4 +38,17 @@ public interface PermissionAPI {
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<PermissionResponse> getById(@PathVariable String id);
+
+  @DeleteMapping(
+      value = "/{id}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(summary = "Delete a permission by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204", description = "Permission deleted successfully"),
+      @ApiResponse(responseCode = "200", description = "Permission not found error"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  ResponseEntity<Void> delete(@PathVariable String id);
 }
