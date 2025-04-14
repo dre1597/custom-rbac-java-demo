@@ -6,7 +6,6 @@ import org.example.customrbacjavademo.common.domain.exceptions.ValidationExcepti
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,35 +18,36 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleNotFoundException_ShouldReturnNotFoundStatus() {
+  void handleNotFoundException_shouldReturnNotFoundStatusWithApiError() {
     final var errorMessage = "Resource not found";
     final var exception = new NotFoundException(errorMessage);
 
-    ResponseEntity<String> response = globalExceptionHandler.handleNotFoundException(exception);
+    final var response = globalExceptionHandler.handleNotFoundException(exception);
 
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    assertEquals(errorMessage, response.getBody());
+    assertEquals(new ApiError(errorMessage, HttpStatus.NOT_FOUND.value()), response.getBody());
   }
 
   @Test
-  void handleAlreadyExistsException_ShouldReturnConflictStatus() {
+  void handleAlreadyExistsException_shouldReturnConflictStatusWithApiError() {
     final var errorMessage = "Resource already exists";
     final var exception = new AlreadyExistsException(errorMessage);
 
     final var response = globalExceptionHandler.handleAlreadyExistsException(exception);
 
     assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-    assertEquals(errorMessage, response.getBody());
+    assertEquals(new ApiError(errorMessage, HttpStatus.CONFLICT.value()), response.getBody());
   }
 
   @Test
-  void handleValidationException_ShouldReturnUnprocessableEntityStatus() {
+  void handleValidationException_shouldReturnUnprocessableEntityStatusWithApiError() {
     final var errorMessage = "Validation failed";
     final var exception = new ValidationException(errorMessage);
 
     final var response = globalExceptionHandler.handleValidationException(exception);
 
     assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
-    assertEquals(errorMessage, response.getBody());
+    assertEquals(new ApiError(errorMessage, HttpStatus.UNPROCESSABLE_ENTITY.value()), response.getBody());
   }
 }
+

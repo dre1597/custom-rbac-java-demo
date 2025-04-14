@@ -27,11 +27,7 @@ public interface PermissionAPI {
   })
   ResponseEntity<Void> create(@RequestBody final CreatePermissionRequest input);
 
-  @GetMapping(
-      value = "/{id}",
-      consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(summary = "Get a permission by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permission found successfully"),
@@ -50,6 +46,7 @@ public interface PermissionAPI {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permission updated successfully"),
       @ApiResponse(responseCode = "404", description = "Permission not found error"),
+      @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "422", description = "Permission validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
