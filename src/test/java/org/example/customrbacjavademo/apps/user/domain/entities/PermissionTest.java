@@ -7,9 +7,13 @@ import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,14 +34,7 @@ class PermissionTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-      "null, USER, any_description, ACTIVE, name is required",
-      "READ, null, any_description, ACTIVE, scope is required",
-      "READ, USER, null, ACTIVE, description is required",
-      "READ, USER, '', ACTIVE, description is required",
-      "READ, USER, any_description, null, status is required",
-      "null, null, null, null, 'name is required, scope is required, description is required, status is required'",
-  })
+  @MethodSource("invalidInputProvider")
   void shouldNotCreatePermissionWithInvalidInput(
       final String name,
       final String scope,
@@ -55,6 +52,7 @@ class PermissionTest {
     assertEquals(expectedMessage, exception.getMessage());
   }
 
+
   @Test
   void shouldUpdateRole() {
     final var permission = PermissionTestMocks.createActiveTestPermission();
@@ -69,14 +67,7 @@ class PermissionTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-      "null, USER, any_description, ACTIVE, name is required",
-      "READ, null, any_description, ACTIVE, scope is required",
-      "READ, USER, null, ACTIVE, description is required",
-      "READ, USER, '', ACTIVE, description is required",
-      "READ, USER, any_description, null, status is required",
-      "null, null, null, null, 'name is required, scope is required, description is required, status is required'",
-  })
+  @MethodSource("invalidInputProvider")
   void shouldNotUpdatePermissionWithInvalidInput(
       final String name,
       final String scope,
@@ -94,4 +85,23 @@ class PermissionTest {
     final var exception = org.junit.jupiter.api.Assertions.assertThrows(ValidationException.class, () -> permission.update(dto));
     assertEquals(expectedMessage, exception.getMessage());
   }
+
+  private static Stream<Arguments> invalidInputProvider() {
+    final var validNames = EnumValidator.enumValuesAsString(PermissionName.class);
+    final var validScopes = EnumValidator.enumValuesAsString(PermissionScope.class);
+    final var validStatuses = EnumValidator.enumValuesAsString(PermissionStatus.class);
+
+    return Stream.of(
+        Arguments.of("null", "USER", "any_description", "ACTIVE", "name is required"),
+        Arguments.of("INVALID", "USER", "any_description", "ACTIVE", "name must be one of " + validNames),
+        Arguments.of("READ", "null", "any_description", "ACTIVE", "scope is required"),
+        Arguments.of("READ", "INVALID", "any_description", "ACTIVE", "scope must be one of " + validScopes),
+        Arguments.of("READ", "USER", "null", "ACTIVE", "description is required"),
+        Arguments.of("READ", "USER", "", "ACTIVE", "description is required"),
+        Arguments.of("READ", "USER", "any_description", "null", "status is required"),
+        Arguments.of("READ", "USER", "any_description", "INVALID", "status must be one of " + validStatuses),
+        Arguments.of("null", "null", "null", "null", "name is required, scope is required, description is required, status is required")
+    );
+  }
+
 }
