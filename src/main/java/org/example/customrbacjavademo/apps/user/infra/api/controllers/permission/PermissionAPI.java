@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
+import org.example.customrbacjavademo.common.domain.helpers.Pagination;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/permissions")
 @Tag(name = "Permissions")
 public interface PermissionAPI {
+  @GetMapping
+  @Operation(summary = "Get all permissions")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Permissions found successfully"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  ResponseEntity<Pagination<PermissionResponse>> list(
+      @RequestParam(name = "search", required = false, defaultValue = "") final String search,
+      @RequestParam(name = "page", defaultValue = "0") int page,
+      @RequestParam(name = "perPage", required = false, defaultValue = "10") final int perPage,
+      @RequestParam(name = "sort", required = false, defaultValue = "name") final String sort,
+      @RequestParam(name = "dir", required = false, defaultValue = "asc") final String direction
+  );
+
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE

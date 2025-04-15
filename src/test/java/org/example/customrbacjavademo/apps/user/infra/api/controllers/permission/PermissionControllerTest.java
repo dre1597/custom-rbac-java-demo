@@ -5,10 +5,9 @@ import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
-import org.example.customrbacjavademo.apps.user.usecase.permission.CreatePermissionUseCase;
-import org.example.customrbacjavademo.apps.user.usecase.permission.DeletePermissionUseCase;
-import org.example.customrbacjavademo.apps.user.usecase.permission.GetOnePermissionUseCase;
-import org.example.customrbacjavademo.apps.user.usecase.permission.UpdatePermissionUseCase;
+import org.example.customrbacjavademo.apps.user.usecase.permission.*;
+import org.example.customrbacjavademo.common.domain.helpers.Pagination;
+import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +25,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PermissionControllerTest {
+  @Mock
+  private ListPermissionsUseCase listPermissionsUseCase;
+
   @Mock
   private CreatePermissionUseCase createPermissionUseCase;
 
@@ -39,6 +42,43 @@ class PermissionControllerTest {
 
   @InjectMocks
   private PermissionController controller;
+
+  @Test
+  void shouldListPermissions() {
+    final var permissionId = UUID.randomUUID();
+    final var expected = new PermissionResponse(
+        permissionId,
+        "READ",
+        "USER",
+        "any_description",
+        "ACTIVE",
+        Instant.now(),
+        Instant.now()
+    );
+
+    final var page = 0;
+    final var perPage = 10;
+    final var search = "USER";
+    final var sort = "name";
+    final var direction = "asc";
+
+    final var pagination = new Pagination<>(
+        page,
+        perPage,
+        1,
+        List.of(expected)
+    );
+
+    final var query = new SearchQuery(page, perPage, search, sort, direction);
+
+    when(listPermissionsUseCase.execute(query)).thenReturn(pagination);
+
+    final var response = controller.list(search, page, perPage, sort, direction);
+
+    verify(listPermissionsUseCase).execute(query);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(pagination, response.getBody());
+  }
 
 
   @Test
