@@ -52,7 +52,6 @@ class PermissionTest {
     assertEquals(expectedMessage, exception.getMessage());
   }
 
-
   @Test
   void shouldUpdateRole() {
     final var permission = PermissionTestMocks.createActiveTestPermission();
@@ -103,5 +102,4 @@ class PermissionTest {
         Arguments.of("null", "null", "null", "null", "name is required, scope is required, description is required, status is required")
     );
   }
-
 }

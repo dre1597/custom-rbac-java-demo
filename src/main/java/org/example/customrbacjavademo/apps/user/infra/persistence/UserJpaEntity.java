@@ -9,8 +9,7 @@ import java.util.UUID;
 @Table
 public class UserJpaEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  private UUID id = UUID.randomUUID();
 
   @Column
   private String name;
@@ -22,10 +21,10 @@ public class UserJpaEntity {
   private String status;
 
   @Column
-  private Instant createdAt = Instant.now();
+  private Instant createdAt;
 
   @Column
-  private Instant updatedAt = Instant.now();
+  private Instant updatedAt;
 
   @ManyToOne
   @JoinColumn(name = "role_id")

@@ -54,6 +54,5 @@ class RoleJpaEntityTest {
     assertEquals(now, jpaEntity.getCreatedAt());
     assertEquals(now, jpaEntity.getUpdatedAt());
     assertEquals(List.of(), jpaEntity.getPermissions());
-    assertEquals(List.of(), jpaEntity.getUsers());
   }
 }

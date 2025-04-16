@@ -1,20 +1,18 @@
 package org.example.customrbacjavademo.apps.user.infra.persistence;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "permissions")
 @Table
 public class PermissionJpaEntity {
-  @ManyToMany(mappedBy = "permissions")
-  private final List<RoleJpaEntity> roles = new ArrayList<>();
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  private UUID id = UUID.randomUUID();
   @Column(nullable = false)
   private String name;
   @Column(nullable = false)
@@ -24,9 +22,9 @@ public class PermissionJpaEntity {
   @Column(nullable = false)
   private String status;
   @Column
-  private Instant createdAt = Instant.now();
+  private Instant createdAt;
   @Column
-  private Instant updatedAt = Instant.now();
+  private Instant updatedAt;
 
   public PermissionJpaEntity(
       final UUID id,

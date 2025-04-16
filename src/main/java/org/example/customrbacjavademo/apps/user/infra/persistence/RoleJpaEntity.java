@@ -10,11 +10,8 @@ import java.util.UUID;
 @Entity(name = "roles")
 @Table
 public class RoleJpaEntity {
-  @OneToMany(mappedBy = "role")
-  private final List<UserJpaEntity> users = new ArrayList<>();
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  private UUID id;
+  private UUID id = UUID.randomUUID();
   @Column
   private String name;
   @Column
@@ -22,9 +19,9 @@ public class RoleJpaEntity {
   @Column
   private String status;
   @Column
-  private Instant createdAt = Instant.now();
+  private Instant createdAt;
   @Column
-  private Instant updatedAt = Instant.now();
+  private Instant updatedAt;
   @ManyToMany
   @JoinTable(
       name = "role_permissions",
@@ -108,9 +105,5 @@ public class RoleJpaEntity {
 
   public void setPermissions(final List<PermissionJpaEntity> permissions) {
     this.permissions = permissions;
-  }
-
-  public List<UserJpaEntity> getUsers() {
-    return users;
   }
 }
