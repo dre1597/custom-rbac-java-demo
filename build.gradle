@@ -43,7 +43,17 @@ tasks.named('test') {
 jacocoTestReport {
   dependsOn test
   reports {
-    xml.required.set(true)
     html.required.set(true)
+  }
+
+  afterEvaluate {
+    classDirectories.setFrom(
+        files(classDirectories.files.collect {
+          fileTree(dir: it, exclude: [
+              '**/configuration/**',
+              '**/CustomRbacJavaDemoApplication.class'
+          ])
+        })
+    )
   }
 }
