@@ -41,10 +41,10 @@ class CreatePermissionUseCaseIntegrationTest {
     final var permission = useCase.execute(dto);
 
     assertNotNull(permission.getId());
-    assertEquals(dto.name(), permission.getName());
-    assertEquals(dto.scope(), permission.getScope());
+    assertEquals(dto.name(), permission.getName().name());
+    assertEquals(dto.scope(), permission.getScope().name());
     assertEquals(dto.description(), permission.getDescription());
-    assertEquals(dto.status(), permission.getStatus());
+    assertEquals(dto.status(), permission.getStatus().name());
   }
 
   @Test

@@ -38,6 +38,8 @@ class CreatePermissionUseCaseTest {
     when(repository.existsByNameAndScope(dto.name(), dto.scope()))
         .thenReturn(false);
 
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
     useCase.execute(dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);

@@ -2,7 +2,6 @@ package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
-import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
@@ -18,7 +17,7 @@ public class CreatePermissionUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public PermissionJpaEntity execute(final NewPermissionDto dto) {
+  public Permission execute(final NewPermissionDto dto) {
     final var exists = repository.existsByNameAndScope(dto.name(), dto.scope());
 
     if (exists) {
@@ -26,6 +25,8 @@ public class CreatePermissionUseCase {
     }
 
     final var entity = Permission.newPermission(dto);
-    return repository.save(PermissionMapper.entityToJpa(entity));
+    final var savedPermission = repository.save(PermissionMapper.entityToJpa(entity));
+    
+    return PermissionMapper.jpaToEntity(savedPermission);
   }
 }
