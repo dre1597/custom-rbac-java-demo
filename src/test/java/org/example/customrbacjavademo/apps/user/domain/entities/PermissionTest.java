@@ -53,7 +53,7 @@ class PermissionTest {
   }
 
   @Test
-  void shouldUpdateRole() {
+  void shouldUpdatePermission() {
     final var permission = PermissionTestMocks.createActiveTestPermission();
     final var dto = UpdatePermissionDto.of(PermissionName.READ.name(), PermissionScope.USER.name(), "any_description", PermissionStatus.ACTIVE.name());
 
