@@ -42,6 +42,7 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
 
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     useCase.execute(id.toString(), dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
@@ -107,6 +108,8 @@ class UpdatePermissionUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
 
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
     useCase.execute(id.toString(), dto);
 
     final var permissionJpaEntityCaptor = ArgumentCaptor.forClass(PermissionJpaEntity.class);
@@ -132,6 +135,8 @@ class UpdatePermissionUseCaseTest {
     );
 
     when(repository.findById(id)).thenReturn(Optional.of(existingPermission));
+
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     useCase.execute(id.toString(), dto);
 
