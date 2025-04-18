@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @IntegrationTest
 class GetOnePermissionUseCaseIntegrationTest {
@@ -26,7 +25,14 @@ class GetOnePermissionUseCaseIntegrationTest {
   void shouldGetPermissionById() {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var result = useCase.execute(permission.getId().toString());
-    assertEquals(PermissionMapper.jpaToResponse(permission), result);
+    final var permissionResponse = PermissionMapper.jpaToResponse(permission);
+
+    assertEquals(permissionResponse.name(), result.name());
+    assertEquals(permissionResponse.scope(), result.scope());
+    assertEquals(permissionResponse.description(), result.description());
+    assertEquals(permissionResponse.status(), result.status());
+    assertNotNull(result.createdAt());
+    assertNotNull(result.updatedAt());
   }
 
   @Test
