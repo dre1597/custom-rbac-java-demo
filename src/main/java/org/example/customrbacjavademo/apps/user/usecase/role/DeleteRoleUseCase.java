@@ -1,10 +1,10 @@
 package org.example.customrbacjavademo.apps.user.usecase.role;
 
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class DeleteRoleUseCase {
@@ -14,11 +14,12 @@ public class DeleteRoleUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public void execute(final UUID id) {
-    final var exists = repository.existsById(id);
+  public void execute(final String id) {
+    final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    final var exists = repository.existsById(idAsUUID);
 
     if (exists) {
-      repository.deleteById(id);
+      repository.deleteById(idAsUUID);
     }
   }
 }

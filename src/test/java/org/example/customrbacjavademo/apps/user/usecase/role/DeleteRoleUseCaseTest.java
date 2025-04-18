@@ -25,7 +25,7 @@ class DeleteRoleUseCaseTest {
 
     when(repository.existsById(id)).thenReturn(true);
 
-    useCase.execute(id);
+    useCase.execute(id.toString());
 
     verify(repository, times(1)).deleteById(id);
   }
@@ -35,8 +35,8 @@ class DeleteRoleUseCaseTest {
     final var id = UUID.randomUUID();
 
     when(repository.existsById(id)).thenReturn(false);
-    
-    useCase.execute(id);
+
+    useCase.execute(id.toString());
 
     verify(repository, never()).deleteById(id);
   }
