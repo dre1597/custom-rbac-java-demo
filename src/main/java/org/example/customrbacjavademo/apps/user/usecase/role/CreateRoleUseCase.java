@@ -6,7 +6,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
-import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
+import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -21,7 +21,7 @@ public class CreateRoleUseCase {
     this.permissionJpaRepository = Objects.requireNonNull(permissionJpaRepository);
   }
 
-  public void execute(final NewRoleDto dto) {
+  public Role execute(final NewRoleDto dto) {
     final var exists = repository.existsByName(dto.name());
 
     if (exists) {
@@ -31,12 +31,14 @@ public class CreateRoleUseCase {
     final var foundPermissions = permissionJpaRepository.countByIdIn(dto.permissionIds());
 
     if (foundPermissions != dto.permissionIds().size()) {
-      throw new InvalidReferenceException(
+      throw new NotFoundException(
           "Some permissions are invalid or missing. Provided: " + dto.permissionIds()
       );
     }
 
     final var entity = Role.newRole(dto);
-    repository.save(RoleMapper.entityToJpa(entity));
+    final var savedRole = repository.save(RoleMapper.entityToJpa(entity));
+
+    return RoleMapper.jpaToEntity(savedRole);
   }
 }

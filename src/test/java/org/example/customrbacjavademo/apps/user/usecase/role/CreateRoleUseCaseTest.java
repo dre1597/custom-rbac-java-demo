@@ -6,7 +6,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
-import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
+import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -40,6 +40,7 @@ class CreateRoleUseCaseTest {
 
     when(repository.existsByName(dto.name())).thenReturn(false);
     when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
+    when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     useCase.execute(dto);
 
@@ -77,7 +78,7 @@ class CreateRoleUseCaseTest {
     when(repository.existsByName(dto.name())).thenReturn(false);
     when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(1L);
 
-    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(dto));
 
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
     verify(repository, never()).save(any());
