@@ -32,7 +32,7 @@ class GetOneRoleUseCaseTest {
     when(repository.findWithPermissionsById(id))
         .thenReturn(Optional.of(role));
 
-    final var result = useCase.execute(id);
+    final var result = useCase.execute(id.toString());
     final var permissions = role.getPermissions().stream().map(PermissionMapper::jpaToResponse).toList();
 
     assertNotNull(result);
@@ -52,7 +52,7 @@ class GetOneRoleUseCaseTest {
     when(repository.findWithPermissionsById(id))
         .thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString()));
 
     verify(repository, times(1)).findWithPermissionsById(id);
     assertEquals("Role not found", exception.getMessage());

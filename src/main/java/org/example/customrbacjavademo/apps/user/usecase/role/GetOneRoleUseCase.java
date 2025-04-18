@@ -4,10 +4,10 @@ import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleDeta
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class GetOneRoleUseCase {
@@ -17,8 +17,9 @@ public class GetOneRoleUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public RoleDetailsResponse execute(final UUID id) {
-    return repository.findWithPermissionsById(id)
+  public RoleDetailsResponse execute(final String id) {
+    final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    return repository.findWithPermissionsById(idAsUUID)
         .map(RoleMapper::jpaToDetailsResponse)
         .orElseThrow(() -> new NotFoundException("Role not found"));
   }
