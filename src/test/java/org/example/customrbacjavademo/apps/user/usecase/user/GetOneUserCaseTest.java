@@ -31,7 +31,7 @@ class GetOneUserCaseTest {
     when(repository.findWithRoleById(id))
         .thenReturn(Optional.of(user));
 
-    final var result = useCase.execute(id);
+    final var result = useCase.execute(id.toString());
 
     assertNotNull(result);
     assertEquals(user.getId(), result.id());
@@ -51,7 +51,7 @@ class GetOneUserCaseTest {
     when(repository.findWithRoleById(id))
         .thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString()));
 
     assertEquals("User not found", exception.getMessage());
   }

@@ -4,10 +4,10 @@ import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserDeta
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class GetOneUserUseCase {
@@ -17,8 +17,9 @@ public class GetOneUserUseCase {
     this.repository = Objects.requireNonNull(repository);
   }
 
-  public UserDetailsResponse execute(final UUID id) {
-    final var user = repository.findWithRoleById((id));
+  public UserDetailsResponse execute(final String id) {
+    final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    final var user = repository.findWithRoleById((idAsUUID));
 
     if (user.isEmpty()) {
       throw new NotFoundException("User not found");
