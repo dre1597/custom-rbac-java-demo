@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.common.domain.helpers;
 
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 
+import java.util.List;
 import java.util.UUID;
 
 public final class UUIDValidator {
@@ -15,5 +16,9 @@ public final class UUIDValidator {
     } catch (IllegalArgumentException ex) {
       throw new ValidationException("Invalid UUID: " + id);
     }
+  }
+
+  public static List<UUID> parseOrThrow(final List<String> ids) {
+    return ids.stream().map(UUIDValidator::parseOrThrow).toList();
   }
 }

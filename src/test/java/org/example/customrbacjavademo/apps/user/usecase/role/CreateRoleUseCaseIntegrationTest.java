@@ -41,8 +41,8 @@ class CreateRoleUseCaseIntegrationTest {
     final var dto = NewRoleDto.of(
         "any_name",
         "any_description",
-        RoleStatus.ACTIVE,
-        List.of(permissionJpa.getId())
+        RoleStatus.ACTIVE.name(),
+        List.of(permissionJpa.getId().toString())
     );
 
     final var role = useCase.execute(dto);
@@ -50,8 +50,8 @@ class CreateRoleUseCaseIntegrationTest {
     assertNotNull(role.getId());
     assertEquals(dto.name(), role.getName());
     assertEquals(dto.description(), role.getDescription());
-    assertEquals(dto.status(), role.getStatus());
-    assertEquals(dto.permissionIds(), role.getPermissionIds());
+    assertEquals(dto.status(), role.getStatus().name());
+    assertEquals(dto.permissionIds(), role.getPermissionIds().stream().map(UUID::toString).toList());
     assertNotNull(role.getCreatedAt());
     assertNotNull(role.getUpdatedAt());
   }
@@ -65,8 +65,8 @@ class CreateRoleUseCaseIntegrationTest {
     final var dto = NewRoleDto.of(
         role.getName(),
         "any_description",
-        RoleStatus.ACTIVE,
-        List.of(permissionJpa.getId())
+        RoleStatus.ACTIVE.name(),
+        List.of(permissionJpa.getId().toString())
     );
 
     var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(dto));
@@ -83,8 +83,8 @@ class CreateRoleUseCaseIntegrationTest {
     final var dto = NewRoleDto.of(
         "updated_name",
         "updated_description",
-        RoleStatus.ACTIVE,
-        List.of(permissionJpa.getId(), UUID.randomUUID())
+        RoleStatus.ACTIVE.name(),
+        List.of(permissionJpa.getId().toString(), UUID.randomUUID().toString())
     );
 
     final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(dto));
@@ -112,8 +112,8 @@ class CreateRoleUseCaseIntegrationTest {
 
     final var actualName = "null".equals(name) ? null : name;
     final var actualDescription = "null".equals(description) ? null : description;
-    final var actualStatus = "null".equals(String.valueOf(status)) ? null : RoleStatus.valueOf(status);
-    final var dto = NewRoleDto.of(actualName, actualDescription, actualStatus, List.of(permissionJpa.getId()));
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : status;
+    final var dto = NewRoleDto.of(actualName, actualDescription, actualStatus, List.of(permissionJpa.getId().toString()));
 
     final var exception = assertThrows(
         ValidationException.class,

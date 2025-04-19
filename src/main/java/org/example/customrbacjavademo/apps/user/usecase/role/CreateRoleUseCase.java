@@ -7,6 +7,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -27,8 +28,9 @@ public class CreateRoleUseCase {
     if (exists) {
       throw new AlreadyExistsException("Role already exists");
     }
-
-    final var foundPermissions = permissionJpaRepository.countByIdIn(dto.permissionIds());
+    
+    final var permissionIdsAsUUID = UUIDValidator.parseOrThrow(dto.permissionIds());
+    final var foundPermissions = permissionJpaRepository.countByIdIn(permissionIdsAsUUID);
 
     if (foundPermissions != dto.permissionIds().size()) {
       throw new NotFoundException(

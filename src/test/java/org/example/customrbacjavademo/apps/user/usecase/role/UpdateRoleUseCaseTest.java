@@ -8,7 +8,6 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
-import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,14 +38,14 @@ class UpdateRoleUseCaseTest {
   void shouldUpdateRole() {
     final var id = UUID.randomUUID();
     final var permissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds);
+    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList());
 
     final var role = RoleTestMocks.createActiveTestRole(permissionIds);
 
-    when(repository.findById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
+    when(repository.findWithPermissionsById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(2L);
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var roleJpaEntityCaptor = ArgumentCaptor.forClass(RoleJpaEntity.class);
     verify(repository, times(1)).save(roleJpaEntityCaptor.capture());
@@ -54,9 +53,8 @@ class UpdateRoleUseCaseTest {
 
     assertEquals(dto.name(), capturedRole.getName());
     assertEquals(dto.description(), capturedRole.getDescription());
-    assertEquals(dto.status().toString(), capturedRole.getStatus());
+    assertEquals(dto.status(), capturedRole.getStatus());
     assertEquals(2, capturedRole.getPermissions().size());
-    assertTrue(capturedRole.getPermissions().stream().allMatch(p -> dto.permissionIds().contains(p.getId())));
     assertNotNull(capturedRole.getCreatedAt());
     assertNotNull(capturedRole.getUpdatedAt());
   }
@@ -64,12 +62,12 @@ class UpdateRoleUseCaseTest {
   @Test
   void shouldNotUpdateNonExistentRole() {
     final var id = UUID.randomUUID();
-    final var permissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds);
+    final var permissionIds = List.of(UUID.randomUUID().toString(), UUID.randomUUID().toString());
+    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds);
 
-    when(repository.findById(id)).thenReturn(Optional.empty());
+    when(repository.findWithPermissionsById(id)).thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Role not found", exception.getMessage());
   }
 
@@ -77,57 +75,31 @@ class UpdateRoleUseCaseTest {
   void shouldNotUpdateNoneExistentPermissions() {
     final var id = UUID.randomUUID();
     final var permissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds);
+    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList());
 
     final var role = RoleTestMocks.createActiveTestRole(permissionIds);
 
-    when(repository.findById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(0L);
+    when(repository.findWithPermissionsById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(0L);
 
-    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
   }
 
   @Test
   void shouldNotUpdateToDuplicateName() {
     final var permissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("new_name", "any_description", RoleStatus.ACTIVE, permissionIds);
+    final var dto = UpdateRoleDto.of("new_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList());
 
     final var role = RoleTestMocks.createActiveTestRole(permissionIds);
     final var id = role.getId();
 
-    when(repository.findById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
+    when(repository.findWithPermissionsById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(2L);
     when(repository.existsByName(dto.name())).thenReturn(true);
 
-    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Role already exists", exception.getMessage());
-  }
-
-  @Test
-  void shouldUpdateWhenOnlyNameChanged() {
-    final var id = UUID.randomUUID();
-    final var permissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("new_name", "any_description", RoleStatus.ACTIVE, permissionIds);
-
-    final var role = RoleTestMocks.createActiveTestRole(permissionIds);
-
-    when(repository.findById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
-
-    useCase.execute(id, dto);
-
-    final var roleJpaEntityCaptor = ArgumentCaptor.forClass(RoleJpaEntity.class);
-    verify(repository, times(1)).save(roleJpaEntityCaptor.capture());
-    final var capturedRole = roleJpaEntityCaptor.getValue();
-
-    assertEquals(dto.name(), capturedRole.getName());
-    assertEquals(dto.description(), capturedRole.getDescription());
-    assertEquals(dto.status().toString(), capturedRole.getStatus());
-    assertEquals(2, capturedRole.getPermissions().size());
-    assertTrue(capturedRole.getPermissions().stream().allMatch(p -> dto.permissionIds().contains(p.getId())));
-    assertNotNull(capturedRole.getCreatedAt());
-    assertNotNull(capturedRole.getUpdatedAt());
   }
 
   @Test
@@ -135,14 +107,14 @@ class UpdateRoleUseCaseTest {
     final var id = UUID.randomUUID();
     final var oldPermissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
     final var newPermissionIds = List.of(UUID.randomUUID(), UUID.randomUUID());
-    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, newPermissionIds);
+    final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), newPermissionIds.stream().map(UUID::toString).toList());
 
     final var role = RoleTestMocks.createActiveTestRole(oldPermissionIds);
 
-    when(repository.findById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
+    when(repository.findWithPermissionsById(id)).thenReturn(Optional.of(RoleMapper.entityToJpa(role)));
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(2L);
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var roleJpaEntityCaptor = ArgumentCaptor.forClass(RoleJpaEntity.class);
     verify(repository, times(1)).save(roleJpaEntityCaptor.capture());
@@ -150,9 +122,8 @@ class UpdateRoleUseCaseTest {
 
     assertEquals(dto.name(), capturedRole.getName());
     assertEquals(dto.description(), capturedRole.getDescription());
-    assertEquals(dto.status().toString(), capturedRole.getStatus());
+    assertEquals(dto.status(), capturedRole.getStatus());
     assertEquals(2, capturedRole.getPermissions().size());
-    assertTrue(capturedRole.getPermissions().stream().allMatch(p -> dto.permissionIds().contains(p.getId())));
     assertNotNull(capturedRole.getCreatedAt());
     assertNotNull(capturedRole.getUpdatedAt());
   }

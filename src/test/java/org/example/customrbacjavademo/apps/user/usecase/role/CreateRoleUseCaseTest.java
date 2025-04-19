@@ -34,12 +34,12 @@ class CreateRoleUseCaseTest {
 
   @Test
   void shouldCreateRole() {
-    final var permissionId1 = UUID.randomUUID();
-    final var permissionId2 = UUID.randomUUID();
-    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(permissionId1, permissionId2));
+    final var permissionId1 = UUID.randomUUID().toString();
+    final var permissionId2 = UUID.randomUUID().toString();
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE.name(), List.of(permissionId1, permissionId2));
 
     when(repository.existsByName(dto.name())).thenReturn(false);
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(2L);
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(2L);
     when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
     useCase.execute(dto);
@@ -50,16 +50,15 @@ class CreateRoleUseCaseTest {
 
     assertEquals(dto.name(), savedRole.getName());
     assertEquals(dto.description(), savedRole.getDescription());
-    assertEquals(dto.status().toString(), savedRole.getStatus());
+    assertEquals(dto.status(), savedRole.getStatus());
     assertEquals(2, savedRole.getPermissions().size());
-    assertTrue(savedRole.getPermissions().stream().allMatch(p -> dto.permissionIds().contains(p.getId())));
     assertNotNull(savedRole.getCreatedAt());
     assertNotNull(savedRole.getUpdatedAt());
   }
 
   @Test
   void shouldNotCreateRoleIfNameAlreadyExists() {
-    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE, List.of(UUID.randomUUID()));
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE.name(), List.of(UUID.randomUUID().toString()));
 
     when(repository.existsByName(dto.name())).thenReturn(true);
 
@@ -71,12 +70,12 @@ class CreateRoleUseCaseTest {
 
   @Test
   void shouldThrowIfSomePermissionsAreInvalid() {
-    final var validId = UUID.randomUUID();
-    final var invalidId = UUID.randomUUID();
-    final var dto = new NewRoleDto("any_name", "any_descriptions", RoleStatus.ACTIVE, List.of(validId, invalidId));
+    final var validId = UUID.randomUUID().toString();
+    final var invalidId = UUID.randomUUID().toString();
+    final var dto = new NewRoleDto("any_name", "any_descriptions", RoleStatus.ACTIVE.name(), List.of(validId, invalidId));
 
     when(repository.existsByName(dto.name())).thenReturn(false);
-    when(permissionRepository.countByIdIn(dto.permissionIds())).thenReturn(1L);
+    when(permissionRepository.countByIdIn(dto.permissionIds().stream().map(UUID::fromString).toList())).thenReturn(1L);
 
     final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(dto));
 

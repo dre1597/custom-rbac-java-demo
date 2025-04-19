@@ -21,9 +21,9 @@ public class PermissionJpaEntity {
   private String description;
   @Column(nullable = false)
   private String status;
-  @Column
+  @Column(nullable = false)
   private Instant createdAt;
-  @Column
+  @Column(nullable = false)
   private Instant updatedAt;
 
   public PermissionJpaEntity(

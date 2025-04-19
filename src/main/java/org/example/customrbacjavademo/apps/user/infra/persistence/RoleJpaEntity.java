@@ -12,15 +12,15 @@ import java.util.UUID;
 public class RoleJpaEntity {
   @Id
   private UUID id = UUID.randomUUID();
-  @Column
+  @Column(nullable = false)
   private String name;
-  @Column
+  @Column(nullable = false)
   private String description;
-  @Column
+  @Column(nullable = false)
   private String status;
-  @Column
+  @Column(nullable = false)
   private Instant createdAt;
-  @Column
+  @Column(nullable = false)
   private Instant updatedAt;
   @ManyToMany
   @JoinTable(

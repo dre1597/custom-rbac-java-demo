@@ -13,19 +13,19 @@ public class RoleTestMocks {
   public static Role createActiveTestRole() {
     final var permissionIds = List.of(PermissionTestMocks.createActiveTestPermission().getId());
 
-    return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
+    return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList()));
   }
 
   public static Role createActiveTestRole(final List<UUID> permissionIds) {
-    return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
+    return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList()));
   }
 
   public static Role createActiveTestRole(final String name, final List<UUID> permissionIds) {
-    return Role.newRole(NewRoleDto.of(name, "any_description", RoleStatus.ACTIVE, permissionIds));
+    return Role.newRole(NewRoleDto.of(name, "any_description", RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList()));
   }
 
   public static Role createActiveTestRole(final String name, final String description, final List<UUID> permissionIds) {
-    return Role.newRole(NewRoleDto.of(name, description, RoleStatus.ACTIVE, permissionIds));
+    return Role.newRole(NewRoleDto.of(name, description, RoleStatus.ACTIVE.name(), permissionIds.stream().map(UUID::toString).toList()));
   }
 
   public static RoleJpaEntity createActiveTestRoleJpa() {

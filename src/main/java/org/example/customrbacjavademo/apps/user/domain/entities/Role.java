@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.apps.user.domain.dto.NewRoleDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateRoleDto;
 import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -18,19 +19,6 @@ public class Role {
   private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
   private List<UUID> permissionIds;
-
-  private Role(
-      final String name,
-      final String description,
-      final RoleStatus status,
-      final List<UUID> permissionIds
-  ) {
-    this.validate(name, description, status, permissionIds);
-    this.name = name;
-    this.description = description;
-    this.status = status;
-    this.permissionIds = permissionIds;
-  }
 
   private Role(
       final UUID id,
@@ -50,6 +38,18 @@ public class Role {
     this.permissionIds = permissionIds;
   }
 
+  private Role(
+      final String name,
+      final String description,
+      final String status,
+      final List<String> permissionIds
+  ) {
+    this.validate(name, description, status, permissionIds);
+    this.name = name;
+    this.description = description;
+    this.status = RoleStatus.valueOf(status);
+    this.permissionIds = permissionIds.stream().map(UUID::fromString).toList();
+  }
 
   public static Role with(
       final UUID id,
@@ -79,8 +79,8 @@ public class Role {
     this.validate(dto.name(), dto.description(), dto.status(), dto.permissionIds());
     this.name = dto.name();
     this.description = dto.description();
-    this.status = dto.status();
-    this.permissionIds = dto.permissionIds();
+    this.status = RoleStatus.valueOf(dto.status());
+    this.permissionIds = dto.permissionIds().stream().map(UUID::fromString).toList();
     this.updatedAt = Instant.now();
     return this;
   }
@@ -88,8 +88,8 @@ public class Role {
   private void validate(
       final String name,
       final String description,
-      final RoleStatus status,
-      final List<UUID> permissionIds
+      final String status,
+      final List<String> permissionIds
   ) {
     final var errors = new ArrayList<String>();
 
@@ -103,6 +103,8 @@ public class Role {
 
     if (status == null) {
       errors.add("status is required");
+    } else if (EnumValidator.isInvalidEnum(status, RoleStatus.class)) {
+      errors.add("status must be one of " + EnumValidator.enumValuesAsString(RoleStatus.class));
     }
 
     if (permissionIds == null || permissionIds.isEmpty()) {
