@@ -27,7 +27,7 @@ class DeleteUserUseCaseTest {
 
     when(repository.existsById(id)).thenReturn(true);
 
-    useCase.execute(id);
+    useCase.execute(id.toString());
 
     verify(repository, times(1)).deleteById(id);
   }
@@ -38,7 +38,7 @@ class DeleteUserUseCaseTest {
 
     when(repository.existsById(id)).thenReturn(false);
 
-    useCase.execute(id);
+    useCase.execute(id.toString());
 
     verify(repository, never()).deleteById(id);
   }
