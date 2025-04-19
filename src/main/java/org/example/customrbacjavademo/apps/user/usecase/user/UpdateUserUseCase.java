@@ -6,6 +6,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -24,7 +25,8 @@ public class UpdateUserUseCase {
   public void execute(final UUID id, final UpdateUserDto dto) {
     final var userOnDatabase = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
 
-    final var foundRole = roleRepository.existsById(dto.roleId());
+    final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
+    final var foundRole = roleRepository.existsById(roleIdAsUUID);
 
     if (!foundRole) {
       throw new NotFoundException("Role not found");

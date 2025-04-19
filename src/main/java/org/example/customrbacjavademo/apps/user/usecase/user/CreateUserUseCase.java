@@ -7,6 +7,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -21,20 +22,22 @@ public class CreateUserUseCase {
     this.roleJpaRepository = Objects.requireNonNull(roleJpaRepository);
   }
 
-  public void execute(final NewUserDto dto) {
+  public User execute(final NewUserDto dto) {
     final var exists = repository.existsByName(dto.name());
 
     if (exists) {
       throw new AlreadyExistsException("User already exists");
     }
 
-    final var foundRole = roleJpaRepository.existsById(dto.roleId());
+    final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
+    final var foundRole = roleJpaRepository.existsById(roleIdAsUUID);
 
-    if (foundRole) {
+    if (!foundRole) {
       throw new NotFoundException("Role not found");
     }
 
     final var entity = User.newUser(dto);
     repository.save(UserMapper.entityToJpa(entity));
+    return entity;
   }
 }

@@ -21,19 +21,6 @@ public class User {
   private UUID roleId;
 
   private User(
-      final String name,
-      final String password,
-      final UserStatus status,
-      final UUID roleId
-  ) {
-    this.validate(name, password, status, roleId);
-    this.name = name.trim();
-    this.password = PasswordService.encryptPassword(password.trim());
-    this.status = status;
-    this.roleId = roleId;
-  }
-
-  private User(
       final UUID id,
       final String name,
       final String password,
@@ -49,6 +36,19 @@ public class User {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.roleId = roleId;
+  }
+
+  private User(
+      final String name,
+      final String password,
+      final String status,
+      final String roleId
+  ) {
+    this.validate(name, password, status, roleId);
+    this.name = name.trim();
+    this.password = PasswordService.encryptPassword(password.trim());
+    this.status = UserStatus.valueOf(status);
+    this.roleId = UUID.fromString(roleId);
   }
 
   public static User with(
@@ -77,14 +77,14 @@ public class User {
 
   public User update(final UpdateUserDto dto) {
     this.validate(dto.name(), this.password, dto.status(), dto.roleId());
-    name = dto.name().trim();
-    status = dto.status();
-    roleId = dto.roleId();
-    updatedAt = Instant.now();
+    this.name = dto.name().trim();
+    this.status = UserStatus.valueOf(dto.status());
+    this.roleId = UUID.fromString(dto.roleId());
+    this.updatedAt = Instant.now();
     return this;
   }
 
-  private void validate(final String name, final String password, final UserStatus status, final UUID roleId) {
+  private void validate(final String name, final String password, final String status, final String roleId) {
     final var errors = new ArrayList<String>();
 
     if (name == null || name.isBlank()) {
@@ -115,30 +115,30 @@ public class User {
   }
 
   public UUID getId() {
-    return id;
+    return this.id;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public String getPassword() {
-    return password;
+    return this.password;
   }
 
   public UserStatus getStatus() {
-    return status;
+    return this.status;
   }
 
   public UUID getRoleId() {
-    return roleId;
+    return this.roleId;
   }
 
   public Instant getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 }

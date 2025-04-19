@@ -11,11 +11,11 @@ import java.util.UUID;
 public class UserTestMocks {
   public static User createActiveTestUser() {
     final var role = RoleTestMocks.createActiveTestRole();
-    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE, role.getId()));
+    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE.name(), role.getId().toString()));
   }
 
   public static User createActiveTestUser(final UUID roleId) {
-    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE, roleId));
+    return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE.name(), roleId.toString()));
   }
 
   public static UserJpaEntity createActiveTestUserJpa() {

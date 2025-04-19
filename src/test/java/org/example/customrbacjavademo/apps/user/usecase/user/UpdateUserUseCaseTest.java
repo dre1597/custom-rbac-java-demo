@@ -37,7 +37,7 @@ class UpdateUserUseCaseTest {
   void shouldUpdateUser() {
     final var id = UUID.randomUUID();
     final var roleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE, roleId);
+    final var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE.name(), roleId.toString());
 
     final var user = UserTestMocks.createActiveTestUser(roleId);
 
@@ -51,8 +51,8 @@ class UpdateUserUseCaseTest {
     final var savedUser = userJpaEntityCaptor.getValue();
 
     assertEquals(dto.name(), savedUser.getName());
-    assertEquals(dto.status().name(), savedUser.getStatus());
-    assertEquals(dto.roleId(), savedUser.getRole().getId());
+    assertEquals(dto.status(), savedUser.getStatus());
+    assertEquals(dto.roleId(), savedUser.getRole().getId().toString());
     assertNotNull(savedUser.getCreatedAt());
     assertNotNull(savedUser.getUpdatedAt());
   }
@@ -61,7 +61,7 @@ class UpdateUserUseCaseTest {
   void shouldNotUpdateNonExistentUser() {
     final var id = UUID.randomUUID();
     final var roleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE, roleId);
+    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE.name(), roleId.toString());
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
@@ -73,7 +73,7 @@ class UpdateUserUseCaseTest {
   void shouldNotUpdateUserWithNonExistentRole() {
     final var id = UUID.randomUUID();
     final var roleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE, roleId);
+    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE.name(), roleId.toString());
 
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(roleId))));
     when(roleRepository.existsById(roleId)).thenReturn(false);
@@ -85,7 +85,7 @@ class UpdateUserUseCaseTest {
   @Test
   void shouldNotUpdateToDuplicatedName() {
     final var roleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("new_name", UserStatus.ACTIVE, roleId);
+    final var dto = UpdateUserDto.of("new_name", UserStatus.ACTIVE.name(), roleId.toString());
 
     final var user = UserTestMocks.createActiveTestUser(roleId);
     final var id = user.getId();
@@ -102,7 +102,7 @@ class UpdateUserUseCaseTest {
   void shouldUpdateWhenOnlyNameChanged() {
     final var id = UUID.randomUUID();
     final var roleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("new_name", UserStatus.ACTIVE, roleId);
+    final var dto = UpdateUserDto.of("new_name", UserStatus.ACTIVE.name(), roleId.toString());
 
     final var user = UserTestMocks.createActiveTestUser(roleId);
 
@@ -116,8 +116,8 @@ class UpdateUserUseCaseTest {
     final var savedUser = userJpaEntityCaptor.getValue();
 
     assertEquals(dto.name(), savedUser.getName());
-    assertEquals(dto.status().name(), savedUser.getStatus());
-    assertEquals(dto.roleId(), savedUser.getRole().getId());
+    assertEquals(dto.status(), savedUser.getStatus());
+    assertEquals(dto.roleId(), savedUser.getRole().getId().toString());
     assertNotNull(savedUser.getCreatedAt());
     assertNotNull(savedUser.getUpdatedAt());
   }
@@ -127,7 +127,7 @@ class UpdateUserUseCaseTest {
     final var id = UUID.randomUUID();
     final var oldRoleId = UUID.randomUUID();
     final var newRoleId = UUID.randomUUID();
-    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE, newRoleId);
+    final var dto = UpdateUserDto.of("any_name", UserStatus.ACTIVE.name(), newRoleId.toString());
 
     final var user = UserTestMocks.createActiveTestUser(oldRoleId);
 
@@ -141,8 +141,8 @@ class UpdateUserUseCaseTest {
     final var savedUser = userJpaEntityCaptor.getValue();
 
     assertEquals(dto.name(), savedUser.getName());
-    assertEquals(dto.status().name(), savedUser.getStatus());
-    assertEquals(dto.roleId(), newRoleId);
+    assertEquals(dto.status(), savedUser.getStatus());
+    assertEquals(dto.roleId(), newRoleId.toString());
     assertNotNull(savedUser.getCreatedAt());
     assertNotNull(savedUser.getUpdatedAt());
   }

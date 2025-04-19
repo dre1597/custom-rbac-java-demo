@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
@@ -20,14 +18,14 @@ class UserTest {
   void shouldCreateUser() {
     final var password = "any_password";
     final var role = RoleTestMocks.createActiveTestRole();
-    final var dto = NewUserDto.of("any_name", password, UserStatus.ACTIVE, role.getId());
+    final var dto = NewUserDto.of("any_name", password, UserStatus.ACTIVE.name(), role.getId().toString());
     final var user = User.newUser(dto);
 
     assertNotNull(user.getId());
     assertEquals(dto.name(), user.getName());
     assertTrue(PasswordService.matches(password, user.getPassword()));
-    assertEquals(dto.status(), user.getStatus());
-    assertEquals(dto.roleId(), user.getRoleId());
+    assertEquals(dto.status(), user.getStatus().toString());
+    assertEquals(dto.roleId(), user.getRoleId().toString());
     assertNotNull(user.getCreatedAt());
     assertNotNull(user.getUpdatedAt());
   }
@@ -51,8 +49,8 @@ class UserTest {
   ) {
     final var actualName = "null".equals(name) ? null : name;
     final var actualPassword = "null".equals(password) ? null : password;
-    final var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
-    final var actualRoleId = "null".equals(roleId) ? null : UUID.fromString(roleId);
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : status;
+    final var actualRoleId = "null".equals(roleId) ? null : roleId;
 
     final var dto = new NewUserDto(actualName, actualPassword, actualStatus, actualRoleId);
 
@@ -68,12 +66,12 @@ class UserTest {
   void shouldUpdateUser() {
     final var user = UserTestMocks.createActiveTestUser();
     final var newRole = RoleTestMocks.createActiveTestRole();
-    final var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE, newRole.getId());
+    final var dto = UpdateUserDto.of("updated_name", UserStatus.INACTIVE.name(), newRole.getId().toString());
     final var updatedUser = user.update(dto);
 
     assertEquals(dto.name(), updatedUser.getName());
-    assertEquals(dto.status(), updatedUser.getStatus());
-    assertEquals(dto.roleId(), updatedUser.getRoleId());
+    assertEquals(dto.status(), updatedUser.getStatus().toString());
+    assertEquals(dto.roleId(), updatedUser.getRoleId().toString());
   }
 
   @ParameterizedTest
@@ -88,8 +86,8 @@ class UserTest {
     final var user = UserTestMocks.createActiveTestUser();
 
     final var actualName = "null".equals(name) ? null : name;
-    final var actualStatus = "null".equals(String.valueOf(status)) ? null : UserStatus.valueOf(status);
-    final var actualRoleId = "null".equals(String.valueOf(roleId)) ? null : UUID.fromString(roleId);
+    final var actualStatus = "null".equals(String.valueOf(status)) ? null : status;
+    final var actualRoleId = "null".equals(String.valueOf(roleId)) ? null : roleId;
 
     final var dto = UpdateUserDto.of(actualName, actualStatus, actualRoleId);
 
