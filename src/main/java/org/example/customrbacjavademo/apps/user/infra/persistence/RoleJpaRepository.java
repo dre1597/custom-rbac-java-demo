@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RoleJpaRepository extends JpaRepository<RoleJpaEntity, UUID> {
+  @EntityGraph(attributePaths = "permissions")
   Page<RoleJpaEntity> findAll(final Specification<RoleJpaRepository> whereClause, final Pageable page);
 
   boolean existsByName(final String name);

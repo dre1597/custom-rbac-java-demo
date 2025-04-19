@@ -20,6 +20,14 @@ public class RoleTestMocks {
     return Role.newRole(NewRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE, permissionIds));
   }
 
+  public static Role createActiveTestRole(final String name, final List<UUID> permissionIds) {
+    return Role.newRole(NewRoleDto.of(name, "any_description", RoleStatus.ACTIVE, permissionIds));
+  }
+
+  public static Role createActiveTestRole(final String name, final String description, final List<UUID> permissionIds) {
+    return Role.newRole(NewRoleDto.of(name, description, RoleStatus.ACTIVE, permissionIds));
+  }
+
   public static RoleJpaEntity createActiveTestRoleJpa() {
     final var role = RoleMapper.entityToJpa(createActiveTestRole());
     final var permissions = role.getPermissions();

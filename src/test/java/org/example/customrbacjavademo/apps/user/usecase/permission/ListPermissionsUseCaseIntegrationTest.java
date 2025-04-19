@@ -103,7 +103,7 @@ class ListPermissionsUseCaseIntegrationTest {
   @Test
   void shouldSearchByDescriptionWhenTermsMatchDescription() {
     final var permissionSaved = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    var searchQuery = new SearchQuery(0, 10, permissionSaved.getDescription(), "name", "ASC");
+    final var searchQuery = new SearchQuery(0, 10, permissionSaved.getDescription(), "name", "ASC");
 
     final var result = useCase.execute(searchQuery);
 
