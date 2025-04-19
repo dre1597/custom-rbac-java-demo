@@ -79,8 +79,7 @@ class PermissionControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(pagination, response.getBody());
   }
-
-
+  
   @Test
   void shouldCreatePermission() {
     final var input = new CreatePermissionRequest(
@@ -140,7 +139,7 @@ class PermissionControllerTest {
 
   @Test
   void shouldDeletePermission() {
-    var id = "perm-id";
+    var id = UUID.randomUUID().toString();
 
     var response = controller.delete(id);
 
