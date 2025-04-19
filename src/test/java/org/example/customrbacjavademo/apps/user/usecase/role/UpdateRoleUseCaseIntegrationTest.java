@@ -64,7 +64,6 @@ class UpdateRoleUseCaseIntegrationTest {
     final var dto = UpdateRoleDto.of("any_name", "any_description", RoleStatus.ACTIVE.name(), List.of());
     final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Role not found", exception.getMessage());
-    ;
   }
 
   @Test

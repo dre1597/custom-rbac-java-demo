@@ -44,7 +44,7 @@ class UpdateUserUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
     when(roleRepository.existsById(roleId)).thenReturn(true);
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var userJpaEntityCaptor = ArgumentCaptor.forClass(UserJpaEntity.class);
     verify(repository, times(1)).save(userJpaEntityCaptor.capture());
@@ -65,7 +65,7 @@ class UpdateUserUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("User not found", exception.getMessage());
   }
 
@@ -78,7 +78,7 @@ class UpdateUserUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(roleId))));
     when(roleRepository.existsById(roleId)).thenReturn(false);
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("Role not found", exception.getMessage());
   }
 
@@ -94,7 +94,7 @@ class UpdateUserUseCaseTest {
     when(roleRepository.existsById(roleId)).thenReturn(true);
     when(repository.existsByName(dto.name())).thenReturn(true);
 
-    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id, dto));
+    final var exception = assertThrows(AlreadyExistsException.class, () -> useCase.execute(id.toString(), dto));
     assertEquals("User already exists", exception.getMessage());
   }
 
@@ -109,7 +109,7 @@ class UpdateUserUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
     when(roleRepository.existsById(roleId)).thenReturn(true);
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var userJpaEntityCaptor = ArgumentCaptor.forClass(UserJpaEntity.class);
     verify(repository, times(1)).save(userJpaEntityCaptor.capture());
@@ -134,7 +134,7 @@ class UpdateUserUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
     when(roleRepository.existsById(newRoleId)).thenReturn(true);
 
-    useCase.execute(id, dto);
+    useCase.execute(id.toString(), dto);
 
     final var userJpaEntityCaptor = ArgumentCaptor.forClass(UserJpaEntity.class);
     verify(repository, times(1)).save(userJpaEntityCaptor.capture());

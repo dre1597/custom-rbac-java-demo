@@ -18,6 +18,10 @@ public class UserTestMocks {
     return User.newUser(NewUserDto.of("any_name", "any_password", UserStatus.ACTIVE.name(), roleId.toString()));
   }
 
+  public static User createActiveTestUser(final String name, final UUID roleId) {
+    return User.newUser(NewUserDto.of(name, "any_password", UserStatus.ACTIVE.name(), roleId.toString()));
+  }
+
   public static UserJpaEntity createActiveTestUserJpa() {
     final var user = UserMapper.entityToJpa(createActiveTestUser());
     final var role = user.getRole();

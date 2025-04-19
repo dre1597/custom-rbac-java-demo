@@ -1,6 +1,7 @@
 package org.example.customrbacjavademo.apps.user.usecase.user;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
+import org.example.customrbacjavademo.apps.user.domain.entities.User;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
@@ -10,7 +11,6 @@ import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 public class UpdateUserUseCase {
@@ -22,8 +22,9 @@ public class UpdateUserUseCase {
     this.roleRepository = Objects.requireNonNull(roleRepository);
   }
 
-  public void execute(final UUID id, final UpdateUserDto dto) {
-    final var userOnDatabase = repository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+  public User execute(final String id, final UpdateUserDto dto) {
+    final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    final var userOnDatabase = repository.findById(idAsUUID).orElseThrow(() -> new NotFoundException("User not found"));
 
     final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
     final var foundRole = roleRepository.existsById(roleIdAsUUID);
@@ -33,7 +34,7 @@ public class UpdateUserUseCase {
     }
 
     final var user = UserMapper.jpaToEntity(userOnDatabase);
-    final var isChangingName = !dto.name().equals(user.getName());
+    final var isChangingName = dto.name() != null && !dto.name().equals(user.getName());
 
     if (isChangingName) {
       final var exists = repository.existsByName(dto.name());
@@ -45,5 +46,6 @@ public class UpdateUserUseCase {
 
     user.update(dto);
     repository.save(UserMapper.entityToJpa(user));
+    return user;
   }
 }
