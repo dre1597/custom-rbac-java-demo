@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.apps.user.usecase.permission;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
+import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
@@ -23,9 +24,17 @@ public class UpdatePermissionUseCase {
     final var idAsUUID = UUIDValidator.parseOrThrow(id);
     final var permissionOnDatabase = repository.findById(idAsUUID).orElseThrow(() -> new NotFoundException("Permission not found"));
     final var permission = PermissionMapper.jpaToEntity(permissionOnDatabase);
+    
+    this.ensurePermissionIsUnique(permissionOnDatabase, dto);
 
-    final var isChangingName = dto.name() != null && !dto.name().equals(permission.getName().name());
-    final var isChangingScope = dto.scope() != null && !dto.scope().equals(permission.getScope().name());
+    permission.update(dto);
+    repository.save(PermissionMapper.entityToJpa(permission));
+    return permission;
+  }
+
+  private void ensurePermissionIsUnique(final PermissionJpaEntity permissionOnDatabase, final UpdatePermissionDto dto) {
+    final var isChangingName = dto.name() != null && !dto.name().equals(permissionOnDatabase.getName());
+    final var isChangingScope = dto.scope() != null && !dto.scope().equals(permissionOnDatabase.getScope());
 
     if (isChangingName || isChangingScope) {
       final var exists = repository.existsByNameAndScope(dto.name(), dto.scope());
@@ -34,11 +43,5 @@ public class UpdatePermissionUseCase {
         throw new AlreadyExistsException("Permission already exists");
       }
     }
-
-    permission.update(dto);
-
-    final var savedPermission = repository.save(PermissionMapper.entityToJpa(permission));
-
-    return PermissionMapper.jpaToEntity(savedPermission);
   }
 }

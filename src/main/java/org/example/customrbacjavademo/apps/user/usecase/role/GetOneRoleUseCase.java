@@ -19,6 +19,7 @@ public class GetOneRoleUseCase {
 
   public RoleDetailsResponse execute(final String id) {
     final var idAsUUID = UUIDValidator.parseOrThrow(id);
+    
     return repository.findWithPermissionsById(idAsUUID)
         .map(RoleMapper::jpaToDetailsResponse)
         .orElseThrow(() -> new NotFoundException("Role not found"));

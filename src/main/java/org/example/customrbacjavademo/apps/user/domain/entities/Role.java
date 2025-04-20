@@ -44,7 +44,13 @@ public class Role {
       final String status,
       final List<String> permissionIds
   ) {
-    this.validate(name, description, status, permissionIds);
+    this.validate(
+        name,
+        description,
+        status,
+        permissionIds
+    );
+
     this.name = name;
     this.description = description;
     this.status = RoleStatus.valueOf(status);
@@ -72,16 +78,28 @@ public class Role {
   }
 
   public static Role newRole(final NewRoleDto dto) {
-    return new Role(dto.name(), dto.description(), dto.status(), dto.permissionIds());
+    return new Role(
+        dto.name(),
+        dto.description(),
+        dto.status(),
+        dto.permissionIds()
+    );
   }
 
   public Role update(final UpdateRoleDto dto) {
-    this.validate(dto.name(), dto.description(), dto.status(), dto.permissionIds());
+    this.validate(
+        dto.name(),
+        dto.description(),
+        dto.status(),
+        dto.permissionIds()
+    );
+
     this.name = dto.name();
     this.description = dto.description();
     this.status = RoleStatus.valueOf(dto.status());
     this.permissionIds = dto.permissionIds().stream().map(UUID::fromString).toList();
     this.updatedAt = Instant.now();
+
     return this;
   }
 
@@ -117,30 +135,30 @@ public class Role {
   }
 
   public UUID getId() {
-    return id;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
+    return this.id;
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public RoleStatus getStatus() {
-    return status;
+    return this.status;
+  }
+
+  public Instant getCreatedAt() {
+    return this.createdAt;
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 
   public List<UUID> getPermissionIds() {
-    return permissionIds;
+    return this.permissionIds;
   }
 }

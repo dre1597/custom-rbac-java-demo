@@ -6,7 +6,17 @@ public record NewUserDto(
     String status,
     String roleId
 ) {
-  public static NewUserDto of(final String name, final String password, final String status, final String roleId) {
-    return new NewUserDto(name, password, status, roleId);
+  public static NewUserDto of(
+      final String name,
+      final String password,
+      final String status,
+      final String roleId
+  ) {
+    return new NewUserDto(
+        name,
+        password,
+        status,
+        roleId
+    );
   }
 }

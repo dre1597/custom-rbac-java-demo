@@ -13,10 +13,10 @@ import java.util.UUID;
 
 public class User {
   private UUID id = UUID.randomUUID();
-  private Instant createdAt = Instant.now();
   private String name;
   private String password;
   private UserStatus status;
+  private Instant createdAt = Instant.now();
   private Instant updatedAt = Instant.now();
   private UUID roleId;
 
@@ -44,7 +44,13 @@ public class User {
       final String status,
       final String roleId
   ) {
-    this.validate(name, password, status, roleId);
+    this.validate(
+        name,
+        password,
+        status,
+        roleId
+    );
+
     this.name = name.trim();
     this.password = PasswordService.encryptPassword(password.trim());
     this.status = UserStatus.valueOf(status);
@@ -72,27 +78,46 @@ public class User {
   }
 
   public static User newUser(final NewUserDto dto) {
-    return new User(dto.name(), dto.password(), dto.status(), dto.roleId());
+    return new User(
+        dto.name(),
+        dto.password(),
+        dto.status(),
+        dto.roleId()
+    );
   }
 
   public User update(final UpdateUserDto dto) {
-    this.validate(dto.name(), this.password, dto.status(), dto.roleId());
+    this.validate(
+        dto.name(),
+        this.password,
+        dto.status(),
+        dto.roleId()
+    );
+
     this.name = dto.name().trim();
     this.status = UserStatus.valueOf(dto.status());
     this.roleId = UUID.fromString(dto.roleId());
     this.updatedAt = Instant.now();
+
     return this;
   }
 
-  private void validate(final String name, final String password, final String status, final String roleId) {
+  private void validate(
+      final String name,
+      final String password,
+      final String status,
+      final String roleId
+  ) {
     final var errors = new ArrayList<String>();
 
     if (name == null || name.isBlank()) {
       errors.add("name is required");
     }
+
     if (password == null || password.isBlank()) {
       errors.add("password is required");
     }
+
     if (status == null) {
       errors.add("status is required");
     }

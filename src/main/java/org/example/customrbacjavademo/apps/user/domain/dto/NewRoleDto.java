@@ -14,6 +14,11 @@ public record NewRoleDto(
       final String status,
       final List<String> permissionIds
   ) {
-    return new NewRoleDto(name, description, status, permissionIds);
+    return new NewRoleDto(
+        name,
+        description,
+        status,
+        permissionIds
+    );
   }
 }

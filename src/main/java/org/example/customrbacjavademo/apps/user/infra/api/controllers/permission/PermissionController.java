@@ -45,16 +45,20 @@ public class PermissionController implements PermissionAPI {
       final String sort,
       final String direction
   ) {
-    final var searchQuery = new SearchQuery(page, perPage, search, sort, direction);
+    final var searchQuery = new SearchQuery(
+        page,
+        perPage,
+        search,
+        sort,
+        direction
+    );
     return ResponseEntity.ok(listPermissionsUseCase.execute(searchQuery));
   }
 
   @Override
   public ResponseEntity<Void> create(final CreatePermissionRequest input) {
     final var dto = NewPermissionDto.from(input);
-
     createPermissionUseCase.execute(dto);
-
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 

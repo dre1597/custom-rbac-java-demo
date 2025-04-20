@@ -25,7 +25,17 @@ public class UpdateRoleUseCase {
   public Role execute(final String id, final UpdateRoleDto dto) {
     final var idAsUUID = UUIDValidator.parseOrThrow(id);
     final var roleOnDatabase = repository.findWithPermissionsById(idAsUUID).orElseThrow(() -> new NotFoundException("Role not found"));
+    final var role = RoleMapper.jpaToEntity(roleOnDatabase);
 
+    this.ensurePermissionsExist(dto);
+    this.ensureRoleIsUnique(role, dto);
+
+    role.update(dto);
+    repository.save(RoleMapper.entityToJpa(role));
+    return role;
+  }
+
+  private void ensurePermissionsExist(final UpdateRoleDto dto) {
     final var permissionIdsAsUUID = UUIDValidator.parseOrThrow(dto.permissionIds());
     final var foundPermissionsCount = permissionRepository.countByIdIn(permissionIdsAsUUID);
 
@@ -34,9 +44,9 @@ public class UpdateRoleUseCase {
           "Some permissions are invalid or missing. Provided: " + dto.permissionIds()
       );
     }
+  }
 
-    final var role = RoleMapper.jpaToEntity(roleOnDatabase);
-
+  private void ensureRoleIsUnique(final Role role, final UpdateRoleDto dto) {
     final var isChangingName = dto.name() != null && !dto.name().equals(role.getName());
 
     if (isChangingName) {
@@ -46,9 +56,5 @@ public class UpdateRoleUseCase {
         throw new AlreadyExistsException("Role already exists");
       }
     }
-
-    role.update(dto);
-    repository.save(RoleMapper.entityToJpa(role));
-    return role;
   }
 }

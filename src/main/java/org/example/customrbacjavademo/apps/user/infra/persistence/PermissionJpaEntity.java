@@ -48,7 +48,7 @@ public class PermissionJpaEntity {
   }
 
   public UUID getId() {
-    return id;
+    return this.id;
   }
 
   public void setId(final UUID id) {
@@ -56,7 +56,7 @@ public class PermissionJpaEntity {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public void setName(final String name) {
@@ -64,7 +64,7 @@ public class PermissionJpaEntity {
   }
 
   public String getScope() {
-    return scope;
+    return this.scope;
   }
 
   public void setScope(final String scope) {
@@ -72,7 +72,7 @@ public class PermissionJpaEntity {
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public void setDescription(final String description) {
@@ -80,7 +80,7 @@ public class PermissionJpaEntity {
   }
 
   public String getStatus() {
-    return status;
+    return this.status;
   }
 
   public void setStatus(final String status) {
@@ -88,7 +88,7 @@ public class PermissionJpaEntity {
   }
 
   public Instant getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public void setCreatedAt(final Instant createdAt) {
@@ -96,7 +96,7 @@ public class PermissionJpaEntity {
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 
   public void setUpdatedAt(final Instant updatedAt) {

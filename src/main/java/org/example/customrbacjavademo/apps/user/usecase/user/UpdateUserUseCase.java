@@ -25,15 +25,26 @@ public class UpdateUserUseCase {
   public User execute(final String id, final UpdateUserDto dto) {
     final var idAsUUID = UUIDValidator.parseOrThrow(id);
     final var userOnDatabase = repository.findById(idAsUUID).orElseThrow(() -> new NotFoundException("User not found"));
+    final var user = UserMapper.jpaToEntity(userOnDatabase);
 
+    this.ensureRoleExist(dto);
+    this.ensureUserIsUnique(dto, user);
+
+    user.update(dto);
+    repository.save(UserMapper.entityToJpa(user));
+    return user;
+  }
+
+  private void ensureRoleExist(final UpdateUserDto dto) {
     final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
     final var foundRole = roleRepository.existsById(roleIdAsUUID);
 
     if (!foundRole) {
       throw new NotFoundException("Role not found");
     }
+  }
 
-    final var user = UserMapper.jpaToEntity(userOnDatabase);
+  private void ensureUserIsUnique(final UpdateUserDto dto, final User user) {
     final var isChangingName = dto.name() != null && !dto.name().equals(user.getName());
 
     if (isChangingName) {
@@ -43,9 +54,5 @@ public class UpdateUserUseCase {
         throw new AlreadyExistsException("User already exists");
       }
     }
-
-    user.update(dto);
-    repository.save(UserMapper.entityToJpa(user));
-    return user;
   }
 }

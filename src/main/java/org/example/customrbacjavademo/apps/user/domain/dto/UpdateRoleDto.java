@@ -14,6 +14,11 @@ public record UpdateRoleDto(
       final String status,
       final List<String> permissionIds
   ) {
-    return new UpdateRoleDto(name, description, status, permissionIds);
+    return new UpdateRoleDto(
+        name,
+        description,
+        status,
+        permissionIds
+    );
   }
 }

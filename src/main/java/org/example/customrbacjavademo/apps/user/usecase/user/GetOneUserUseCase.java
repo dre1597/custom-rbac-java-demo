@@ -19,12 +19,9 @@ public class GetOneUserUseCase {
 
   public UserDetailsResponse execute(final String id) {
     final var idAsUUID = UUIDValidator.parseOrThrow(id);
-    final var user = repository.findWithRoleById((idAsUUID));
-
-    if (user.isEmpty()) {
-      throw new NotFoundException("User not found");
-    }
-
-    return UserMapper.jpaToDetailsResponse(user.get());
+    
+    return repository.findWithRoleById((idAsUUID))
+        .map(UserMapper::jpaToDetailsResponse)
+        .orElseThrow(() -> new NotFoundException("User not found"));
   }
 }

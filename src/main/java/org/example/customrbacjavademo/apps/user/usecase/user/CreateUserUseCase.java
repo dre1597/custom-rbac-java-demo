@@ -23,21 +23,28 @@ public class CreateUserUseCase {
   }
 
   public User execute(final NewUserDto dto) {
+    this.ensureUserIsUnique(dto);
+    this.ensureRoleExist(dto);
+
+    final var entity = User.newUser(dto);
+    repository.save(UserMapper.entityToJpa(entity));
+    return entity;
+  }
+
+  private void ensureUserIsUnique(final NewUserDto dto) {
     final var exists = repository.existsByName(dto.name());
 
     if (exists) {
       throw new AlreadyExistsException("User already exists");
     }
+  }
 
+  private void ensureRoleExist(final NewUserDto dto) {
     final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
     final var foundRole = roleJpaRepository.existsById(roleIdAsUUID);
 
     if (!foundRole) {
       throw new NotFoundException("Role not found");
     }
-
-    final var entity = User.newUser(dto);
-    repository.save(UserMapper.entityToJpa(entity));
-    return entity;
   }
 }

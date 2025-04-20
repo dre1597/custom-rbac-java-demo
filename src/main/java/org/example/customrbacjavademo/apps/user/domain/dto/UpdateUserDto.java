@@ -6,6 +6,10 @@ public record UpdateUserDto(String name, String status, String roleId) {
       final String status,
       final String roleId
   ) {
-    return new UpdateUserDto(name, status, roleId);
+    return new UpdateUserDto(
+        name,
+        status,
+        roleId
+    );
   }
 }

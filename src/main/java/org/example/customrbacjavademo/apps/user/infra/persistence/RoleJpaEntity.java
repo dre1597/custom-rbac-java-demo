@@ -52,7 +52,7 @@ public class RoleJpaEntity {
   }
 
   public UUID getId() {
-    return id;
+    return this.id;
   }
 
   public void setId(final UUID id) {
@@ -60,7 +60,7 @@ public class RoleJpaEntity {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public void setName(final String name) {
@@ -68,7 +68,7 @@ public class RoleJpaEntity {
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public void setDescription(final String description) {
@@ -76,7 +76,7 @@ public class RoleJpaEntity {
   }
 
   public String getStatus() {
-    return status;
+    return this.status;
   }
 
   public void setStatus(final String status) {
@@ -84,7 +84,7 @@ public class RoleJpaEntity {
   }
 
   public Instant getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public void setCreatedAt(final Instant createdAt) {
@@ -92,7 +92,7 @@ public class RoleJpaEntity {
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 
   public void setUpdatedAt(final Instant updatedAt) {
@@ -100,7 +100,7 @@ public class RoleJpaEntity {
   }
 
   public List<PermissionJpaEntity> getPermissions() {
-    return permissions;
+    return this.permissions;
   }
 
   public void setPermissions(final List<PermissionJpaEntity> permissions) {

@@ -45,7 +45,13 @@ public class Permission {
       final String description,
       final String status
   ) {
-    this.validate(name, scope, description, status);
+    this.validate(
+        name,
+        scope,
+        description,
+        status
+    );
+
     this.name = PermissionName.valueOf(name);
     this.scope = PermissionScope.valueOf(scope);
     this.description = description;
@@ -73,20 +79,37 @@ public class Permission {
   }
 
   public static Permission newPermission(final NewPermissionDto dto) {
-    return new Permission(dto.name(), dto.scope(), dto.description(), dto.status());
+    return new Permission(
+        dto.name(),
+        dto.scope(),
+        dto.description(),
+        dto.status()
+    );
   }
 
   public Permission update(final UpdatePermissionDto dto) {
-    this.validate(dto.name(), dto.scope(), dto.description(), dto.status());
+    this.validate(
+        dto.name(),
+        dto.scope(),
+        dto.description(),
+        dto.status()
+    );
+
     this.name = PermissionName.valueOf(dto.name());
     this.scope = PermissionScope.valueOf(dto.scope());
     this.description = dto.description();
     this.status = PermissionStatus.valueOf(dto.status());
     this.updatedAt = Instant.now();
+
     return this;
   }
 
-  private void validate(final String name, final String scope, final String description, final String status) {
+  private void validate(
+      final String name,
+      final String scope,
+      final String description,
+      final String status
+  ) {
     final var errors = new ArrayList<String>();
 
     if (name == null) {
@@ -117,30 +140,30 @@ public class Permission {
   }
 
   public UUID getId() {
-    return id;
-  }
-
-  public Instant getCreatedAt() {
-    return createdAt;
+    return this.id;
   }
 
   public PermissionName getName() {
-    return name;
+    return this.name;
   }
 
   public PermissionScope getScope() {
-    return scope;
+    return this.scope;
   }
 
   public String getDescription() {
-    return description;
+    return this.description;
   }
 
   public PermissionStatus getStatus() {
-    return status;
+    return this.status;
+  }
+
+  public Instant getCreatedAt() {
+    return this.createdAt;
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 }

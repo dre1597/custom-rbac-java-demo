@@ -60,7 +60,7 @@ public class UserJpaEntity {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public void setName(final String name) {
@@ -68,11 +68,15 @@ public class UserJpaEntity {
   }
 
   public String getPassword() {
-    return password;
+    return this.password;
+  }
+
+  public void setPassword(final String password) {
+    this.password = password;
   }
 
   public String getStatus() {
-    return status;
+    return this.status;
   }
 
   public void setStatus(final String status) {
@@ -80,7 +84,7 @@ public class UserJpaEntity {
   }
 
   public Instant getCreatedAt() {
-    return createdAt;
+    return this.createdAt;
   }
 
   public void setCreatedAt(final Instant createdAt) {
@@ -88,7 +92,7 @@ public class UserJpaEntity {
   }
 
   public Instant getUpdatedAt() {
-    return updatedAt;
+    return this.updatedAt;
   }
 
   public void setUpdatedAt(final Instant updatedAt) {
@@ -96,7 +100,7 @@ public class UserJpaEntity {
   }
 
   public RoleJpaEntity getRole() {
-    return role;
+    return this.role;
   }
 
   public void setRole(final RoleJpaEntity role) {

@@ -18,15 +18,19 @@ public class CreatePermissionUseCase {
   }
 
   public Permission execute(final NewPermissionDto dto) {
+    this.ensurePermissionIsUnique(dto);
+
+    final var entity = Permission.newPermission(dto);
+    final var savedPermission = repository.save(PermissionMapper.entityToJpa(entity));
+
+    return PermissionMapper.jpaToEntity(savedPermission);
+  }
+
+  private void ensurePermissionIsUnique(final NewPermissionDto dto) {
     final var exists = repository.existsByNameAndScope(dto.name(), dto.scope());
 
     if (exists) {
       throw new AlreadyExistsException("Permission already exists");
     }
-
-    final var entity = Permission.newPermission(dto);
-    final var savedPermission = repository.save(PermissionMapper.entityToJpa(entity));
-    
-    return PermissionMapper.jpaToEntity(savedPermission);
   }
 }
