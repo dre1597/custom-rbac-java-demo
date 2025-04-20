@@ -1,6 +1,7 @@
 package org.example.customrbacjavademo.apps.user.infra.api.controllers;
 
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
+import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,7 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleNotFoundException_shouldReturnNotFoundStatusWithApiError() {
+  void shouldHandleNotFoundException() {
     final var errorMessage = "Resource not found";
     final var exception = new NotFoundException(errorMessage);
 
@@ -29,7 +30,18 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleAlreadyExistsException_shouldReturnConflictStatusWithApiError() {
+  void shouldHandleInvalidReferenceException() {
+    final var errorMessage = "Invalid reference";
+    final var exception = new InvalidReferenceException(errorMessage);
+
+    final var response = globalExceptionHandler.handleInvalidReferenceException(exception);
+
+    assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
+    assertEquals(new ApiError(errorMessage, HttpStatus.UNPROCESSABLE_ENTITY.value()), response.getBody());
+  }
+
+  @Test
+  void shouldHandleAlreadyExistsException() {
     final var errorMessage = "Resource already exists";
     final var exception = new AlreadyExistsException(errorMessage);
 
@@ -40,7 +52,7 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
-  void handleValidationException_shouldReturnUnprocessableEntityStatusWithApiError() {
+  void shouldHandleValidationException() {
     final var errorMessage = "Validation failed";
     final var exception = new ValidationException(errorMessage);
 
