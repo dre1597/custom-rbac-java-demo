@@ -1,5 +1,7 @@
 package org.example.customrbacjavademo.apps.user.domain.dto;
 
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateUserRequest;
+
 public record NewUserDto(
     String name,
     String password,
@@ -17,6 +19,15 @@ public record NewUserDto(
         password,
         status,
         roleId
+    );
+  }
+
+  public static NewUserDto from(final CreateUserRequest request) {
+    return new NewUserDto(
+        request.name(),
+        request.password(),
+        request.status(),
+        request.roleId()
     );
   }
 }
