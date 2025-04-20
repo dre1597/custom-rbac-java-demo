@@ -1,5 +1,7 @@
 package org.example.customrbacjavademo.apps.user.domain.dto;
 
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdateRoleRequest;
+
 import java.util.List;
 
 public record UpdateRoleDto(
@@ -19,6 +21,15 @@ public record UpdateRoleDto(
         description,
         status,
         permissionIds
+    );
+  }
+
+  public static UpdateRoleDto from(final UpdateRoleRequest request) {
+    return new UpdateRoleDto(
+        request.name(),
+        request.description(),
+        request.status(),
+        request.permissionIds()
     );
   }
 }

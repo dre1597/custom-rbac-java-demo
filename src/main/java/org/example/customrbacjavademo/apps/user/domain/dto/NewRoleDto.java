@@ -1,5 +1,7 @@
 package org.example.customrbacjavademo.apps.user.domain.dto;
 
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateRoleRequest;
+
 import java.util.List;
 
 public record NewRoleDto(
@@ -19,6 +21,15 @@ public record NewRoleDto(
         description,
         status,
         permissionIds
+    );
+  }
+
+  public static NewRoleDto from(final CreateRoleRequest request) {
+    return new NewRoleDto(
+        request.name(),
+        request.description(),
+        request.status(),
+        request.permissionIds()
     );
   }
 }
