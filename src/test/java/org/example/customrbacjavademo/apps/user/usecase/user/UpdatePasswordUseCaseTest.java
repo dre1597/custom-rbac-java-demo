@@ -5,7 +5,7 @@ import org.example.customrbacjavademo.apps.user.domain.services.PasswordService;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
-import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.exceptions.UnauthorizedException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,12 +30,13 @@ class UpdatePasswordUseCaseTest {
 
   @Test
   void shouldUpdatePassword() {
+    final var oldPassword = "any_password";
     final var newPassword = "updated_password";
-    final var user = UserTestMocks.createActiveTestUser();
+    final var user = UserTestMocks.createActiveTestUser("any_name", oldPassword);
 
     when(repository.findById(user.getId())).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
 
-    useCase.execute(user.getId().toString(), newPassword);
+    useCase.execute(user.getId().toString(), oldPassword, newPassword);
 
     final var userJpaEntityCaptor = ArgumentCaptor.forClass(UserJpaEntity.class);
     verify(repository, times(1)).save(userJpaEntityCaptor.capture());
@@ -52,8 +53,8 @@ class UpdatePasswordUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(id.toString(), "any_password"));
-    assertEquals("User not found", exception.getMessage());
+    final var exception = assertThrows(UnauthorizedException.class, () -> useCase.execute(id.toString(), "any_password", "any_password"));
+    assertEquals("User not found or old password is invalid", exception.getMessage());
   }
 
   @Test
@@ -63,7 +64,7 @@ class UpdatePasswordUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
 
-    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), " "));
+    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), "any_password", " "));
     assertEquals("password is required", exception.getMessage());
   }
 
@@ -74,7 +75,22 @@ class UpdatePasswordUseCaseTest {
 
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
 
-    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), null));
+    final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), "any_password", null));
     assertEquals("password is required", exception.getMessage());
+  }
+
+  @Test
+  void shouldThrowWhenOldPasswordIsInvalid() {
+    final var oldPassword = "any_password";
+    final var user = UserTestMocks.createActiveTestUser(oldPassword, "new_password");
+
+    when(repository.findById(user.getId())).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
+
+    final var exception = assertThrows(
+        UnauthorizedException.class,
+        () -> useCase.execute(user.getId().toString(), "wrong_password", "new_password")
+    );
+
+    assertEquals("User not found or old password is invalid", exception.getMessage());
   }
 }

@@ -11,7 +11,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
-import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.exceptions.UnauthorizedException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,7 +49,7 @@ class UpdatePasswordUseCaseIntegrationTest {
     final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
 
     final var newPassword = "updated_password";
-    useCase.execute(user.getId().toString(), newPassword);
+    useCase.execute(user.getId().toString(), "any_password", newPassword);
 
     final var updatedUser = repository.findById(user.getId()).orElseThrow();
     assertNotNull(updatedUser.getPassword());
@@ -58,15 +58,39 @@ class UpdatePasswordUseCaseIntegrationTest {
   }
 
   @Test
+  void shouldThrowWhenOldPasswordIsInvalid() {
+    final var oldPassword = "any_password";
+    final var wrongPassword = "wrong_password";
+    final var permission = permissionRepository.save(
+        PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission())
+    );
+    final var role = roleRepository.save(
+        RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId())))
+    );
+    final var user = UserTestMocks.createActiveTestUser(role.getId());
+
+    user.updatePassword(oldPassword);
+
+    final var savedUser = repository.save(UserMapper.entityToJpa(user));
+
+    final var exception = assertThrows(
+        UnauthorizedException.class,
+        () -> useCase.execute(savedUser.getId().toString(), wrongPassword, "new_password")
+    );
+
+    assertEquals("User not found or old password is invalid", exception.getMessage());
+  }
+
+  @Test
   void shouldThrowWhenUserNotFound() {
     final var nonExistentId = UUID.randomUUID();
 
     final var exception = assertThrows(
-        NotFoundException.class,
-        () -> useCase.execute(nonExistentId.toString(), "new_password")
+        UnauthorizedException.class,
+        () -> useCase.execute(nonExistentId.toString(), "any_password", "new_password")
     );
 
-    assertEquals("User not found", exception.getMessage());
+    assertEquals("User not found or old password is invalid", exception.getMessage());
   }
 
   @ParameterizedTest
@@ -85,7 +109,7 @@ class UpdatePasswordUseCaseIntegrationTest {
 
     final var exception = assertThrows(
         ValidationException.class,
-        () -> useCase.execute(user.getId().toString(), invalidPassword)
+        () -> useCase.execute(user.getId().toString(), "any_password", invalidPassword)
     );
 
     assertEquals("password is required", exception.getMessage());
