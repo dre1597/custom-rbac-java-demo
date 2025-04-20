@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.apps.user.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
 import org.example.customrbacjavademo.apps.user.domain.entities.User;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateUserRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePasswordRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdateUserRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.RoleResponse;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserDetailsResponse;
@@ -40,6 +41,9 @@ class UserControllerTest {
 
   @Mock
   private UpdateUserUseCase updateUserUseCase;
+
+  @Mock
+  private UpdatePasswordUseCase updatePasswordUseCase;
 
   @Mock
   private DeleteUserUseCase deleteUserUseCase;
@@ -153,6 +157,20 @@ class UserControllerTest {
     final var response = controller.update(id, input);
 
     verify(updateUserUseCase).execute(id, dto);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void shouldUpdatePassword() {
+    final var id = UUID.randomUUID().toString();
+    final var input = new UpdatePasswordRequest(
+        "any_password",
+        "new_password"
+    );
+
+    final var response = controller.updatePassword(id, input);
+    
+    verify(updatePasswordUseCase).execute(id, input.oldPassword(), input.newPassword());
     assertEquals(HttpStatus.OK, response.getStatusCode());
   }
 

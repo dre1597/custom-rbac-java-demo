@@ -3,6 +3,7 @@ package org.example.customrbacjavademo.apps.user.infra.api.controllers.user;
 import org.example.customrbacjavademo.apps.user.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateUserRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePasswordRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdateUserRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserDetailsResponse;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserResponse;
@@ -21,6 +22,7 @@ public class UserController implements UserAPI {
   private final CreateUserUseCase createUserUseCase;
   private final GetOneUserUseCase getOneUserUseCase;
   private final UpdateUserUseCase updateUserUseCase;
+  private final UpdatePasswordUseCase updatePasswordUseCase;
   private final DeleteUserUseCase deleteUserUseCase;
 
   public UserController(
@@ -28,12 +30,14 @@ public class UserController implements UserAPI {
       final CreateUserUseCase createUserUseCase,
       final GetOneUserUseCase getOneUserUseCase,
       final UpdateUserUseCase updateUserUseCase,
+      final UpdatePasswordUseCase updatePasswordUseCase,
       final DeleteUserUseCase deleteUserUseCase
   ) {
     this.listUsersUseCase = Objects.requireNonNull(listUsersUseCase);
     this.createUserUseCase = Objects.requireNonNull(createUserUseCase);
     this.getOneUserUseCase = Objects.requireNonNull(getOneUserUseCase);
     this.updateUserUseCase = Objects.requireNonNull(updateUserUseCase);
+    this.updatePasswordUseCase = Objects.requireNonNull(updatePasswordUseCase);
     this.deleteUserUseCase = Objects.requireNonNull(deleteUserUseCase);
   }
 
@@ -72,6 +76,12 @@ public class UserController implements UserAPI {
   public ResponseEntity<Void> update(final String id, final UpdateUserRequest input) {
     final var dto = UpdateUserDto.from(input);
     updateUserUseCase.execute(id, dto);
+    return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> updatePassword(final String id, final UpdatePasswordRequest input) {
+    updatePasswordUseCase.execute(id, input.oldPassword(), input.newPassword());
     return ResponseEntity.ok().build();
   }
 

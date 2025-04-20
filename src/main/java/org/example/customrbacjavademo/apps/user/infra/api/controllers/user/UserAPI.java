@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateUserRequest;
+import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePasswordRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdateUserRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserDetailsResponse;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserResponse;
@@ -67,6 +68,21 @@ public interface UserAPI {
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<Void> update(@PathVariable String id, @RequestBody final UpdateUserRequest input);
+
+  @PatchMapping(
+      value = "/{id}/password",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  @Operation(summary = "Update a user by id")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "User updated successfully"),
+      @ApiResponse(responseCode = "404", description = "User not found error"),
+      @ApiResponse(responseCode = "422", description = "UUID validation error"),
+      @ApiResponse(responseCode = "422", description = "User validation error"),
+      @ApiResponse(responseCode = "500", description = "Internal server error")
+  })
+  ResponseEntity<Void> updatePassword(@PathVariable String id, @RequestBody final UpdatePasswordRequest input);
 
   @DeleteMapping(
       value = "/{id}",
