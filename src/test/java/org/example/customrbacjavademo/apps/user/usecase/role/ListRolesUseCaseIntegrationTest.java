@@ -44,13 +44,13 @@ class ListRolesUseCaseIntegrationTest {
     assertEquals(2, result.items().size());
 
     final var firstRoleResult = result.items().getFirst();
-    assertEquals(firstRole.getId(), firstRoleResult.id());
+    assertEquals(firstRole.getId().toString(), firstRoleResult.id());
     assertEquals(firstRole.getName(), firstRoleResult.name());
     assertEquals(firstRole.getDescription(), firstRoleResult.description());
     assertEquals(firstRole.getStatus(), firstRoleResult.status());
 
     final var secondRoleResult = result.items().get(1);
-    assertEquals(secondRole.getId(), secondRoleResult.id());
+    assertEquals(secondRole.getId().toString(), secondRoleResult.id());
     assertEquals(secondRole.getName(), secondRoleResult.name());
     assertEquals(secondRole.getDescription(), secondRoleResult.description());
     assertEquals(secondRole.getStatus(), secondRoleResult.status());
@@ -73,7 +73,7 @@ class ListRolesUseCaseIntegrationTest {
     assertEquals(1, result.items().size());
 
     final var firstRoleResult = result.items().getFirst();
-    assertEquals(otherRole.getId(), firstRoleResult.id());
+    assertEquals(otherRole.getId().toString(), firstRoleResult.id());
     assertEquals(otherRole.getName(), firstRoleResult.name());
     assertEquals(otherRole.getDescription(), firstRoleResult.description());
     assertEquals(otherRole.getStatus(), firstRoleResult.status());
@@ -108,7 +108,7 @@ class ListRolesUseCaseIntegrationTest {
     assertEquals(1, result.items().size());
 
     final var firstRoleResult = result.items().getFirst();
-    assertEquals(otherRole.getId(), firstRoleResult.id());
+    assertEquals(otherRole.getId().toString(), firstRoleResult.id());
     assertEquals(otherRole.getName(), firstRoleResult.name());
     assertEquals(otherRole.getDescription(), firstRoleResult.description());
     assertEquals(otherRole.getStatus(), firstRoleResult.status());

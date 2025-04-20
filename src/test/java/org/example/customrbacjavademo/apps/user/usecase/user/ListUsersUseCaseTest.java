@@ -94,12 +94,12 @@ class ListUsersUseCaseTest {
     final var firstUser = result.items().getFirst();
     assertEquals("any_name", firstUser.name());
     assertEquals(UserStatus.ACTIVE.name(), firstUser.status());
-    assertEquals(role.getId(), firstUser.roleId());
+    assertEquals(role.getId().toString(), firstUser.roleId());
 
     final var secondUser = result.items().get(1);
     assertEquals("other_name", secondUser.name());
     assertEquals(UserStatus.ACTIVE.name(), secondUser.status());
-    assertEquals(role.getId(), secondUser.roleId());
+    assertEquals(role.getId().toString(), secondUser.roleId());
   }
 
   @Test

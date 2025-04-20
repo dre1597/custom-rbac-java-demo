@@ -12,6 +12,7 @@ import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.Objects;
 
 @RestController
@@ -57,8 +58,9 @@ public class UserController implements UserAPI {
   @Override
   public ResponseEntity<Void> create(final CreateUserRequest input) {
     final var dto = NewUserDto.from(input);
-    createUserUseCase.execute(dto);
-    return ResponseEntity.ok().build();
+    final var user = createUserUseCase.execute(dto);
+    final var location = URI.create("/users/" + user.getId());
+    return ResponseEntity.created(location).build();
   }
 
   @Override

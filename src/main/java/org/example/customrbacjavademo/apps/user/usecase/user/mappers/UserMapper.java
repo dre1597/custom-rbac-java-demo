@@ -44,12 +44,12 @@ public final class UserMapper {
 
   public static UserResponse entityToResponse(final User entity) {
     return new UserResponse(
-        entity.getId(),
+        entity.getId().toString(),
         entity.getName(),
         entity.getStatus().toString(),
         entity.getCreatedAt(),
         entity.getUpdatedAt(),
-        entity.getRoleId()
+        entity.getRoleId().toString()
     );
   }
 
@@ -57,7 +57,7 @@ public final class UserMapper {
     final var role = RoleMapper.jpaToResponse(jpa.getRole());
 
     return new UserDetailsResponse(
-        jpa.getId(),
+        jpa.getId().toString(),
         jpa.getName(),
         jpa.getStatus(),
         jpa.getCreatedAt(),

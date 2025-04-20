@@ -12,6 +12,7 @@ import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.Objects;
 
 @RestController
@@ -58,8 +59,9 @@ public class RoleController implements RoleAPI {
   @Override
   public ResponseEntity<Void> create(final CreateRoleRequest input) {
     final var dto = NewRoleDto.from(input);
-    createRoleUseCase.execute(dto);
-    return ResponseEntity.ok().build();
+    final var role = createRoleUseCase.execute(dto);
+    final var location = URI.create("/roles/" + role.getId());
+    return ResponseEntity.created(location).build();
   }
 
   @Override

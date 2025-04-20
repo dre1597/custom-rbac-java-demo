@@ -9,10 +9,10 @@ import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.Permissi
 import org.example.customrbacjavademo.apps.user.usecase.permission.*;
 import org.example.customrbacjavademo.common.domain.helpers.Pagination;
 import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 import java.util.Objects;
 
 @RestController
@@ -58,8 +58,9 @@ public class PermissionController implements PermissionAPI {
   @Override
   public ResponseEntity<Void> create(final CreatePermissionRequest input) {
     final var dto = NewPermissionDto.from(input);
-    createPermissionUseCase.execute(dto);
-    return ResponseEntity.status(HttpStatus.CREATED).build();
+    final var permission = createPermissionUseCase.execute(dto);
+    final var location = URI.create("/permissions/" + permission.getId());
+    return ResponseEntity.created(location).build();
   }
 
   @Override

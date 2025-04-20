@@ -37,7 +37,7 @@ public final class PermissionMapper {
 
   public static PermissionResponse entityToResponse(final Permission entity) {
     return new PermissionResponse(
-        entity.getId(),
+        entity.getId().toString(),
         entity.getName().name(),
         entity.getScope().name(),
         entity.getDescription(),
@@ -49,7 +49,7 @@ public final class PermissionMapper {
 
   public static PermissionResponse jpaToResponse(final PermissionJpaEntity jpa) {
     return new PermissionResponse(
-        jpa.getId(),
+        jpa.getId().toString(),
         jpa.getName(),
         jpa.getScope(),
         jpa.getDescription(),

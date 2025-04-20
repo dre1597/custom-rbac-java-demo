@@ -50,7 +50,7 @@ public final class RoleMapper {
 
   public static RoleResponse entityToResponse(final Role entity) {
     return new RoleResponse(
-        entity.getId(),
+        entity.getId().toString(),
         entity.getName(),
         entity.getDescription(),
         entity.getStatus().toString(),
@@ -65,7 +65,7 @@ public final class RoleMapper {
         .toList();
 
     return new RoleDetailsResponse(
-        jpa.getId(),
+        jpa.getId().toString(),
         jpa.getName(),
         jpa.getDescription(),
         jpa.getStatus(),
@@ -77,7 +77,7 @@ public final class RoleMapper {
 
   public static RoleResponse jpaToResponse(final RoleJpaEntity jpa) {
     return new RoleResponse(
-        jpa.getId(),
+        jpa.getId().toString(),
         jpa.getName(),
         jpa.getDescription(),
         jpa.getStatus(),

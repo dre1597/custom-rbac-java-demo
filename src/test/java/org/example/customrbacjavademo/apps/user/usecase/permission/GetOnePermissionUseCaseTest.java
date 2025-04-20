@@ -37,7 +37,7 @@ class GetOnePermissionUseCaseTest {
 
     verify(repository, times(1)).findById(id);
     assertNotNull(result);
-    assertEquals(permission.getId(), result.id());
+    assertEquals(permission.getId().toString(), result.id());
     assertEquals(permission.getName().name(), result.name());
     assertEquals(permission.getScope().name(), result.scope());
     assertEquals(permission.getDescription(), result.description());

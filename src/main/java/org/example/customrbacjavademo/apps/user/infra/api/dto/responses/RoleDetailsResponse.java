@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 public record RoleDetailsResponse(
-    @JsonProperty("id") UUID id,
+    @JsonProperty("id") String id,
     @JsonProperty("name") String name,
     @JsonProperty("description") String description,
     @JsonProperty("status") String status,

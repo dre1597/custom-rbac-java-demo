@@ -36,7 +36,7 @@ class GetOneRoleUseCaseTest {
     final var permissions = role.getPermissions().stream().map(PermissionMapper::jpaToResponse).toList();
 
     assertNotNull(result);
-    assertEquals(role.getId(), result.id());
+    assertEquals(role.getId().toString(), result.id());
     assertEquals(role.getName(), result.name());
     assertEquals(role.getDescription(), result.description());
     assertEquals(role.getStatus(), result.status());

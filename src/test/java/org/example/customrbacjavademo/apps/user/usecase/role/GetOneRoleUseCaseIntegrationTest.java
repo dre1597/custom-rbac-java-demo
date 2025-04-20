@@ -36,7 +36,7 @@ class GetOneRoleUseCaseIntegrationTest {
 
     final var result = useCase.execute(role.getId().toString());
 
-    assertEquals(role.getId(), result.id());
+    assertEquals(role.getId().toString(), result.id());
     assertEquals(role.getName(), result.name());
     assertEquals(role.getDescription(), result.description());
     assertEquals(role.getStatus(), result.status());

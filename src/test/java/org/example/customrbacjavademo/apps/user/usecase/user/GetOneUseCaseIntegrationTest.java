@@ -43,9 +43,9 @@ class GetOneUseCaseIntegrationTest {
     final var result = useCase.execute(user.getId().toString());
 
     assertNotNull(result);
-    assertEquals(user.getId(), result.id());
+    assertEquals(user.getId().toString(), result.id());
     assertEquals(user.getName(), result.name());
-    assertEquals(user.getRole().getId(), result.role().id());
+    assertEquals(user.getRole().getId().toString(), result.role().id());
     assertEquals(user.getRole().getName(), result.role().name());
     assertEquals(user.getRole().getDescription(), result.role().description());
     assertEquals(user.getRole().getStatus(), result.role().status());

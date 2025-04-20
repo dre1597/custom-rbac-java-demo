@@ -50,12 +50,12 @@ class ListUsersUseCaseIntegrationTest {
     assertEquals(2, result.items().size());
 
     final var firstUserResult = result.items().getFirst();
-    assertEquals(firstUser.getId(), firstUserResult.id());
+    assertEquals(firstUser.getId().toString(), firstUserResult.id());
     assertEquals(firstUser.getName(), firstUserResult.name());
     assertEquals(firstUser.getStatus(), firstUserResult.status());
 
     final var secondUserResult = result.items().get(1);
-    assertEquals(secondUser.getId(), secondUserResult.id());
+    assertEquals(secondUser.getId().toString(), secondUserResult.id());
     assertEquals(secondUser.getName(), secondUserResult.name());
     assertEquals(secondUser.getStatus(), secondUserResult.status());
   }
@@ -77,7 +77,7 @@ class ListUsersUseCaseIntegrationTest {
     assertEquals(1, result.items().size());
 
     final var firstUserResult = result.items().getFirst();
-    assertEquals(secondUser.getId(), firstUserResult.id());
+    assertEquals(secondUser.getId().toString(), firstUserResult.id());
     assertEquals(secondUser.getName(), firstUserResult.name());
     assertEquals(secondUser.getStatus(), firstUserResult.status());
   }

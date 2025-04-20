@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.apps.user.infra.api.controllers.permissio
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
+import org.example.customrbacjavademo.apps.user.domain.entities.Permission;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +47,7 @@ class PermissionControllerTest {
 
   @Test
   void shouldListPermissions() {
-    final var permissionId = UUID.randomUUID();
+    final var permissionId = UUID.randomUUID().toString();
     final var expected = new PermissionResponse(
         permissionId,
         "READ",
@@ -79,7 +81,7 @@ class PermissionControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(pagination, response.getBody());
   }
-  
+
   @Test
   void shouldCreatePermission() {
     final var input = new CreatePermissionRequest(
@@ -88,19 +90,22 @@ class PermissionControllerTest {
         "ACTIVE",
         "any_description"
     );
+    final var dto = NewPermissionDto.from(input);
+    final var permission = Permission.newPermission(dto);
+    final var permissionId = permission.getId();
+    when(createPermissionUseCase.execute(dto)).thenReturn(permission);
 
-    var dto = NewPermissionDto.from(input);
-
-    var response = controller.create(input);
+    final var response = controller.create(input);
 
     verify(createPermissionUseCase).execute(dto);
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    assertEquals(URI.create("/permissions/" + permissionId), response.getHeaders().getLocation());
   }
 
   @Test
   void shouldReturnPermissionById() {
-    var id = UUID.randomUUID();
-    var expected = new PermissionResponse(
+    final var id = UUID.randomUUID().toString();
+    final var expected = new PermissionResponse(
         id,
         "READ",
         "USER",
@@ -110,28 +115,26 @@ class PermissionControllerTest {
         Instant.now()
     );
 
-    when(getOnePermissionUseCase.execute(id.toString())).thenReturn(expected);
+    when(getOnePermissionUseCase.execute(id)).thenReturn(expected);
 
-    var response = controller.getById(id.toString());
+    final var response = controller.getById(id);
 
-    verify(getOnePermissionUseCase).execute(id.toString());
+    verify(getOnePermissionUseCase).execute(id);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(expected, response.getBody());
   }
 
   @Test
   void shouldUpdatePermission() {
-    var id = UUID.randomUUID().toString();
-    var input = new UpdatePermissionRequest(
+    final var id = UUID.randomUUID().toString();
+    final var input = new UpdatePermissionRequest(
         "CREATE",
         "USER",
         "INACTIVE",
         "updated_description"
     );
-
-    var dto = UpdatePermissionDto.from(input);
-
-    var response = controller.update(id, input);
+    final var dto = UpdatePermissionDto.from(input);
+    final var response = controller.update(id, input);
 
     verify(updatePermissionUseCase).execute(id, dto);
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -139,9 +142,8 @@ class PermissionControllerTest {
 
   @Test
   void shouldDeletePermission() {
-    var id = UUID.randomUUID().toString();
-
-    var response = controller.delete(id);
+    final var id = UUID.randomUUID().toString();
+    final var response = controller.delete(id);
 
     verify(deletePermissionUseCase).execute(id);
     assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
