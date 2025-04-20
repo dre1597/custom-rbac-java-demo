@@ -11,6 +11,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
+import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
@@ -86,7 +87,7 @@ class UpdateRoleUseCaseIntegrationTest {
         RoleStatus.ACTIVE.name(),
         List.of(UUID.randomUUID().toString())
     );
-    final var exception = assertThrows(NotFoundException.class, () -> useCase.execute(role.getId().toString(), dto));
+    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(role.getId().toString(), dto));
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
   }
 

@@ -1,6 +1,7 @@
 package org.example.customrbacjavademo.apps.user.infra.api.controllers;
 
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
+import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity
         .status(HttpStatus.NOT_FOUND)
         .body(ApiError.from(exception.getMessage(), HttpStatus.NOT_FOUND.value()));
+  }
+
+  @ExceptionHandler(value = InvalidReferenceException.class)
+  public ResponseEntity<ApiError> handleInvalidReferenceException(final InvalidReferenceException exception) {
+    return ResponseEntity
+        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        .body(ApiError.from(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.value()));
   }
 
   @ExceptionHandler(value = AlreadyExistsException.class)

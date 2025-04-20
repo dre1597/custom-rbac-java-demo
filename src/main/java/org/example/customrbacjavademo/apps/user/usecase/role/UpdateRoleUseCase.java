@@ -6,6 +6,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
+import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class UpdateRoleUseCase {
     final var foundPermissionsCount = permissionRepository.countByIdIn(permissionIdsAsUUID);
 
     if (foundPermissionsCount != dto.permissionIds().size()) {
-      throw new NotFoundException(
+      throw new InvalidReferenceException(
           "Some permissions are invalid or missing. Provided: " + dto.permissionIds()
       );
     }
