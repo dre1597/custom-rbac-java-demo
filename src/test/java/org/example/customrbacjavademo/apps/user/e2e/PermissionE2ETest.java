@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -463,5 +464,304 @@ class PermissionE2ETest {
             .content(json))
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("description is required"));
+  }
+
+  @Test
+  void shouldGetPermissionById() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    mvc.perform(get("/permissions/{id}", permission.getId()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(permission.getId().toString()))
+        .andExpect(jsonPath("$.name").value(permission.getName()))
+        .andExpect(jsonPath("$.scope").value(permission.getScope()))
+        .andExpect(jsonPath("$.status").value(permission.getStatus()))
+        .andExpect(jsonPath("$.description").value(permission.getDescription()));
+  }
+
+  @Test
+  void shouldNotGetPermissionByIdWithNotFoundId() throws Exception {
+    final var id = UUID.randomUUID().toString();
+    mvc.perform(get("/permissions/{id}", id))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("Permission not found"));
+  }
+
+  @Test
+  void shouldNotGetPermissionByIdWithInvalidId() throws Exception {
+    final var id = "invalid_id";
+    mvc.perform(get("/permissions/{id}", id))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));
+  }
+
+  @Test
+  void shouldUpdatePermission() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithTheSameNameAndScopeTogether() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var permissionToUpdate = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission(PermissionName.UPDATE.name())));
+
+
+    final var json = """
+        {
+          "name": "%s",
+          "scope": "%s",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """.formatted(
+        permission.getName(),
+        permission.getScope()
+    );
+
+
+    mvc.perform(put("/permissions/{id}", permissionToUpdate.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("Permission already exists"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithoutName() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name is required"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithNullName() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": null,
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name is required"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithEmptyName() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithBlankName() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "  ",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithInvalidName() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "invalid_name",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithoutScope() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("scope is required"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithNullScope() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": null,
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("scope is required"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithEmptyScope() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithBlankScope() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "  ",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithInvalidScope() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "invalid_scope",
+          "status": "ACTIVE",
+          "description": "some description"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+  }
+
+  @Test
+  void shouldDeletePermission() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    mvc.perform(delete("/permissions/{id}", permission.getId())
+            .contentType("application/json"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldDoNothingWhenDeletePermissionWithNotFoundId() throws Exception {
+    final var id = UUID.randomUUID().toString();
+    mvc.perform(delete("/permissions/{id}", id)
+            .contentType("application/json"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldNotDeletePermissionWhenIdIsNotAValidUUID() throws Exception {
+    final var id = "invalid_id";
+    mvc.perform(delete("/permissions/{id}", id)
+            .contentType("application/json"))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));
   }
 }

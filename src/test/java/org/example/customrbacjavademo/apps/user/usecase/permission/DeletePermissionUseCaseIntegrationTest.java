@@ -31,7 +31,7 @@ class DeletePermissionUseCaseIntegrationTest {
   }
 
   @Test
-  void shouldDoNothingWhenMangaDoesNotExist() {
+  void shouldDoNothingWhenPermissionDoesNotExist() {
     final var id = UUID.randomUUID();
 
     assertDoesNotThrow(() -> useCase.execute(id.toString()));
