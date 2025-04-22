@@ -6,11 +6,14 @@ import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -99,10 +102,21 @@ class PermissionE2ETest {
         }
         """;
 
-    mvc.perform(post("/permissions")
+    final var result = mvc.perform(post("/permissions")
             .contentType("application/json")
             .content(json))
         .andExpect(status().isCreated());
+
+    final var response = result.andReturn().getResponse();
+    assertThat(response.getHeader("Location")).isNotNull();
+
+    final var permissions = repository.findAll();
+    final var firstPermission = permissions.getFirst();
+    assertThat(permissions).hasSize(1);
+    assertThat(firstPermission.getName()).isEqualTo("READ");
+    assertThat(firstPermission.getScope()).isEqualTo("USER");
+    assertThat(firstPermission.getStatus()).isEqualTo("ACTIVE");
+    assertThat(firstPermission.getDescription()).isEqualTo("some description");
   }
 
   @Test
@@ -163,52 +177,19 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("name is required"));
   }
 
-  @Test
-  void shouldNotCreatePermissionWithEmptyName() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '", "INVALID" })
+  void shouldNotCreatePermissionWithInvalidName(final String name) throws Exception {
+    final var actualName = "null".equals(name) ? null : name;
+
     final var json = """
         {
-          "name": "",
+          "name": "%s",
           "scope": "USER",
           "status": "ACTIVE",
           "description": "some description"
         }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithBlankName() throws Exception {
-    final var json = """
-        {
-          "name": "  ",
-          "scope": "USER",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithInvalidName() throws Exception {
-    final var json = """
-        {
-          "name": "INVALID",
-          "scope": "USER",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
+        """.formatted(actualName);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -252,52 +233,18 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("scope is required"));
   }
 
-  @Test
-  void shouldNotCreatePermissionWithEmptyScope() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '", "INVALID" })
+  void shouldNotCreatePermissionWithInvalidScope(final String scope) throws Exception {
+    final var actualScope = "null".equals(scope) ? null : scope;
     final var json = """
         {
           "name": "READ",
-          "scope": "",
+          "scope": "%s",
           "status": "ACTIVE",
           "description": "some description"
         }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithBlankScope() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "  ",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithInvalidScope() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "INVALID",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
+        """.formatted(actualScope);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -323,70 +270,18 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("status is required"));
   }
 
-  @Test
-  void shouldNotCreatePermissionWithNullStatus() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '", "INVALID" })
+  void shouldNotCreatePermissionWithInvalidStatus(final String status) throws Exception {
+    final var actualStatus = "null".equals(status) ? null : status;
     final var json = """
         {
           "name": "READ",
           "scope": "USER",
-          "status": null,
+          "status": "%s",
           "description": "some description"
         }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status is required"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithEmptyStatus() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "USER",
-          "status": "",
-          "description": "some description"
-        }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithBlankStatus() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "USER",
-          "status": "  ",
-          "description": "some description"
-        }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithInvalidStatus() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "USER",
-          "status": "INVALID",
-          "description": "some description"
-        }
-        """;
+        """.formatted(actualStatus);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -430,34 +325,18 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("description is required"));
   }
 
-  @Test
-  void shouldNotCreatePermissionWithEmptyDescription() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '" })
+  void shouldNotCreatePermissionWithInvalidDescription(final String description) throws Exception {
+    final var actualDescription = "null".equals(description) ? null : description;
     final var json = """
         {
           "name": "READ",
           "scope": "USER",
           "status": "ACTIVE",
-          "description": ""
+          "description": "%s"
         }
-        """;
-
-    mvc.perform(post("/permissions")
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("description is required"));
-  }
-
-  @Test
-  void shouldNotCreatePermissionWithBlankDescription() throws Exception {
-    final var json = """
-        {
-          "name": "READ",
-          "scope": "USER",
-          "status": "ACTIVE",
-          "description": "  "
-        }
-        """;
+        """.formatted(actualDescription);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -561,7 +440,7 @@ class PermissionE2ETest {
   }
 
   @Test
-  void shouldNotUpdatePermissionWithNullName() throws Exception {
+  void shouldNotUpdatePermissionWitNullName() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
     final var json = """
@@ -580,58 +459,21 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("name is required"));
   }
 
-  @Test
-  void shouldNotUpdatePermissionWithEmptyName() throws Exception {
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '" })
+  void shouldNotUpdatePermissionWithInvalidName(final String name) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var actualName = "null".equals(name) ? null : name;
 
     final var json = """
         {
-          "name": "",
+          "name": "%s",
           "scope": "PERMISSION",
           "status": "ACTIVE",
           "description": "some description"
         }
-        """;
-
-    mvc.perform(put("/permissions/{id}", permission.getId())
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
-  }
-
-  @Test
-  void shouldNotUpdatePermissionWithBlankName() throws Exception {
-    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
-    final var json = """
-        {
-          "name": "  ",
-          "scope": "PERMISSION",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
-
-    mvc.perform(put("/permissions/{id}", permission.getId())
-            .contentType("application/json")
-            .content(json))
-        .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
-  }
-
-  @Test
-  void shouldNotUpdatePermissionWithInvalidName() throws Exception {
-    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
-    final var json = """
-        {
-          "name": "invalid_name",
-          "scope": "PERMISSION",
-          "status": "ACTIVE",
-          "description": "some description"
-        }
-        """;
+        """.formatted(actualName);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -679,18 +521,20 @@ class PermissionE2ETest {
         .andExpect(jsonPath("$.message").value("scope is required"));
   }
 
-  @Test
-  void shouldNotUpdatePermissionWithEmptyScope() throws Exception {
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '" })
+  void shouldNotUpdatePermissionWithNullScope(final String scope) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var actualScope = "null".equals(scope) ? null : scope;
 
     final var json = """
         {
           "name": "CREATE",
-          "scope": "",
+          "scope": "%s",
           "status": "ACTIVE",
           "description": "some description"
         }
-        """;
+        """.formatted(actualScope);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -700,14 +544,13 @@ class PermissionE2ETest {
   }
 
   @Test
-  void shouldNotUpdatePermissionWithBlankScope() throws Exception {
+  void shouldNotUpdatePermissionWithoutStatus() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
     final var json = """
         {
           "name": "CREATE",
-          "scope": "  ",
-          "status": "ACTIVE",
+          "scope": "PERMISSION",
           "description": "some description"
         }
         """;
@@ -716,18 +559,18 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+        .andExpect(jsonPath("$.message").value("status is required"));
   }
 
   @Test
-  void shouldNotUpdatePermissionWithInvalidScope() throws Exception {
+  void shouldNotUpdatePermissionWithNullStatus() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
     final var json = """
         {
           "name": "CREATE",
-          "scope": "invalid_scope",
-          "status": "ACTIVE",
+          "scope": "PERMISSION",
+          "status": null,
           "description": "some description"
         }
         """;
@@ -736,7 +579,90 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+        .andExpect(jsonPath("$.message").value("status is required"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '" })
+  void shouldNotUpdatePermissionWithInvalidStatus(final String status) throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var actualStatus = "null".equals(status) ? null : status;
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "PERMISSION",
+          "status": "%s",
+          "description": "some description"
+        }
+        """.formatted(actualStatus);
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithoutDescription() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "PERMISSION",
+          "status": "ACTIVE"
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("description is required"));
+  }
+
+  @Test
+  void shouldNotUpdatePermissionWithNullDescription() throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": null
+        }
+        """;
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("description is required"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '" })
+  void shouldNotUpdatePermissionWithInvalidDescription(final String description) throws Exception {
+    final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var actualDescription = "null".equals(description) ? null : description;
+
+    final var json = """
+        {
+          "name": "CREATE",
+          "scope": "PERMISSION",
+          "status": "ACTIVE",
+          "description": "%s"
+        }
+        """.formatted(actualDescription);
+
+    mvc.perform(put("/permissions/{id}", permission.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("description is required"));
   }
 
   @Test
