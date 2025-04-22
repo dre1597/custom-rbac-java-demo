@@ -98,7 +98,7 @@ class PermissionE2ETest {
           "name": "READ",
           "scope": "USER",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -116,19 +116,18 @@ class PermissionE2ETest {
     assertThat(firstPermission.getName()).isEqualTo("READ");
     assertThat(firstPermission.getScope()).isEqualTo("USER");
     assertThat(firstPermission.getStatus()).isEqualTo("ACTIVE");
-    assertThat(firstPermission.getDescription()).isEqualTo("some description");
+    assertThat(firstPermission.getDescription()).isEqualTo("any_description");
   }
 
   @Test
   void shouldNotCreatePermissionWithTheSameNameAndScopeTogether() throws Exception {
     final var firstPermission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "%s",
           "scope": "%s",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """.formatted(
         firstPermission.getName(),
@@ -148,7 +147,7 @@ class PermissionE2ETest {
         {
           "scope": "USER",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -166,7 +165,7 @@ class PermissionE2ETest {
           "name": null,
           "scope": "USER",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -180,16 +179,14 @@ class PermissionE2ETest {
   @ParameterizedTest
   @CsvSource(value = {"''", "'  '", "INVALID" })
   void shouldNotCreatePermissionWithInvalidName(final String name) throws Exception {
-    final var actualName = "null".equals(name) ? null : name;
-
     final var json = """
         {
           "name": "%s",
           "scope": "USER",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualName);
+        """.formatted(name);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -204,7 +201,7 @@ class PermissionE2ETest {
         {
           "name": "READ",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -222,7 +219,7 @@ class PermissionE2ETest {
           "name": "READ",
           "scope": null,
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -236,15 +233,14 @@ class PermissionE2ETest {
   @ParameterizedTest
   @CsvSource(value = {"''", "'  '", "INVALID" })
   void shouldNotCreatePermissionWithInvalidScope(final String scope) throws Exception {
-    final var actualScope = "null".equals(scope) ? null : scope;
     final var json = """
         {
           "name": "READ",
           "scope": "%s",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualScope);
+        """.formatted(scope);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -259,7 +255,7 @@ class PermissionE2ETest {
         {
           "name": "READ",
           "scope": "USER",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -273,15 +269,14 @@ class PermissionE2ETest {
   @ParameterizedTest
   @CsvSource(value = {"''", "'  '", "INVALID" })
   void shouldNotCreatePermissionWithInvalidStatus(final String status) throws Exception {
-    final var actualStatus = "null".equals(status) ? null : status;
     final var json = """
         {
           "name": "READ",
           "scope": "USER",
           "status": "%s",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualStatus);
+        """.formatted(status);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -328,7 +323,6 @@ class PermissionE2ETest {
   @ParameterizedTest
   @CsvSource(value = {"''", "'  '" })
   void shouldNotCreatePermissionWithInvalidDescription(final String description) throws Exception {
-    final var actualDescription = "null".equals(description) ? null : description;
     final var json = """
         {
           "name": "READ",
@@ -336,7 +330,7 @@ class PermissionE2ETest {
           "status": "ACTIVE",
           "description": "%s"
         }
-        """.formatted(actualDescription);
+        """.formatted(description);
 
     mvc.perform(post("/permissions")
             .contentType("application/json")
@@ -348,7 +342,6 @@ class PermissionE2ETest {
   @Test
   void shouldGetPermissionById() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     mvc.perform(get("/permissions/{id}", permission.getId()))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(permission.getId().toString()))
@@ -377,13 +370,12 @@ class PermissionE2ETest {
   @Test
   void shouldUpdatePermission() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
           "scope": "PERMISSION",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "updated_description"
         }
         """;
 
@@ -392,6 +384,14 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isOk());
+
+    final var permissions = repository.findAll();
+    final var firstPermission = permissions.getFirst();
+    assertThat(permissions).hasSize(1);
+    assertThat(firstPermission.getName()).isEqualTo("CREATE");
+    assertThat(firstPermission.getScope()).isEqualTo("PERMISSION");
+    assertThat(firstPermission.getStatus()).isEqualTo("ACTIVE");
+    assertThat(firstPermission.getDescription()).isEqualTo("updated_description");
   }
 
   @Test
@@ -399,13 +399,12 @@ class PermissionE2ETest {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var permissionToUpdate = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission(PermissionName.UPDATE.name())));
 
-
     final var json = """
         {
           "name": "%s",
           "scope": "%s",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """.formatted(
         permission.getName(),
@@ -423,12 +422,11 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithoutName() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "scope": "PERMISSION",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -442,13 +440,12 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWitNullName() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": null,
           "scope": "PERMISSION",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -464,16 +461,14 @@ class PermissionE2ETest {
   @CsvSource(value = {"''", "'  '" })
   void shouldNotUpdatePermissionWithInvalidName(final String name) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    final var actualName = "null".equals(name) ? null : name;
-
     final var json = """
         {
           "name": "%s",
           "scope": "PERMISSION",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualName);
+        """.formatted(name);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -485,12 +480,11 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithoutScope() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -504,13 +498,12 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithNullScope() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
           "scope": null,
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -525,16 +518,14 @@ class PermissionE2ETest {
   @CsvSource(value = {"''", "'  '" })
   void shouldNotUpdatePermissionWithNullScope(final String scope) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    final var actualScope = "null".equals(scope) ? null : scope;
-
     final var json = """
         {
           "name": "CREATE",
           "scope": "%s",
           "status": "ACTIVE",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualScope);
+        """.formatted(scope);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -546,12 +537,11 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithoutStatus() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
           "scope": "PERMISSION",
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -565,13 +555,12 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithNullStatus() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
           "scope": "PERMISSION",
           "status": null,
-          "description": "some description"
+          "description": "any_description"
         }
         """;
 
@@ -586,16 +575,14 @@ class PermissionE2ETest {
   @CsvSource(value = {"''", "'  '" })
   void shouldNotUpdatePermissionWithInvalidStatus(final String status) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    final var actualStatus = "null".equals(status) ? null : status;
-
     final var json = """
         {
           "name": "CREATE",
           "scope": "PERMISSION",
           "status": "%s",
-          "description": "some description"
+          "description": "any_description"
         }
-        """.formatted(actualStatus);
+        """.formatted(status);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -607,7 +594,6 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithoutDescription() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
@@ -626,7 +612,6 @@ class PermissionE2ETest {
   @Test
   void shouldNotUpdatePermissionWithNullDescription() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     final var json = """
         {
           "name": "CREATE",
@@ -647,8 +632,6 @@ class PermissionE2ETest {
   @CsvSource(value = {"''", "'  '" })
   void shouldNotUpdatePermissionWithInvalidDescription(final String description) throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    final var actualDescription = "null".equals(description) ? null : description;
-
     final var json = """
         {
           "name": "CREATE",
@@ -656,7 +639,7 @@ class PermissionE2ETest {
           "status": "ACTIVE",
           "description": "%s"
         }
-        """.formatted(actualDescription);
+        """.formatted(description);
 
     mvc.perform(put("/permissions/{id}", permission.getId())
             .contentType("application/json")
@@ -668,7 +651,6 @@ class PermissionE2ETest {
   @Test
   void shouldDeletePermission() throws Exception {
     final var permission = repository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-
     mvc.perform(delete("/permissions/{id}", permission.getId())
             .contentType("application/json"))
         .andExpect(status().isNoContent());

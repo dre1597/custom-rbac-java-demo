@@ -41,6 +41,10 @@ public class CreateRoleUseCase {
   }
 
   private void ensurePermissionsExists(final NewRoleDto dto) {
+    if (dto.permissionIds() == null || dto.permissionIds().isEmpty()) {
+      throw new InvalidReferenceException("At least one permission must be provided");
+    }
+
     final var permissionIdsAsUUID = UUIDValidator.parseOrThrow(dto.permissionIds());
     final var foundPermissions = permissionJpaRepository.countByIdIn(permissionIdsAsUUID);
 
