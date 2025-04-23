@@ -5,6 +5,7 @@ import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
 import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 import org.example.customrbacjavademo.apps.user.domain.services.PasswordService;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -120,6 +121,8 @@ public class User {
 
     if (status == null) {
       errors.add("status is required");
+    } else if (EnumValidator.isInvalidEnum(status, UserStatus.class)) {
+      errors.add("status must be one of " + EnumValidator.enumValuesAsString(UserStatus.class));
     }
 
     if (roleId == null) {

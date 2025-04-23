@@ -91,7 +91,6 @@ class RoleE2ETest {
         )))
         .andExpect(jsonPath("$.items[0].createdAt").exists())
         .andExpect(jsonPath("$.items[0].updatedAt").exists());
-
   }
 
   @Test
@@ -195,7 +194,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotCreateRoleWithInvalidName(final String name) throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
@@ -255,7 +254,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotCreateRoleWithInvalidDescription(final String description) throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
@@ -315,7 +314,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotCreateRoleWithInvalidStatus(final String status) throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
 
@@ -506,7 +505,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotUpdateRoleWithInvalidName(final String name) throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var role = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
@@ -566,7 +565,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotUpdateRoleWithInvalidDescription(final String description) throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var role = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
@@ -626,7 +625,7 @@ class RoleE2ETest {
   }
 
   @ParameterizedTest
-  @CsvSource(value = {"''", "'  '" })
+  @CsvSource(value = {"''", "'  '"})
   void shouldNotUpdateRoleWithInvalidStatus() throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var role = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));

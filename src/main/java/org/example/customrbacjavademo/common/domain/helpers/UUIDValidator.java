@@ -12,6 +12,9 @@ public final class UUIDValidator {
 
   public static UUID parseOrThrow(final String id) {
     try {
+      if (id == null) {
+        return null;
+      }
       return UUID.fromString(id);
     } catch (IllegalArgumentException ex) {
       throw new ValidationException("Invalid UUID: " + id);
