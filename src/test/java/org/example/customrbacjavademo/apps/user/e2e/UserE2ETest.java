@@ -21,8 +21,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -421,6 +420,267 @@ class UserE2ETest {
   void shouldNotGetUserByIdWithInvalidId() throws Exception {
     final var id = "invalid_id";
     mvc.perform(get("/users/{id}", id))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));
+  }
+
+  @Test
+  void shouldUpdateUser() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var newRole = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole("new_role", List.of(permission.getId()))));
+
+    final var json = """
+        {
+          "name": "updated_name",
+          "status": "INACTIVE",
+          "roleId": "%s"
+        }
+        """.formatted(newRole.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void shouldNotUpdateUserToADuplicateName() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+    final var userToUpdate = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser("other_name", role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getName(), userToUpdate.getStatus(), role.getId());
+
+    mvc.perform(put("/users/{id}", userToUpdate.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isConflict())
+        .andExpect(jsonPath("$.message").value("User already exists"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithoutName() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getStatus(), role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name is required"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithNullName() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": null,
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getStatus(), role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name is required"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '"})
+  void shouldNotUpdateUserWithInvalidName(final String name) throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(name, user.getStatus(), role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("name is required"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithoutStatus() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getName(), role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("status is required"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithNullStatus() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": null,
+          "roleId": "%s"
+        }
+        """.formatted(user.getName(), role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("status is required"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '"})
+  void shouldNotUpdateUserWithInvalidStatus(final String status) throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getName(), status, role.getId());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithoutRole() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s"
+        }
+        """.formatted(user.getName(), user.getStatus());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("roleId is required"));
+  }
+
+  @Test
+  void shouldNotUpdateUserWithNullRole() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s",
+          "roleId": null
+        }
+        """.formatted(user.getName(), user.getStatus());
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("roleId is required"));
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"''", "'  '"})
+  void shouldNotUpdateUserWithInvalidRole(final String roleId) throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    final var json = """
+        {
+          "name": "%s",
+          "status": "%s",
+          "roleId": "%s"
+        }
+        """.formatted(user.getName(), user.getStatus(), roleId);
+
+    mvc.perform(put("/users/{id}", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("roleId is required"));
+  }
+
+  @Test
+  void shouldDeleteUser() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+
+    mvc.perform(delete("/users/{id}", user.getId())
+            .contentType("application/json"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldDoNothingWhenDeleteUserWithNotFoundId() throws Exception {
+    final var id = UUID.randomUUID().toString();
+    mvc.perform(delete("/users/{id}", id)
+            .contentType("application/json"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  void shouldNotDeleteUserWithInvalidId() throws Exception {
+    final var id = "invalid_id";
+    mvc.perform(delete("/users/{id}", id)
+            .contentType("application/json"))
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));
   }

@@ -7,6 +7,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaReposit
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
+import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
 import org.example.customrbacjavademo.common.domain.helpers.UUIDValidator;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,10 @@ public class UpdateUserUseCase {
   }
 
   private void ensureRoleExist(final UpdateUserDto dto) {
+    if (dto.roleId() == null || dto.roleId().isBlank()) {
+      throw new ValidationException("roleId is required");
+    }
+
     final var roleIdAsUUID = UUIDValidator.parseOrThrow(dto.roleId());
     final var foundRole = roleRepository.existsById(roleIdAsUUID);
 
