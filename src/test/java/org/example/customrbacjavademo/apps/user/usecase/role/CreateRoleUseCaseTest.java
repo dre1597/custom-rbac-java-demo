@@ -82,4 +82,15 @@ class CreateRoleUseCaseTest {
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
     verify(repository, never()).save(any());
   }
+
+  @Test
+  void shouldThrowIfPermissionListIsEmpty() {
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE.name(), List.of());
+    when(repository.existsByName(dto.name())).thenReturn(false);
+
+    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(dto));
+
+    assertEquals("At least one permission must be provided", exception.getMessage());
+    verify(repository, never()).save(any());
+  }
 }

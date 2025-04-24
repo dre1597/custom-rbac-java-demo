@@ -92,6 +92,15 @@ class CreateRoleUseCaseIntegrationTest {
     assertEquals("Some permissions are invalid or missing. Provided: " + dto.permissionIds(), exception.getMessage());
   }
 
+  @Test
+  void shouldThrowIfPermissionListIsEmpty() {
+    final var dto = new NewRoleDto("any_name", "any_description", RoleStatus.ACTIVE.name(), List.of());
+
+    final var exception = assertThrows(InvalidReferenceException.class, () -> useCase.execute(dto));
+
+    assertEquals("At least one permission must be provided", exception.getMessage());
+  }
+
   @ParameterizedTest
   @CsvSource({
       "null, any_description, ACTIVE, name is required",

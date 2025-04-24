@@ -19,10 +19,6 @@ public final class UUIDValidator {
   }
 
   public static List<UUID> parseOrThrow(final List<String> ids) {
-    if (ids == null) {
-      return List.of();
-    }
-
     return ids.stream().map(UUIDValidator::parseOrThrow).toList();
   }
 }
