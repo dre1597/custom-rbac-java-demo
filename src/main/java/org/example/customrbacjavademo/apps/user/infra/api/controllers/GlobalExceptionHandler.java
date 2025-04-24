@@ -1,9 +1,6 @@
 package org.example.customrbacjavademo.apps.user.infra.api.controllers;
 
-import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
-import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
-import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
-import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,6 +34,13 @@ public class GlobalExceptionHandler {
     return ResponseEntity
         .status(HttpStatus.UNPROCESSABLE_ENTITY)
         .body(ApiError.from(exception.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.value()));
+  }
+
+  @ExceptionHandler(value = UnauthorizedException.class)
+  public ResponseEntity<ApiError> handleUnauthorizedException(final UnauthorizedException exception) {
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(ApiError.from(exception.getMessage(), HttpStatus.UNAUTHORIZED.value()));
   }
 }
 

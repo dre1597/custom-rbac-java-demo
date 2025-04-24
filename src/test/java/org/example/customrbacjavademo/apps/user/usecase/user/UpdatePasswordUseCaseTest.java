@@ -65,7 +65,7 @@ class UpdatePasswordUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
 
     final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), "any_password", " "));
-    assertEquals("password is required", exception.getMessage());
+    assertEquals("new password is required", exception.getMessage());
   }
 
   @Test
@@ -76,7 +76,7 @@ class UpdatePasswordUseCaseTest {
     when(repository.findById(id)).thenReturn(Optional.of(UserMapper.entityToJpa(user)));
 
     final var exception = assertThrows(ValidationException.class, () -> useCase.execute(id.toString(), "any_password", null));
-    assertEquals("password is required", exception.getMessage());
+    assertEquals("new password is required", exception.getMessage());
   }
 
   @Test

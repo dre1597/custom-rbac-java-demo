@@ -136,7 +136,7 @@ public class User {
 
   public User updatePassword(final String newPassword) {
     if (newPassword == null || newPassword.isBlank()) {
-      throw new ValidationException(List.of("password is required"));
+      throw new ValidationException(List.of("new password is required"));
     }
     this.password = PasswordService.encryptPassword(newPassword);
     return this;

@@ -27,6 +27,10 @@ public class UserTestMocks {
     return User.newUser(NewUserDto.of(name, password, UserStatus.ACTIVE.name(), role.getId().toString()));
   }
 
+  public static User createActiveTestUser(final String name, final String password, final UUID roleId) {
+    return User.newUser(NewUserDto.of(name, password, UserStatus.ACTIVE.name(), roleId.toString()));
+  }
+
   public static UserJpaEntity createActiveTestUserJpa() {
     final var user = UserMapper.entityToJpa(createActiveTestUser());
     final var role = user.getRole();

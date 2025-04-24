@@ -10,6 +10,7 @@ import org.example.customrbacjavademo.common.domain.exceptions.ValidationExcepti
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,26 +108,15 @@ class UserTest {
     assertTrue(PasswordService.matches("updated_password", updatedUser.getPassword()));
   }
 
-  @Test
-  void shouldNotUpdatePasswordWithInvalidInput() {
+  @ParameterizedTest
+  @NullAndEmptySource
+  void shouldNotUpdatePasswordWithInvalidInput(final String password) {
     final var user = UserTestMocks.createActiveTestUser();
 
-    var exception = assertThrows(
+    final var exception = assertThrows(
         ValidationException.class,
-        () -> user.updatePassword(null)
+        () -> user.updatePassword(password)
     );
-    assertEquals("password is required", exception.getMessage());
-
-    exception = assertThrows(
-        ValidationException.class,
-        () -> user.updatePassword("")
-    );
-    assertEquals("password is required", exception.getMessage());
-
-    exception = assertThrows(
-        ValidationException.class,
-        () -> user.updatePassword(" ")
-    );
-    assertEquals("password is required", exception.getMessage());
+    assertEquals("new password is required", exception.getMessage());
   }
 }

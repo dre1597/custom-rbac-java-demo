@@ -658,6 +658,83 @@ class UserE2ETest {
   }
 
   @Test
+  void shouldUpdatePassword() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser("any_name", "any_password", role.getId())));
+
+    final var json = """
+        {
+          "oldPassword": "any_password",
+          "newPassword": "new_password"
+        }
+        """;
+
+    mvc.perform(patch("/users/{id}/password", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  void shouldNotUpdatePasswordWhenOldPasswordIsIncorrect() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser("any_name", "any_password", role.getId())));
+
+    final var json = """
+        {
+          "oldPassword": "invalid_password",
+          "newPassword": "new_password"
+        }
+        """;
+
+    mvc.perform(patch("/users/{id}/password", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("User not found or old password is invalid"));
+  }
+
+  @Test
+  void shouldNotUpdatePasswordWhenMissingOldPassword() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser("any_name", "any_password", role.getId())));
+
+    final var json = """
+        {
+          "newPassword": "new_password"
+        }
+        """;
+
+    mvc.perform(patch("/users/{id}/password", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("User not found or old password is invalid"));
+  }
+
+  @Test
+  void shouldNotUpdatePasswordWhenMissingNewPassword() throws Exception {
+    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
+    final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
+    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser("any_name", "any_password", role.getId())));
+
+    final var json = """
+        {
+          "oldPassword": "any_password"
+        }
+        """;
+
+    mvc.perform(patch("/users/{id}/password", user.getId())
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnprocessableEntity())
+        .andExpect(jsonPath("$.message").value("new password is required"));
+  }
+
+  @Test
   void shouldDeleteUser() throws Exception {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var role = roleRepository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));

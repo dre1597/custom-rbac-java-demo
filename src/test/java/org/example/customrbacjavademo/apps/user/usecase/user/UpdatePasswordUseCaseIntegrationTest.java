@@ -112,6 +112,6 @@ class UpdatePasswordUseCaseIntegrationTest {
         () -> useCase.execute(user.getId().toString(), "any_password", invalidPassword)
     );
 
-    assertEquals("password is required", exception.getMessage());
+    assertEquals("new password is required", exception.getMessage());
   }
 }
