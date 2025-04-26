@@ -1,9 +1,6 @@
-package org.example.customrbacjavademo.apps.user.infra.api.controllers;
+package org.example.customrbacjavademo.common.api.controllers;
 
-import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
-import org.example.customrbacjavademo.common.domain.exceptions.InvalidReferenceException;
-import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
-import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -60,6 +57,33 @@ class GlobalExceptionHandlerTest {
 
     assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
     assertEquals(new ApiError(errorMessage, HttpStatus.UNPROCESSABLE_ENTITY.value()), response.getBody());
+  }
+
+  @Test
+  void shouldHandleUnauthorizedException() {
+    final var errorMessage = "Unauthorized";
+    final var exception = new UnauthorizedException(errorMessage);
+
+    final var response = globalExceptionHandler.handleUnauthorizedException(exception);
+
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    assertEquals(new ApiError(errorMessage, HttpStatus.UNAUTHORIZED.value()), response.getBody());
+  }
+
+  @Test
+  void shouldHandleAuthenticationException() {
+    final var response = globalExceptionHandler.handleAuthenticationException();
+
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    assertEquals(new ApiError("Invalid credentials", HttpStatus.UNAUTHORIZED.value()), response.getBody());
+  }
+
+  @Test
+  void shouldHandleUsernameNotFoundException() {
+    final var response = globalExceptionHandler.handleUsernameNotFoundException();
+
+    assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    assertEquals(new ApiError("Invalid credentials", HttpStatus.UNAUTHORIZED.value()), response.getBody());
   }
 }
 

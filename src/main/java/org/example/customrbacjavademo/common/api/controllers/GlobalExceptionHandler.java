@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.apps.user.infra.api.controllers;
+package org.example.customrbacjavademo.common.api.controllers;
 
 import org.example.customrbacjavademo.common.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
@@ -46,14 +46,14 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(value = AuthenticationException.class)
-  public ResponseEntity<ApiError> handleAuthenticationException(final AuthenticationException exception) {
+  public ResponseEntity<ApiError> handleAuthenticationException() {
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .body(ApiError.from("Invalid credentials", HttpStatus.UNAUTHORIZED.value()));
   }
 
   @ExceptionHandler(value = UsernameNotFoundException.class)
-  public ResponseEntity<ApiError> handleUsernameNotFoundException(final UsernameNotFoundException exception) {
+  public ResponseEntity<ApiError> handleUsernameNotFoundException() {
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .body(ApiError.from("Invalid credentials", HttpStatus.UNAUTHORIZED.value()));
