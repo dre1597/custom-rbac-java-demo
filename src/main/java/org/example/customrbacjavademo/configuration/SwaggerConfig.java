@@ -1,7 +1,10 @@
 package org.example.customrbacjavademo.configuration;
 
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.example.customrbacjavademo.configuration.swagger.SwaggerCustomCssInjector;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
 import org.springdoc.core.properties.SwaggerUiOAuthProperties;
@@ -15,12 +18,26 @@ import org.springframework.context.annotation.Configuration;
 public class SwaggerConfig {
   @Bean
   public OpenAPI openAPI() {
-    var info = new Info()
+    final var info = new Info()
         .title("Custom RBAC API")
         .description("Custom RBAC API using Spring")
         .version("v0.0.1");
 
-    return new OpenAPI().info(info);
+    final var securityScheme = new SecurityScheme()
+        .type(SecurityScheme.Type.HTTP)
+        .scheme("bearer")
+        .bearerFormat("JWT");
+
+    final var components = new Components()
+        .addSecuritySchemes("bearerAuth", securityScheme);
+
+    final var securityRequirements = new SecurityRequirement()
+        .addList("bearerAuth");
+
+    return new OpenAPI()
+        .info(info)
+        .components(components)
+        .addSecurityItem(securityRequirements);
   }
 
   @Bean

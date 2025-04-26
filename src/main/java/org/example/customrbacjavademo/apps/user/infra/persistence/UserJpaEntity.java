@@ -1,13 +1,18 @@
 package org.example.customrbacjavademo.apps.user.infra.persistence;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity(name = "users")
 @Table
-public class UserJpaEntity {
+public class UserJpaEntity implements UserDetails {
   @Id
   private UUID id = UUID.randomUUID();
 
@@ -30,6 +35,13 @@ public class UserJpaEntity {
   @JoinColumn(name = "role_id")
   private RoleJpaEntity role;
 
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    var authority = new SimpleGrantedAuthority("ROLE_" + role.getName());
+
+    return List.of(authority);
+  }
+
   public UserJpaEntity() {
   }
 
@@ -49,6 +61,31 @@ public class UserJpaEntity {
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.role = role;
+  }
+
+  @Override
+  public String getUsername() {
+    return this.name;
+  }
+
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
+
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
   }
 
   public UUID getId() {

@@ -3,6 +3,8 @@ package org.example.customrbacjavademo.apps.user.infra.api.controllers;
 import org.example.customrbacjavademo.common.domain.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -41,6 +43,20 @@ public class GlobalExceptionHandler {
     return ResponseEntity
         .status(HttpStatus.UNAUTHORIZED)
         .body(ApiError.from(exception.getMessage(), HttpStatus.UNAUTHORIZED.value()));
+  }
+
+  @ExceptionHandler(value = AuthenticationException.class)
+  public ResponseEntity<ApiError> handleAuthenticationException(final AuthenticationException exception) {
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(ApiError.from("Invalid credentials", HttpStatus.UNAUTHORIZED.value()));
+  }
+
+  @ExceptionHandler(value = UsernameNotFoundException.class)
+  public ResponseEntity<ApiError> handleUsernameNotFoundException(final UsernameNotFoundException exception) {
+    return ResponseEntity
+        .status(HttpStatus.UNAUTHORIZED)
+        .body(ApiError.from("Invalid credentials", HttpStatus.UNAUTHORIZED.value()));
   }
 }
 
