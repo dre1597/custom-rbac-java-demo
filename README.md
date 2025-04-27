@@ -2,7 +2,6 @@
 
 ## Future implementations
 
-- Add some seeds.
 - Add guards for routes.
 - Add issuer validation.
 - Add refresh token.
