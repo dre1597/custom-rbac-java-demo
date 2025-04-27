@@ -1,4 +1,4 @@
-package org.example.customrbacjavademo.apps.user.e2e;
+package org.example.customrbacjavademo.apps.auth.e2e;
 
 import org.example.customrbacjavademo.E2ETest;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
