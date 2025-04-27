@@ -67,7 +67,7 @@ public class UserJpaEntity implements UserDetails {
   public String getUsername() {
     return this.name;
   }
-  
+
   public UUID getId() {
     return id;
   }
@@ -118,5 +118,23 @@ public class UserJpaEntity implements UserDetails {
 
   public void setRole(final RoleJpaEntity role) {
     this.role = role;
+  }
+
+  @Override
+  public String toString() {
+    final var roleStr = role != null ? role.toString() : "null";
+
+    return """
+        UserJpaEntity{
+            id=%s,
+            name='%s',
+            status='%s',
+            createdAt=%s,
+            updatedAt=%s,
+            role=%s
+        }""".formatted(
+        this.id, this.name, this.status,
+        this.createdAt, this.updatedAt, roleStr
+    );
   }
 }

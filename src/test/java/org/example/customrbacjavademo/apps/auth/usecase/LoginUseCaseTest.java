@@ -53,9 +53,7 @@ class LoginUseCaseTest {
 
     verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     verify(userJpaRepository).findWithRoleByName(user.getName());
-
-    System.out.println(result);
-
+    
     assertEquals(user.getId().toString(), result.user().id());
     assertEquals(user.getName(), result.user().name());
   }

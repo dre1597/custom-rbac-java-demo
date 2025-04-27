@@ -102,4 +102,21 @@ public class PermissionJpaEntity {
   public void setUpdatedAt(final Instant updatedAt) {
     this.updatedAt = updatedAt;
   }
+
+  @Override
+  public String toString() {
+    return """
+        PermissionJpaEntity{
+            id=%s,
+            name='%s',
+            scope='%s',
+            description='%s',
+            status='%s',
+            createdAt=%s,
+            updatedAt=%s
+        }""".formatted(
+        this.id, this.name, this.scope, this.description, this.status,
+        this.createdAt, this.updatedAt
+    );
+  }
 }

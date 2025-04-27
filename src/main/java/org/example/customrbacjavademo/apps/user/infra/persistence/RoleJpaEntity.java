@@ -1,11 +1,14 @@
 package org.example.customrbacjavademo.apps.user.infra.persistence;
 
 import jakarta.persistence.*;
+import org.hibernate.LazyInitializationException;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Entity(name = "roles")
 @Table
@@ -105,5 +108,35 @@ public class RoleJpaEntity {
 
   public void setPermissions(final List<PermissionJpaEntity> permissions) {
     this.permissions = permissions;
+  }
+
+  @Override
+  public String toString() {
+    final Function<PermissionJpaEntity, String> permissionMapper =
+        perm -> perm != null ? perm.toString() : "null";
+
+    String permissionsStr;
+    try {
+      permissionsStr = permissions == null ? "null" :
+          permissions.stream()
+              .map(permissionMapper)
+              .collect(Collectors.joining(", "));
+    } catch (LazyInitializationException e) {
+      permissionsStr = "null";
+    }
+
+    return """
+        RoleJpaEntity{
+            id=%s,
+            name='%s',
+            description='%s',
+            status='%s',
+            createdAt=%s,
+            updatedAt=%s,
+            permissions=%s
+        }""".formatted(
+        this.id, this.name, this.description, this.status,
+        this.createdAt, this.updatedAt, permissionsStr
+    );
   }
 }

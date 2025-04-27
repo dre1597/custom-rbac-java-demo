@@ -54,4 +54,35 @@ class PermissionJpaEntityTest {
     assertEquals(now, jpaEntity.getCreatedAt());
     assertEquals(now, jpaEntity.getUpdatedAt());
   }
+
+  @Test
+  void shouldFormatToStringCorrectly() {
+    final var id = UUID.randomUUID();
+    final var now = Instant.now();
+
+    final var jpaEntity = new PermissionJpaEntity(
+        id,
+        "READ",
+        "USER",
+        "Allows reading users",
+        "ACTIVE",
+        now,
+        now
+    );
+
+    final var expectedString = """
+        PermissionJpaEntity{
+            id=%s,
+            name='READ',
+            scope='USER',
+            description='Allows reading users',
+            status='ACTIVE',
+            createdAt=%s,
+            updatedAt=%s
+        }""".formatted(
+        id, now, now
+    );
+
+    assertEquals(expectedString, jpaEntity.toString());
+  }
 }

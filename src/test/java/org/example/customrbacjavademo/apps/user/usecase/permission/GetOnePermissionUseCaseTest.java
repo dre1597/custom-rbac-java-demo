@@ -33,7 +33,7 @@ class GetOnePermissionUseCaseTest {
     when(repository.findById(id))
         .thenReturn(Optional.of(PermissionMapper.entityToJpa(permission)));
 
-    var result = useCase.execute(id.toString());
+    final var result = useCase.execute(id.toString());
 
     verify(repository, times(1)).findById(id);
     assertNotNull(result);

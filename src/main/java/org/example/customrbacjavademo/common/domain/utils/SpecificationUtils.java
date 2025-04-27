@@ -18,7 +18,7 @@ public final class SpecificationUtils {
     return (root, query, cb) -> {
       final var pattern = like(term.toUpperCase());
       final var predicates = new ArrayList<Predicate>();
-      for (var prop : props) {
+      for (final var prop : props) {
         predicates.add(cb.like(cb.upper(root.get(prop)), pattern));
       }
       return cb.or(predicates.toArray(new Predicate[0]));

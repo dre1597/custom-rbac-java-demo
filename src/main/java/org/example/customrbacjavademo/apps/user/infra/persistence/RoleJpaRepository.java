@@ -17,4 +17,7 @@ public interface RoleJpaRepository extends JpaRepository<RoleJpaEntity, UUID> {
 
   @EntityGraph(attributePaths = "permissions")
   Optional<RoleJpaEntity> findWithPermissionsById(final UUID id);
+
+  @EntityGraph(attributePaths = "permissions")
+  Optional<RoleJpaEntity> findWithPermissionsByName(final String name);
 }
