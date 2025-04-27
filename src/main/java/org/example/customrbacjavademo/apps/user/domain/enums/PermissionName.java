@@ -4,5 +4,6 @@ public enum PermissionName {
   CREATE,
   READ,
   UPDATE,
-  DELETE
+  DELETE,
+  UPDATE_PASSWORD
 }

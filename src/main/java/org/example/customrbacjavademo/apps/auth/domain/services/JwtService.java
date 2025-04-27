@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,19 @@ public class JwtService {
   }
 
   public String generateToken(final UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
+    final var extraClaims = new HashMap<String, Object>();
+
+    if (userDetails instanceof UserJpaEntity user) {
+      extraClaims.put("name", user.getName());
+      extraClaims.put("roleId", user.getRole().getId());
+    }
+
+    return generateToken(extraClaims, userDetails);
+  }
+
+  public String extractRoleId(final String token) {
+    final var claims = extractAllClaims(token);
+    return (String) claims.get("roleId");
   }
 
   public String generateToken(final Map<String, Object> extraClaims, final UserDetails userDetails) {

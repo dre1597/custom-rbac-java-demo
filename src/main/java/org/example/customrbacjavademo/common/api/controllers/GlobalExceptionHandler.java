@@ -58,5 +58,12 @@ public class GlobalExceptionHandler {
         .status(HttpStatus.UNAUTHORIZED)
         .body(ApiError.from("Invalid credentials", HttpStatus.UNAUTHORIZED.value()));
   }
+
+  @ExceptionHandler(value = NoAccessException.class)
+  public ResponseEntity<ApiError> handleNoAccessException(final NoAccessException exception) {
+    return ResponseEntity
+        .status(HttpStatus.FORBIDDEN)
+        .body(ApiError.from(exception.getMessage(), HttpStatus.FORBIDDEN.value()));
+  }
 }
 

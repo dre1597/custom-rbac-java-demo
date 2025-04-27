@@ -85,5 +85,16 @@ class GlobalExceptionHandlerTest {
     assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     assertEquals(new ApiError("Invalid credentials", HttpStatus.UNAUTHORIZED.value()), response.getBody());
   }
+
+  @Test
+  void shouldHandleNoAccessException() {
+    final var errorMessage = "Access denied";
+    final var exception = new NoAccessException(errorMessage);
+
+    final var response = globalExceptionHandler.handleNoAccessException(exception);
+
+    assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    assertEquals(new ApiError(errorMessage, HttpStatus.FORBIDDEN.value()), response.getBody());
+  }
 }
 

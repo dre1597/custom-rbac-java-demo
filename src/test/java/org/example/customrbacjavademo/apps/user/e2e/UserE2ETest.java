@@ -56,7 +56,6 @@ class UserE2ETest {
 
   @BeforeEach
   void setUp() throws Exception {
-    System.out.println("Before each on test");
     seeder.seedAllManually();
 
     final var loginJson = """

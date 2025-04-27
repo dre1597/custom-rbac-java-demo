@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @EnableWebSecurity
@@ -24,11 +25,11 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   public SecurityConfig(
-      AuthenticationProvider authenticationProvider,
-      JwtAuthenticationFilter jwtAuthenticationFilter
+      final AuthenticationProvider authenticationProvider,
+      final JwtAuthenticationFilter jwtAuthenticationFilter
   ) {
-    this.authenticationProvider = authenticationProvider;
-    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    this.authenticationProvider = Objects.requireNonNull(authenticationProvider);
+    this.jwtAuthenticationFilter = Objects.requireNonNull(jwtAuthenticationFilter);
   }
 
   @Bean
@@ -41,7 +42,8 @@ public class SecurityConfig {
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
                 "/swagger-resources/**",
-                "/webjars/**"
+                "/webjars/**",
+                "/static/**"
             ).permitAll()
             .anyRequest().authenticated()
         )

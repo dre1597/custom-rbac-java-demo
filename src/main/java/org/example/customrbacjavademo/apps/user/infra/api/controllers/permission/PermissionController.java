@@ -3,12 +3,15 @@ package org.example.customrbacjavademo.apps.user.infra.api.controllers.permissio
 import jakarta.validation.Valid;
 import org.example.customrbacjavademo.apps.user.domain.dto.NewPermissionDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdatePermissionDto;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePermissionRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.PermissionResponse;
 import org.example.customrbacjavademo.apps.user.usecase.permission.*;
 import org.example.customrbacjavademo.common.domain.helpers.Pagination;
 import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
+import org.example.customrbacjavademo.configuration.RequiredPermission;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +41,7 @@ public class PermissionController implements PermissionAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.READ, scope = PermissionScope.PERMISSION)
   public ResponseEntity<Pagination<PermissionResponse>> list(
       final String search,
       final int page,
@@ -56,6 +60,7 @@ public class PermissionController implements PermissionAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.CREATE, scope = PermissionScope.PERMISSION)
   public ResponseEntity<Void> create(final CreatePermissionRequest input) {
     final var dto = NewPermissionDto.from(input);
     final var permission = createPermissionUseCase.execute(dto);
@@ -64,11 +69,13 @@ public class PermissionController implements PermissionAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.READ, scope = PermissionScope.PERMISSION)
   public ResponseEntity<PermissionResponse> getById(final String id) {
     return ResponseEntity.ok(getOnePermissionUseCase.execute(id));
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.UPDATE, scope = PermissionScope.PERMISSION)
   public ResponseEntity<Void> update(final String id, @Valid final UpdatePermissionRequest input) {
     final var dto = UpdatePermissionDto.from(input);
     updatePermissionUseCase.execute(id, dto);
@@ -76,6 +83,7 @@ public class PermissionController implements PermissionAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.DELETE, scope = PermissionScope.PERMISSION)
   public ResponseEntity<Void> delete(final String id) {
     deletePermissionUseCase.execute(id);
     return ResponseEntity.noContent().build();

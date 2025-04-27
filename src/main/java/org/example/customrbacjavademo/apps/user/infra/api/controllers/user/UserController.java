@@ -2,6 +2,8 @@ package org.example.customrbacjavademo.apps.user.infra.api.controllers.user;
 
 import org.example.customrbacjavademo.apps.user.domain.dto.NewUserDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateUserDto;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.CreateUserRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdatePasswordRequest;
 import org.example.customrbacjavademo.apps.user.infra.api.dto.requests.UpdateUserRequest;
@@ -10,6 +12,7 @@ import org.example.customrbacjavademo.apps.user.infra.api.dto.responses.UserResp
 import org.example.customrbacjavademo.apps.user.usecase.user.*;
 import org.example.customrbacjavademo.common.domain.helpers.Pagination;
 import org.example.customrbacjavademo.common.domain.helpers.SearchQuery;
+import org.example.customrbacjavademo.configuration.RequiredPermission;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +45,7 @@ public class UserController implements UserAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.READ, scope = PermissionScope.USER)
   public ResponseEntity<Pagination<UserResponse>> list(
       final String search,
       final int page,
@@ -60,6 +64,7 @@ public class UserController implements UserAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.CREATE, scope = PermissionScope.USER)
   public ResponseEntity<Void> create(final CreateUserRequest input) {
     final var dto = NewUserDto.from(input);
     final var user = createUserUseCase.execute(dto);
@@ -68,11 +73,13 @@ public class UserController implements UserAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.READ, scope = PermissionScope.USER)
   public ResponseEntity<UserDetailsResponse> getById(final String id) {
     return ResponseEntity.ok(getOneUserUseCase.execute(id));
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.UPDATE, scope = PermissionScope.USER)
   public ResponseEntity<Void> update(final String id, final UpdateUserRequest input) {
     final var dto = UpdateUserDto.from(input);
     updateUserUseCase.execute(id, dto);
@@ -80,12 +87,14 @@ public class UserController implements UserAPI {
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.UPDATE_PASSWORD, scope = PermissionScope.USER)
   public ResponseEntity<Void> updatePassword(final String id, final UpdatePasswordRequest input) {
     updatePasswordUseCase.execute(id, input.oldPassword(), input.newPassword());
     return ResponseEntity.ok().build();
   }
 
   @Override
+  @RequiredPermission(name = PermissionName.DELETE, scope = PermissionScope.USER)
   public ResponseEntity<Void> delete(final String id) {
     deleteUserUseCase.execute(id);
     return ResponseEntity.noContent().build();

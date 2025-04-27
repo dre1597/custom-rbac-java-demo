@@ -109,15 +109,21 @@ public class DefaultUserSeeder implements ApplicationListener<ContextRefreshedEv
         ),
         NewPermissionDto.of(
             PermissionName.DELETE.name(), PermissionScope.USER.name(), "Allows deleting users", PermissionStatus.ACTIVE.name()
+        ),
+        NewPermissionDto.of(
+            PermissionName.UPDATE_PASSWORD.name(), PermissionScope.USER.name(), "Allows updating users password", PermissionStatus.ACTIVE.name()
         )
     );
 
     final var profilePermissions = List.of(
         NewPermissionDto.of(
-            PermissionName.READ.name(), PermissionScope.PROFILE.name(), "Allows reading profiles", PermissionStatus.ACTIVE.name()
+            PermissionName.READ.name(), PermissionScope.PROFILE.name(), "Allows reading users on profile", PermissionStatus.ACTIVE.name()
         ),
         NewPermissionDto.of(
-            PermissionName.UPDATE.name(), PermissionScope.PROFILE.name(), "Allows updating profiles", PermissionStatus.ACTIVE.name()
+            PermissionName.UPDATE.name(), PermissionScope.PROFILE.name(), "Allows updating users on profile", PermissionStatus.ACTIVE.name()
+        ),
+        NewPermissionDto.of(
+            PermissionName.UPDATE_PASSWORD.name(), PermissionScope.PROFILE.name(), "Allows updating users password on profile", PermissionStatus.ACTIVE.name()
         )
     );
 
