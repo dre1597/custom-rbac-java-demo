@@ -28,7 +28,7 @@ class LoginUseCaseIntegrationTest {
   private LoginUseCase useCase;
 
   @Autowired
-  private UserJpaRepository repository;
+  private UserJpaRepository userRepository;
 
   @Autowired
   private RoleJpaRepository roleRepository;
@@ -44,7 +44,7 @@ class LoginUseCaseIntegrationTest {
     final var role = roleRepository.save(
         RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId())))
     );
-    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+    final var user = userRepository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
     final var dto = LoginDto.of(user.getName(), "any_password");
 
     final var response = useCase.execute(dto);
@@ -64,7 +64,7 @@ class LoginUseCaseIntegrationTest {
     final var role = roleRepository.save(
         RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId())))
     );
-    final var user = repository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
+    final var user = userRepository.save(UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId())));
 
     final var dto = LoginDto.of(user.getName(), "invalid_password");
 
