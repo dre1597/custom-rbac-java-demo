@@ -14,4 +14,12 @@ public class PermissionTestMocks {
   public static Permission createActiveTestPermission(final String name) {
     return Permission.newPermission(NewPermissionDto.of(name, PermissionScope.USER.name(), "any_description", PermissionStatus.ACTIVE.name()));
   }
+
+  public static Permission createActiveTestPermission(final String name, final String description) {
+    return Permission.newPermission(NewPermissionDto.of(name, PermissionScope.USER.name(), description, PermissionStatus.ACTIVE.name()));
+  }
+
+  public static Permission createActiveTestPermission(final String name, final String scope, final String description) {
+    return Permission.newPermission(NewPermissionDto.of(name, scope, description, PermissionStatus.ACTIVE.name()));
+  }
 }

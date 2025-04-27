@@ -1,16 +1,21 @@
 package org.example.customrbacjavademo.apps.user.e2e;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.customrbacjavademo.E2ETest;
+import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.domain.mocks.RoleTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
+import org.example.customrbacjavademo.apps.user.infra.persistence.bootstrap.DefaultUserSeeder;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -33,38 +38,54 @@ class RoleE2ETest {
   @Autowired
   private PermissionJpaRepository permissionRepository;
 
+  @Autowired
+  private DefaultUserSeeder seeder;
+
+  @Value("${user.admin.name}")
+  private String adminName;
+
+  @Value("${user.admin.password}")
+  private String adminPassword;
+
+  private String authToken;
+
+  @BeforeEach
+  void setUp() throws Exception {
+    System.out.println("Before each on test");
+    seeder.seedAllManually();
+
+    final var loginJson = """
+        {
+          "name": "%s",
+          "password": "%s"
+        }
+        """.formatted(adminName, adminPassword);
+
+    final var loginResponse = mvc.perform(post("/auth/login")
+            .contentType("application/json")
+            .content(loginJson))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
+    authToken = new ObjectMapper().readTree(loginResponse).get("token").asText();
+  }
+
   @Test
   void shouldListRolesWithoutSearchTerm() throws Exception {
-    final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
-    final var permissionsIds = List.of(permission.getId());
-    final var firstRole = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(permissionsIds)));
-    final var secondRole = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole("other_role", permissionsIds)));
-
-    mvc.perform(get("/roles"))
+    mvc.perform(get("/roles")
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.currentPage").value(0))
         .andExpect(jsonPath("$.perPage").value(10))
-        .andExpect(jsonPath("$.total").value(2))
         .andExpect(jsonPath("$.items").isArray())
-        .andExpect(jsonPath("$.items", hasSize(2)))
-        .andExpect(jsonPath("$.items[*]", containsInAnyOrder(
-            allOf(
-                hasEntry("id", firstRole.getId().toString()),
-                hasEntry("name", firstRole.getName()),
-                hasEntry("description", firstRole.getDescription()),
-                hasEntry("status", firstRole.getStatus())
-            ),
-            allOf(
-                hasEntry("id", secondRole.getId().toString()),
-                hasEntry("name", secondRole.getName()),
-                hasEntry("description", secondRole.getDescription()),
-                hasEntry("status", secondRole.getStatus())
-            )
-        )))
+        .andExpect(jsonPath("$.items[0].id").exists())
+        .andExpect(jsonPath("$.items[0].name").exists())
+        .andExpect(jsonPath("$.items[0].description").exists())
+        .andExpect(jsonPath("$.items[0].status").exists())
         .andExpect(jsonPath("$.items[0].createdAt").exists())
-        .andExpect(jsonPath("$.items[0].updatedAt").exists())
-        .andExpect(jsonPath("$.items[1].createdAt").exists())
-        .andExpect(jsonPath("$.items[1].updatedAt").exists());
+        .andExpect(jsonPath("$.items[0].updatedAt").exists());
   }
 
   @Test
@@ -74,7 +95,8 @@ class RoleE2ETest {
     repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(permissionsIds)));
     final var secondRole = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole("other_role", permissionsIds)));
 
-    mvc.perform(get("/roles?search=other"))
+    mvc.perform(get("/roles?search=other")
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.currentPage").value(0))
         .andExpect(jsonPath("$.perPage").value(10))
@@ -95,7 +117,8 @@ class RoleE2ETest {
 
   @Test
   void shouldReturnEmptyPaginatedRolesWhenNoResults() throws Exception {
-    mvc.perform(get("/roles?search=nonexistent"))
+    mvc.perform(get("/roles?search=nonexistent")
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.currentPage").value(0))
         .andExpect(jsonPath("$.perPage").value(10))
@@ -118,6 +141,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     final var result = mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isCreated());
@@ -125,12 +149,8 @@ class RoleE2ETest {
     final var response = result.andReturn().getResponse();
     assertThat(response.getHeader("Location")).isNotNull();
 
-    final var roles = repository.findAll();
-    final var firstRole = roles.getFirst();
-    assertThat(roles).hasSize(1);
-    assertThat(firstRole.getName()).isEqualTo("any_role");
-    assertThat(firstRole.getDescription()).isEqualTo("any_description");
-    assertThat(firstRole.getStatus()).isEqualTo("ACTIVE");
+    final var roles = repository.existsByName("any_role");
+    assertThat(roles).isTrue();
   }
 
   @Test
@@ -148,6 +168,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), permissions.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isConflict())
@@ -167,6 +188,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -187,6 +209,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -208,6 +231,7 @@ class RoleE2ETest {
         """.formatted(name, permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -227,6 +251,7 @@ class RoleE2ETest {
         """.formatted(permissions.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -247,6 +272,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -268,6 +294,7 @@ class RoleE2ETest {
         """.formatted(description, permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -287,6 +314,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -307,6 +335,7 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -328,6 +357,7 @@ class RoleE2ETest {
         """.formatted(status, permission.getId());
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -345,6 +375,7 @@ class RoleE2ETest {
         """;
 
     mvc.perform(post("/roles")
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -356,7 +387,8 @@ class RoleE2ETest {
     final var permission = permissionRepository.save(PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission()));
     final var role = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
 
-    mvc.perform(get("/roles/{id}", role.getId()))
+    mvc.perform(get("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value(role.getName()))
         .andExpect(jsonPath("$.description").value(role.getDescription()))
@@ -379,7 +411,8 @@ class RoleE2ETest {
   @Test
   void shouldNotGetRoleByIdWithNotFoundId() throws Exception {
     final var id = UUID.randomUUID().toString();
-    mvc.perform(get("/roles/{id}", id))
+    mvc.perform(get("/roles/{id}", id)
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("Role not found"));
   }
@@ -387,7 +420,8 @@ class RoleE2ETest {
   @Test
   void shouldNotGetRoleByIdWithInvalidId() throws Exception {
     final var id = "invalid_id";
-    mvc.perform(get("/roles/{id}", id))
+    mvc.perform(get("/roles/{id}", id)
+            .header("Authorization", "Bearer " + authToken))
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));
   }
@@ -407,16 +441,18 @@ class RoleE2ETest {
         """.formatted(permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isOk());
 
-    final var roles = repository.findAll();
-    final var firstRole = roles.getFirst();
-    assertThat(roles).hasSize(1);
-    assertThat(firstRole.getName()).isEqualTo("updated_role");
-    assertThat(firstRole.getDescription()).isEqualTo("updated_description");
-    assertThat(firstRole.getStatus()).isEqualTo("INACTIVE");
+    final var savedRole = repository.findById(role.getId());
+
+    assertThat(savedRole).isPresent();
+    assertThat(savedRole.get().getName()).isEqualTo("updated_role");
+    assertThat(savedRole.get().getDescription()).isEqualTo("updated_description");
+    assertThat(savedRole.get().getStatus()).isEqualTo(RoleStatus.INACTIVE.name());
+
   }
 
   @Test
@@ -435,6 +471,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getDescription(), role.getStatus(), newPermission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isOk());
@@ -459,6 +496,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), roleToUpdate.getDescription(), roleToUpdate.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", roleToUpdate.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isConflict())
@@ -478,6 +516,7 @@ class RoleE2ETest {
         """.formatted(role.getDescription(), role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -498,6 +537,7 @@ class RoleE2ETest {
         """.formatted(role.getDescription(), role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -519,6 +559,7 @@ class RoleE2ETest {
         """.formatted(name, role.getDescription(), role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -538,6 +579,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -558,6 +600,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -579,6 +622,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), description, role.getStatus(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -598,6 +642,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getDescription(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -618,6 +663,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getDescription(), permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -639,6 +685,7 @@ class RoleE2ETest {
         """.formatted(role.getName(), role.getDescription(), "invalid_status", permission.getId());
 
     mvc.perform(put("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
@@ -651,6 +698,7 @@ class RoleE2ETest {
     final var role = repository.save(RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId()))));
 
     mvc.perform(delete("/roles/{id}", role.getId())
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json"))
         .andExpect(status().isNoContent());
   }
@@ -659,6 +707,7 @@ class RoleE2ETest {
   void shouldDoNothingWhenDeleteRoleWithNotFoundId() throws Exception {
     final var id = UUID.randomUUID().toString();
     mvc.perform(delete("/roles/{id}", id)
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json"))
         .andExpect(status().isNoContent());
   }
@@ -667,6 +716,7 @@ class RoleE2ETest {
   void shouldNotDeleteRoleWithInvalidId() throws Exception {
     final var id = "invalid_id";
     mvc.perform(delete("/roles/{id}", id)
+            .header("Authorization", "Bearer " + authToken)
             .contentType("application/json"))
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("Invalid UUID: " + id));

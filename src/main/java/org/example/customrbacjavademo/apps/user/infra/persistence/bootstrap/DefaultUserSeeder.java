@@ -52,6 +52,12 @@ public class DefaultUserSeeder implements ApplicationListener<ContextRefreshedEv
     this.seedAdminUser();
   }
 
+  public void seedAllManually() {
+    this.seedPermissions();
+    this.seedAdminRole();
+    this.seedAdminUser();
+  }
+
   private boolean isAlreadySeeded(final JpaRepository repository) {
     return repository.count() > 0;
   }

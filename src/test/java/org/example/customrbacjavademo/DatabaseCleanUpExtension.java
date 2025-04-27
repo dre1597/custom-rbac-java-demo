@@ -14,6 +14,8 @@ import java.util.List;
 public class DatabaseCleanUpExtension implements BeforeEachCallback {
   @Override
   public void beforeEach(final ExtensionContext context) {
+    System.out.println("Before each on extension");
+
     final var applicationContext = SpringExtension.getApplicationContext(context);
 
     cleanUp(List.of(
