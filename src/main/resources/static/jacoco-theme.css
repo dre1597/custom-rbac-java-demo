@@ -1,0 +1,264 @@
+body, td {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  font-family: sans-serif;
+  font-size: 10pt;
+}
+
+h1 {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 18pt;
+}
+
+.breadcrumb {
+  border: #555555 1px solid;
+  background-color: #2a2a2a;
+  padding: 2px 4px 2px 4px;
+}
+
+.breadcrumb .info {
+  float: right;
+}
+
+.breadcrumb .info a {
+  color: #5fa8ff;
+  margin-left: 8px;
+}
+
+.el_report {
+  padding-left: 18px;
+  background-image: url(report.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_group {
+  padding-left: 18px;
+  background-image: url(group.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_bundle {
+  padding-left: 18px;
+  background-image: url(bundle.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_package {
+  padding-left: 18px;
+  background-image: url(package.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_class {
+  padding-left: 18px;
+  background-image: url(class.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_source {
+  padding-left: 18px;
+  background-image: url(source.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_method {
+  padding-left: 18px;
+  background-image: url(method.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.el_session {
+  padding-left: 18px;
+  background-image: url(session.gif);
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+pre.source {
+  border: #444444 1px solid;
+  background-color: #252526;
+  color: #cccccc;
+  font-family: monospace;
+}
+
+pre.source ol {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+pre.source li {
+  border-left: 1px solid #555555;
+  color: #888888;
+  padding-left: 0;
+}
+
+pre.source span.fc {
+  background-color: #006400;
+}
+
+pre.source span.nc {
+  background-color: #8b0000;
+}
+
+pre.source span.pc {
+  background-color: #b8860b;
+}
+
+pre.source span.bfc {
+  background-image: url(branchfc.gif);
+  background-repeat: no-repeat;
+  background-position: 2px center;
+}
+
+pre.source span.bfc:hover {
+  background-color: #008000;
+}
+
+pre.source span.bnc {
+  background-image: url(branchnc.gif);
+  background-repeat: no-repeat;
+  background-position: 2px center;
+}
+
+pre.source span.bnc:hover {
+  background-color: #a52a2a;
+}
+
+pre.source span.bpc {
+  background-image: url(branchpc.gif);
+  background-repeat: no-repeat;
+  background-position: 2px center;
+}
+
+pre.source span.bpc:hover {
+  background-color: #d4af37;
+}
+
+table.coverage {
+  empty-cells: show;
+  border-collapse: collapse;
+}
+
+table.coverage thead {
+  background-color: #333333;
+  color: #ffffff;
+}
+
+table.coverage thead td {
+  white-space: nowrap;
+  padding: 2px 14px 0 6px;
+  border-bottom: #555555 1px solid;
+}
+
+table.coverage thead td.bar {
+  border-left: #cccccc 1px solid;
+}
+
+table.coverage thead td.ctr1 {
+  text-align: right;
+  border-left: #cccccc 1px solid;
+}
+
+table.coverage thead td.ctr2 {
+  text-align: right;
+  padding-left: 2px;
+}
+
+table.coverage thead td.sortable {
+  cursor: pointer;
+  background-image: url(sort.gif);
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+table.coverage thead td.up {
+  background-image: url(up.gif);
+}
+
+table.coverage thead td.down {
+  background-image: url(down.gif);
+}
+
+table.coverage tbody td {
+  white-space: nowrap;
+  padding: 2px 6px 2px 6px;
+  border-bottom: #444444 1px solid;
+}
+
+table.coverage tbody tr:hover {
+  background: #444444 !important;
+}
+
+table.coverage tbody td.bar {
+  border-left: #e8e8e8 1px solid;
+}
+
+table.coverage tbody td.ctr1 {
+  text-align: right;
+  padding-right: 14px;
+  border-left: #e8e8e8 1px solid;
+}
+
+table.coverage tbody td.ctr2 {
+  text-align: right;
+  padding-right: 14px;
+  padding-left: 2px;
+}
+
+table.coverage tfoot td {
+  white-space: nowrap;
+  padding: 2px 6px 2px 6px;
+}
+
+table.coverage tfoot td.bar {
+  border-left: #e8e8e8 1px solid;
+}
+
+table.coverage tfoot td.ctr1 {
+  text-align: right;
+  padding-right: 14px;
+  border-left: #e8e8e8 1px solid;
+}
+
+table.coverage tfoot td.ctr2 {
+  text-align: right;
+  padding-right: 14px;
+  padding-left: 2px;
+}
+
+.footer {
+  margin-top: 20px;
+  border-top: #444444 1px solid;
+  padding-top: 2px;
+  font-size: 8pt;
+  color: #888888;
+}
+
+.footer a {
+  color: #5fa8ff;
+}
+
+.right {
+  float: right;
+}
+
+a {
+  color: #66b2ff;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #99ccff;
+}
+
+a:visited {
+  color: #bb99ff;
+}

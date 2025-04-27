@@ -60,6 +60,8 @@ jacocoTestReport {
   dependsOn test
   reports {
     html.required.set(true)
+    xml.required.set(false)
+    csv.required.set(false)
   }
 
   afterEvaluate {
@@ -71,6 +73,16 @@ jacocoTestReport {
           ])
         })
     )
+  }
+
+  doLast {
+    def htmlReportDir = layout.buildDirectory.dir("reports/jacoco/test/html").get().asFile
+    def jacocoCss = new File(htmlReportDir, "jacoco-resources/report.css")
+    def darkTheme = file("src/main/resources/static/jacoco-theme.css")
+
+    if (jacocoCss.exists() && darkTheme.exists()) {
+      jacocoCss.append("\n\n" + darkTheme.text)
+    }
   }
 }
 
