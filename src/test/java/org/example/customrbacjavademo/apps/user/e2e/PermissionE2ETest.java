@@ -3,10 +3,13 @@ package org.example.customrbacjavademo.apps.user.e2e;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.customrbacjavademo.E2ETest;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
+import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.bootstrap.DefaultUserSeeder;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -215,7 +218,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
+        .andExpect(jsonPath("$.message").value("name must be one of " + EnumUtils.enumValuesAsString(PermissionName.class)));
   }
 
   @Test
@@ -272,7 +275,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+        .andExpect(jsonPath("$.message").value("scope must be one of " + EnumUtils.enumValuesAsString(PermissionScope.class)));
   }
 
   @Test
@@ -310,7 +313,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(PermissionStatus.class)));
   }
 
   @Test
@@ -513,7 +516,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("name must be one of CREATE, READ, UPDATE, DELETE"));
+        .andExpect(jsonPath("$.message").value("name must be one of " + EnumUtils.enumValuesAsString(PermissionName.class)));
   }
 
   @Test
@@ -573,7 +576,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("scope must be one of USER, PROFILE, ROLE, PERMISSION"));
+        .andExpect(jsonPath("$.message").value("scope must be one of " + EnumUtils.enumValuesAsString(PermissionScope.class)));
   }
 
   @Test
@@ -633,7 +636,7 @@ class PermissionE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(PermissionStatus.class)));
   }
 
   @Test

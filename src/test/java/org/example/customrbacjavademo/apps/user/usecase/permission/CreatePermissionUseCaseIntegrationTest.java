@@ -10,7 +10,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaR
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.common.domain.exceptions.AlreadyExistsException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
-import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -82,9 +82,9 @@ class CreatePermissionUseCaseIntegrationTest {
   }
 
   private static Stream<Arguments> invalidInputProvider() {
-    final var validNames = EnumValidator.enumValuesAsString(PermissionName.class);
-    final var validScopes = EnumValidator.enumValuesAsString(PermissionScope.class);
-    final var validStatuses = EnumValidator.enumValuesAsString(PermissionStatus.class);
+    final var validNames = EnumUtils.enumValuesAsString(PermissionName.class);
+    final var validScopes = EnumUtils.enumValuesAsString(PermissionScope.class);
+    final var validStatuses = EnumUtils.enumValuesAsString(PermissionStatus.class);
 
     return Stream.of(
         Arguments.of("null", "USER", "any_description", "ACTIVE", "name is required"),

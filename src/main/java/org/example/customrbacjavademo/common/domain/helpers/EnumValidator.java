@@ -1,8 +1,5 @@
 package org.example.customrbacjavademo.common.domain.helpers;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public final class EnumValidator {
   private EnumValidator() {
   }
@@ -15,11 +12,5 @@ public final class EnumValidator {
     } catch (IllegalArgumentException e) {
       return true;
     }
-  }
-
-  public static <E extends Enum<E>> String enumValuesAsString(Class<E> enumType) {
-    return Stream.of(enumType.getEnumConstants())
-        .map(Enum::name)
-        .collect(Collectors.joining(", "));
   }
 }

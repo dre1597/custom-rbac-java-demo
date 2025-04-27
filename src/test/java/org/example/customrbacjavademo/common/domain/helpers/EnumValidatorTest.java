@@ -24,7 +24,7 @@ class EnumValidatorTest {
 
   @Test
   void shouldReturnAllEnumValuesAsCommaSeparatedString() {
-    var result = EnumValidator.enumValuesAsString(DummyEnum.class);
+    var result = EnumUtils.enumValuesAsString(DummyEnum.class);
     assertEquals("FOO, BAR, BAZ", result);
   }
 }

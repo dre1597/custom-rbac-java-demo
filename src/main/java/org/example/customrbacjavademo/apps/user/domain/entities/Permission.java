@@ -6,6 +6,7 @@ import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionStatus;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 
 import java.time.Instant;
@@ -115,13 +116,13 @@ public class Permission {
     if (name == null) {
       errors.add("name is required");
     } else if (EnumValidator.isInvalidEnum(name, PermissionName.class)) {
-      errors.add("name must be one of " + EnumValidator.enumValuesAsString(PermissionName.class));
+      errors.add("name must be one of " + EnumUtils.enumValuesAsString(PermissionName.class));
     }
 
     if (scope == null) {
       errors.add("scope is required");
     } else if (status != null && EnumValidator.isInvalidEnum(scope, PermissionScope.class)) {
-      errors.add("scope must be one of " + EnumValidator.enumValuesAsString(PermissionScope.class));
+      errors.add("scope must be one of " + EnumUtils.enumValuesAsString(PermissionScope.class));
     }
 
     if (description == null || description.isBlank()) {
@@ -131,7 +132,7 @@ public class Permission {
     if (status == null) {
       errors.add("status is required");
     } else if (EnumValidator.isInvalidEnum(status, PermissionStatus.class)) {
-      errors.add("status must be one of " + EnumValidator.enumValuesAsString(PermissionStatus.class));
+      errors.add("status must be one of " + EnumUtils.enumValuesAsString(PermissionStatus.class));
     }
 
     if (!errors.isEmpty()) {

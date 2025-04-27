@@ -4,6 +4,7 @@ import org.example.customrbacjavademo.apps.user.domain.dto.NewRoleDto;
 import org.example.customrbacjavademo.apps.user.domain.dto.UpdateRoleDto;
 import org.example.customrbacjavademo.apps.user.domain.enums.RoleStatus;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.example.customrbacjavademo.common.domain.helpers.EnumValidator;
 
 import java.time.Instant;
@@ -122,7 +123,7 @@ public class Role {
     if (status == null) {
       errors.add("status is required");
     } else if (EnumValidator.isInvalidEnum(status, RoleStatus.class)) {
-      errors.add("status must be one of " + EnumValidator.enumValuesAsString(RoleStatus.class));
+      errors.add("status must be one of " + EnumUtils.enumValuesAsString(RoleStatus.class));
     }
 
     if (permissionIds == null || permissionIds.isEmpty()) {

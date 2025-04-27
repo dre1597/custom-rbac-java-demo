@@ -2,6 +2,7 @@ package org.example.customrbacjavademo.apps.user.e2e;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.customrbacjavademo.E2ETest;
+import org.example.customrbacjavademo.apps.user.domain.enums.UserStatus;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.domain.mocks.RoleTestMocks;
 import org.example.customrbacjavademo.apps.user.domain.mocks.UserTestMocks;
@@ -12,6 +13,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.bootstrap.Defa
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -362,7 +364,7 @@ class UserE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(UserStatus.class)));
   }
 
   @Test
@@ -634,7 +636,7 @@ class UserE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(UserStatus.class)));
   }
 
   @Test

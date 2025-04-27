@@ -10,6 +10,7 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaReposit
 import org.example.customrbacjavademo.apps.user.infra.persistence.bootstrap.DefaultUserSeeder;
 import org.example.customrbacjavademo.apps.user.usecase.permission.mappers.PermissionMapper;
 import org.example.customrbacjavademo.apps.user.usecase.role.mappers.RoleMapper;
+import org.example.customrbacjavademo.common.domain.helpers.EnumUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -360,7 +361,7 @@ class RoleE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(RoleStatus.class)));
   }
 
   @Test
@@ -688,7 +689,7 @@ class RoleE2ETest {
             .contentType("application/json")
             .content(json))
         .andExpect(status().isUnprocessableEntity())
-        .andExpect(jsonPath("$.message").value("status must be one of ACTIVE, INACTIVE"));
+        .andExpect(jsonPath("$.message").value("status must be one of " + EnumUtils.enumValuesAsString(RoleStatus.class)));
   }
 
   @Test
