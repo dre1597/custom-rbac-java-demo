@@ -2,7 +2,6 @@
 
 ## Future implementations
 
-- JWT Authentication.
 - Add some seeds.
 - Add guards for routes.
 - Add issuer validation.
