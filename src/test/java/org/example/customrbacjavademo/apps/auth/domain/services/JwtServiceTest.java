@@ -1,169 +1,144 @@
 package org.example.customrbacjavademo.apps.auth.domain.services;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaEntity;
+import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Date;
-import java.util.Map;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
-  private JwtService service;
-  private final long expirationTime = 1000 * 60 * 60;
-  private final String secret = "ZmFrZXNlY3JldGtleWZha2VzZWNyZXRrZXlmYWtlc2VjcmV0a2V5ZmFrZQ==";
+  @InjectMocks
+  private JwtService jwtService;
 
-
-  @BeforeEach
-  void setup() {
-    service = new JwtService();
-    ReflectionTestUtils.setField(service, "secretKey", secret);
-    ReflectionTestUtils.setField(service, "jwtExpiration", expirationTime);
-  }
+  private final String secretKey = "ZmFrZXNlY3JldGtleWZha2VzZWNyZXRrZXlmYWtlc2VjcmV0a2V5ZmFrZQ==";
+  private final long expirationTime = 100000;
 
   @Test
   void shouldExtractUsernameFromToken() {
-    var username = "user";
-    var token = createToken(username);
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-    var extractedUsername = service.extractUsername(token);
+    final var userDetails = createUserDetails();
+    final var token = jwtService.generateToken(userDetails);
 
-    assertEquals(username, extractedUsername);
+    final var username = jwtService.extractUsername(token);
+
+    assertEquals(userDetails.getUsername(), username);
   }
 
   @Test
-  void shouldExtractCustomClaim() {
-    var token = createToken("user");
+  void shouldExtractRoleIdFromToken() {
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-    var expiration = service.extractClaim(token, Claims::getExpiration);
+    final var user = createUserJpaEntity();
+    final var token = jwtService.generateToken(user);
 
-    assertNotNull(expiration);
+    final var roleId = jwtService.extractRoleId(token);
+
+    assertEquals(user.getRole().getId().toString(), roleId);
   }
 
   @Test
-  void shouldGenerateToken() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
+  void shouldGenerateValidTokenForUserDetails() {
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-    var token = service.generateToken(userDetails);
+    final var userDetails = createUserDetails();
+    final var token = jwtService.generateToken(userDetails);
 
     assertNotNull(token);
-    assertFalse(token.isEmpty());
+    assertTrue(jwtService.isTokenValid(token, userDetails));
   }
 
   @Test
-  void shouldGenerateTokenWithExtraClaims() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
-    Map<String, Object> extraClaims = Map.of("role", "ADMIN");
+  void shouldGenerateValidTokenForUserJpaEntity() {
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-    var token = service.generateToken(extraClaims, userDetails);
+    final var user = createUserJpaEntity();
+    final var token = jwtService.generateToken(user);
 
     assertNotNull(token);
-    assertFalse(token.isEmpty());
+    assertTrue(jwtService.isTokenValid(token, user));
   }
 
   @Test
-  void shouldReturnExpirationTime() {
-    var expiration = service.getExpirationTime();
-    assertEquals(expirationTime, expiration);
-  }
+  void shouldReturnFalseWhenTokenHasDifferentUser() {
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-  @Test
-  void shouldValidateValidToken() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
-    var token = createToken("user");
+    final var userDetails = createUserDetails();
+    final var otherUserDetails = User.withUsername("other_name")
+        .password("any_password")
+        .authorities(Collections.emptyList())
+        .build();
+    final var token = jwtService.generateToken(userDetails);
 
-    var valid = service.isTokenValid(token, userDetails);
-
-    assertTrue(valid);
-  }
-
-  @Test
-  void shouldInvalidateTokenWithDifferentUsername() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("otherUser");
-    var token = createToken("user");
-
-    var valid = service.isTokenValid(token, userDetails);
-
-    assertFalse(valid);
+    assertFalse(jwtService.isTokenValid(token, otherUserDetails));
   }
 
   @Test
   void shouldReturnFalseWhenTokenIsExpired() {
-    var expiredToken = createExpiredToken("user");
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", -1000);
 
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
+    final var userDetails = createUserDetails();
+    final var token = jwtService.generateToken(userDetails);
 
-    assertFalse(service.isTokenValid(expiredToken, userDetails));
+    assertFalse(jwtService.isTokenValid(token, userDetails));
   }
 
   @Test
-  void shouldReturnTrueWhenValidTokenAndCorrectUser() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
-    var validToken = createToken("user");
+  void shouldReturnFalseWhenTokenIsInvalid() {
+    ReflectionTestUtils.setField(jwtService, "secretKey", secretKey);
+    ReflectionTestUtils.setField(jwtService, "jwtExpiration", expirationTime);
 
-    assertTrue(service.isTokenValid(validToken, userDetails));
+    final var invalidToken = "invalid.token.string";
+    final var userDetails = createUserDetails();
+
+    assertFalse(jwtService.isTokenValid(invalidToken, userDetails));
   }
 
-  @Test
-  void shouldReturnFalseWhenValidTokenButWrongUser() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("wrongUser");
-    var validToken = createToken("user");
 
-    assertFalse(service.isTokenValid(validToken, userDetails));
+  private UserDetails createUserDetails() {
+    return User.withUsername("any_name")
+        .password("any_password")
+        .authorities(Collections.emptyList())
+        .build();
   }
 
-  @Test
-  void shouldReturnTrueForValidTokenAndCorrectUser() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("user");
-    var validToken = createToken("user");
+  private UserJpaEntity createUserJpaEntity() {
+    final var role = new RoleJpaEntity(
+        UUID.randomUUID(),
+        "any_role",
+        "any_description",
+        "ACTIVE",
+        Instant.now(),
+        Instant.now(),
+        List.of()
+    );
 
-    assertTrue(service.isTokenValid(validToken, userDetails));
-  }
-
-  @Test
-  void shouldReturnFalseForValidTokenButWrongUser() {
-    var userDetails = mock(UserDetails.class);
-    when(userDetails.getUsername()).thenReturn("wrongUser");
-    var validToken = createToken("user");
-
-    assertFalse(service.isTokenValid(validToken, userDetails));
-  }
-
-  private String createToken(final String username) {
-    var now = System.currentTimeMillis();
-    var key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-    return Jwts.builder()
-        .subject(username)
-        .issuedAt(new Date(now))
-        .expiration(new Date(now + expirationTime))
-        .signWith(key)
-        .compact();
-  }
-
-  private String createExpiredToken(final String username) {
-    var now = System.currentTimeMillis();
-    var key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
-    return Jwts.builder()
-        .subject(username)
-        .issuedAt(new Date(now - 5000))
-        .expiration(new Date(now - 3000))
-        .signWith(key)
-        .compact();
+    return new UserJpaEntity(
+        UUID.randomUUID(),
+        "any_name",
+        "any_password",
+        "ACTIVE",
+        Instant.now(),
+        Instant.now(),
+        role
+    );
   }
 }

@@ -53,10 +53,6 @@ public class JwtService {
     return buildToken(extraClaims, userDetails, jwtExpiration);
   }
 
-  public long getExpirationTime() {
-    return jwtExpiration;
-  }
-
   private String buildToken(
       final Map<String, Object> extraClaims,
       UserDetails userDetails,
@@ -82,12 +78,8 @@ public class JwtService {
   }
 
   private boolean isTokenExpired(final String token) {
-    try {
-      final Date expiration = extractExpiration(token);
-      return expiration.before(new Date());
-    } catch (ExpiredJwtException e) {
-      return true;
-    }
+    final Date expiration = extractExpiration(token);
+    return expiration.before(new Date());
   }
 
   private Date extractExpiration(final String token) {
