@@ -2,7 +2,6 @@
 
 ## Future implementations
 
-- Add issuer validation.
 - Add refresh token.
 - Invalidate old tokens on logout.
 
