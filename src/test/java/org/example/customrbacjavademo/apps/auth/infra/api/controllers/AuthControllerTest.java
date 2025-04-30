@@ -5,6 +5,7 @@ import org.example.customrbacjavademo.apps.auth.infra.api.dto.requests.LoginRequ
 import org.example.customrbacjavademo.apps.auth.infra.api.dto.responses.LoginResponse;
 import org.example.customrbacjavademo.apps.auth.infra.api.dto.responses.UserLoginResponse;
 import org.example.customrbacjavademo.apps.auth.usecase.LoginUseCase;
+import org.example.customrbacjavademo.apps.auth.usecase.RefreshTokenUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,9 @@ class AuthControllerTest {
   @Mock
   private LoginUseCase loginUseCase;
 
+  @Mock
+  private RefreshTokenUseCase refreshTokenUseCase;
+
   @InjectMocks
   private AuthController controller;
 
@@ -26,7 +30,7 @@ class AuthControllerTest {
   void shouldLogin() {
     final var input = new LoginRequest("any_name", "any_password");
     final var userLoginResponse = new UserLoginResponse("any_id", "any_name", "any_role_id", "any_role_name");
-    final var expectedResponse = new LoginResponse(userLoginResponse, "any_token");
+    final var expectedResponse = new LoginResponse(userLoginResponse, "any_token", "any_refresh_token");
 
     when(loginUseCase.execute(LoginDto.from(input))).thenReturn(expectedResponse);
     controller.login(input);

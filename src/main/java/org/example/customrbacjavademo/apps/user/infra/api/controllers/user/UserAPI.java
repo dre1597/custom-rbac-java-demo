@@ -21,6 +21,8 @@ public interface UserAPI {
   @Operation(summary = "Get all users")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Users found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<Pagination<UserResponse>> list(
@@ -38,6 +40,8 @@ public interface UserAPI {
   @Operation(summary = "Create a new user")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "User created successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "409", description = "User already exists error"),
       @ApiResponse(responseCode = "422", description = "User validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -48,6 +52,8 @@ public interface UserAPI {
   @Operation(summary = "Get a user by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "User not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -62,6 +68,8 @@ public interface UserAPI {
   @Operation(summary = "Update a user by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User updated successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "User not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "422", description = "User validation error"),
@@ -77,6 +85,8 @@ public interface UserAPI {
   @Operation(summary = "Update a user by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "User updated successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "User not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "422", description = "User validation error"),
@@ -92,6 +102,8 @@ public interface UserAPI {
   @Operation(summary = "Delete a user by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "User deleted successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })

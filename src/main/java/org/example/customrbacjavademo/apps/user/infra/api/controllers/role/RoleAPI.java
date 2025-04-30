@@ -20,6 +20,8 @@ public interface RoleAPI {
   @Operation(summary = "Get all roles")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Roles found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<Pagination<RoleResponse>> list(
@@ -37,6 +39,8 @@ public interface RoleAPI {
   @Operation(summary = "Create a new role")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Role created successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "409", description = "Role already exists error"),
       @ApiResponse(responseCode = "422", description = "Role validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -47,6 +51,8 @@ public interface RoleAPI {
   @Operation(summary = "Get a role by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Role found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "Role not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -61,6 +67,8 @@ public interface RoleAPI {
   @Operation(summary = "Update a role by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Role updated successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "Role not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "422", description = "Role validation error"),
@@ -76,6 +84,8 @@ public interface RoleAPI {
   @Operation(summary = "Delete a role by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Role deleted successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })

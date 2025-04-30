@@ -19,6 +19,8 @@ public interface PermissionAPI {
   @Operation(summary = "Get all permissions")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permissions found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })
   ResponseEntity<Pagination<PermissionResponse>> list(
@@ -36,6 +38,8 @@ public interface PermissionAPI {
   @Operation(summary = "Create a new permission")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "201", description = "Permission created successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "409", description = "Permission already exists error"),
       @ApiResponse(responseCode = "422", description = "Permission validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -46,6 +50,8 @@ public interface PermissionAPI {
   @Operation(summary = "Get a permission by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permission found successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "Permission not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
@@ -60,6 +66,8 @@ public interface PermissionAPI {
   @Operation(summary = "Update a permission by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Permission updated successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "404", description = "Permission not found error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "422", description = "Permission validation error"),
@@ -75,6 +83,8 @@ public interface PermissionAPI {
   @Operation(summary = "Delete a permission by id")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "204", description = "Permission deleted successfully"),
+      @ApiResponse(responseCode = "401", description = "Invalid token error"),
+      @ApiResponse(responseCode = "403", description = "No access error"),
       @ApiResponse(responseCode = "422", description = "UUID validation error"),
       @ApiResponse(responseCode = "500", description = "Internal server error")
   })

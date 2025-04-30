@@ -2,6 +2,8 @@ package org.example.customrbacjavademo.apps.auth.usecase;
 
 import org.example.customrbacjavademo.apps.auth.domain.dto.LoginDto;
 import org.example.customrbacjavademo.apps.auth.domain.services.JwtService;
+import org.example.customrbacjavademo.apps.auth.domain.services.RefreshTokenService;
+import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
 import org.example.customrbacjavademo.apps.user.domain.mocks.UserTestMocks;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.apps.user.usecase.user.mappers.UserMapper;
@@ -31,10 +33,16 @@ class LoginUseCaseTest {
   private UserJpaRepository userJpaRepository;
 
   @Mock
+  private RefreshTokenJpaRepository refreshTokenJpaRepository;
+
+  @Mock
   private AuthenticationManager authenticationManager;
 
   @Mock
   private JwtService jwtService;
+
+  @Mock
+  private RefreshTokenService refreshTokenService;
 
   @InjectMocks
   private LoginUseCase useCase;
@@ -53,7 +61,7 @@ class LoginUseCaseTest {
 
     verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     verify(userJpaRepository).findWithRoleByName(user.getName());
-    
+
     assertEquals(user.getId().toString(), result.user().id());
     assertEquals(user.getName(), result.user().name());
   }

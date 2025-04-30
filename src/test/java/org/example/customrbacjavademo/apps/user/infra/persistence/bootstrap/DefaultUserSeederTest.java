@@ -1,5 +1,6 @@
 package org.example.customrbacjavademo.apps.user.infra.persistence.bootstrap;
 
+import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionName;
 import org.example.customrbacjavademo.apps.user.domain.enums.PermissionScope;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @TestPropertySource(properties = {
     "user.admin.name=admin",
-    "user.admin.password=Admin@123"
+    "user.admin.password=password"
 })
 class DefaultUserSeederTest {
   @Autowired
@@ -30,13 +31,16 @@ class DefaultUserSeederTest {
   private UserJpaRepository userJpaRepository;
 
   @Autowired
+  private RefreshTokenJpaRepository refreshTokenJpaRepository;
+
+  @Autowired
   private DefaultUserSeeder userSeeder;
 
   @Test
   void shouldInjectProperties() {
     assertThat(userSeeder)
         .hasFieldOrPropertyWithValue("name", "admin")
-        .hasFieldOrPropertyWithValue("password", "Admin@123");
+        .hasFieldOrPropertyWithValue("password", "password");
   }
 
   @Test
@@ -67,6 +71,7 @@ class DefaultUserSeederTest {
 
   @Test
   void shouldSeedManually() {
+    refreshTokenJpaRepository.deleteAll();
     userJpaRepository.deleteAll();
     roleJpaRepository.deleteAll();
     permissionJpaRepository.deleteAll();
