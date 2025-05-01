@@ -56,6 +56,8 @@ class LoginUseCaseTest {
         .thenReturn(new UsernamePasswordAuthenticationToken(user.getName(), password));
     when(userJpaRepository.findWithRoleByName(user.getName()))
         .thenReturn(Optional.of(UserMapper.entityToJpa(user)));
+    when(jwtService.generateToken(any())).thenReturn("any_token");
+    when(refreshTokenService.generateToken(any())).thenReturn("any_refresh_token");
 
     final var result = useCase.execute(new LoginDto(user.getName(), password));
 

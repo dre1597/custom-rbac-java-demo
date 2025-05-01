@@ -43,7 +43,7 @@ public class RefreshTokenService {
       return false;
     }
   }
-  
+
   private boolean isTokenExpired(final String token) {
     final Date expiration = extractExpiration(token);
     return expiration.before(new Date());

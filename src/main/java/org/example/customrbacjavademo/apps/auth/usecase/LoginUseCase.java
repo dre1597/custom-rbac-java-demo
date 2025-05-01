@@ -62,7 +62,7 @@ public class LoginUseCase {
         Instant.now().plusSeconds(3600),
         user.getId()
     );
-    
+
     this.refreshTokenJpaRepository.save(RefreshTokenMapper.entityToJpa(refreshToken));
 
     return new LoginResponse(AuthMapper.jpaToResponse(user), jwtToken, refreshJwtToken);
