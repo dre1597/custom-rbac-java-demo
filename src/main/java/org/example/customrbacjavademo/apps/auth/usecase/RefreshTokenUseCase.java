@@ -10,6 +10,7 @@ import org.example.customrbacjavademo.apps.auth.usecase.mappers.AuthMapper;
 import org.example.customrbacjavademo.apps.auth.usecase.mappers.RefreshTokenMapper;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.common.domain.exceptions.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,9 @@ import java.util.Objects;
 
 @Service
 public class RefreshTokenUseCase {
+  @Value("${security.jwt.refresh-expiration}")
+  private long jwtRefreshExpiration;
+
   private final RefreshTokenJpaRepository refreshTokenJpaRepository;
   private final UserJpaRepository userJpaRepository;
   private final RefreshTokenService refreshTokenService;
@@ -43,24 +47,17 @@ public class RefreshTokenUseCase {
       throw new UnauthorizedException("Invalid refresh token");
     }
 
-    if (!refreshTokenService.isTokenValid(dto.refreshToken())) {
-      throw new UnauthorizedException("Invalid refresh token");
-    }
-
     final var user = userJpaRepository.findById(refreshTokenJpa.get().getUser().getId())
         .orElseThrow(() -> new UnauthorizedException("User not found"));
-
-    System.out.println("user");
-    System.out.println(user);
 
     this.refreshTokenJpaRepository.deleteByUser(user);
 
     final var jwtToken = jwtService.generateToken(user);
-    final var refreshJwtToken = refreshTokenService.generateToken(refreshTokenJpa.get().getUser());
+    final var refreshJwtToken = refreshTokenService.generateToken();
 
     final var refreshToken = RefreshToken.newRefreshToken(
         refreshJwtToken,
-        Instant.now().plusSeconds(3600),
+        Instant.now().plusSeconds(jwtRefreshExpiration),
         user.getId()
     );
 

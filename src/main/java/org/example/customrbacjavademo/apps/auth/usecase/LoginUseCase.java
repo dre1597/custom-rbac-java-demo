@@ -11,6 +11,7 @@ import org.example.customrbacjavademo.apps.auth.usecase.mappers.RefreshTokenMapp
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.example.customrbacjavademo.common.domain.exceptions.NotFoundException;
 import org.example.customrbacjavademo.common.domain.exceptions.ValidationException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,9 @@ import java.util.Objects;
 
 @Service
 public class LoginUseCase {
+  @Value("${security.jwt.refresh-expiration}")
+  private long jwtRefreshExpiration;
+
   private final UserJpaRepository userJpaRepository;
   private final RefreshTokenJpaRepository refreshTokenJpaRepository;
   private final AuthenticationManager authenticationManager;
@@ -56,10 +60,10 @@ public class LoginUseCase {
 
     final var jwtToken = jwtService.generateToken(user);
 
-    final var refreshJwtToken = refreshTokenService.generateToken(user);
+    final var refreshJwtToken = refreshTokenService.generateToken();
     final var refreshToken = RefreshToken.newRefreshToken(
         refreshJwtToken,
-        Instant.now().plusSeconds(3600),
+        Instant.now().plusSeconds(jwtRefreshExpiration),
         user.getId()
     );
 

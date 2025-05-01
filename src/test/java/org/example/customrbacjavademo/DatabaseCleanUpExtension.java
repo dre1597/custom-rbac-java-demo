@@ -1,6 +1,5 @@
 package org.example.customrbacjavademo;
 
-import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
@@ -18,7 +17,6 @@ public class DatabaseCleanUpExtension implements BeforeEachCallback {
     final var applicationContext = SpringExtension.getApplicationContext(context);
 
     cleanUp(List.of(
-        applicationContext.getBean(RefreshTokenJpaRepository.class),
         applicationContext.getBean(UserJpaRepository.class),
         applicationContext.getBean(RoleJpaRepository.class),
         applicationContext.getBean(PermissionJpaRepository.class)

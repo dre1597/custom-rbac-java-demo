@@ -1,7 +1,7 @@
 package org.example.customrbacjavademo.apps.auth.usecase;
 
 import org.example.customrbacjavademo.apps.auth.domain.dto.RefreshTokenDto;
-import org.example.customrbacjavademo.apps.auth.domain.mocks.RefreshTokenTestMocks;
+import org.example.customrbacjavademo.apps.auth.domain.entities.RefreshToken;
 import org.example.customrbacjavademo.apps.auth.domain.services.JwtService;
 import org.example.customrbacjavademo.apps.auth.domain.services.RefreshTokenService;
 import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
@@ -17,11 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RefreshTokenUseCaseTest {
@@ -43,30 +46,23 @@ class RefreshTokenUseCaseTest {
   @Test
   void shouldRefreshToken() {
     final var user = UserTestMocks.createActiveTestUser("any_name", "any_password");
-    final var refreshTokenValue = "any_refresh_token";
-    final var refreshToken = RefreshTokenTestMocks.createActiveTestRefreshToken(refreshTokenValue, user.getId());
-    final var refreshTokenJpa = RefreshTokenMapper.entityToJpa(refreshToken);
     final var userJpa = UserMapper.entityToJpa(user);
 
-    when(refreshTokenJpaRepository.findWithUserByToken(refreshTokenValue))
-        .thenReturn(Optional.of(refreshTokenJpa));
-    when(refreshTokenService.isTokenValid(refreshTokenValue))
-        .thenReturn(true);
-    when(userJpaRepository.findById(user.getId()))
-        .thenReturn(Optional.of(userJpa));
+    final var tokenValue = "valid_token";
+    final var refreshToken = RefreshToken.newRefreshToken(tokenValue, Instant.now().plusSeconds(3600), user.getId());
+    final var refreshTokenJpa = RefreshTokenMapper.entityToJpa(refreshToken);
+    refreshTokenJpa.setUser(userJpa);
+
+    when(refreshTokenJpaRepository.findWithUserByToken(tokenValue)).thenReturn(Optional.of(refreshTokenJpa));
+    when(userJpaRepository.findById(user.getId())).thenReturn(Optional.of(userJpa));
     when(jwtService.generateToken(userJpa)).thenReturn("new_jwt_token");
-    doReturn("new_refresh_token")
-        .when(refreshTokenService)
-        .generateToken(argThat(u -> {
-          if (!(u instanceof UserJpaEntity)) return false;
-          return ((UserJpaEntity) u).getId().equals(userJpa.getId());
-        }));
+    when(refreshTokenService.generateToken()).thenReturn("new_refresh_token");
 
-
-    final var result = useCase.execute(new RefreshTokenDto(refreshTokenValue));
+    final var result = useCase.execute(new RefreshTokenDto(tokenValue));
 
     assertEquals("new_jwt_token", result.token());
     assertEquals("new_refresh_token", result.refreshToken());
+    assertEquals(user.getId().toString(), result.user().id());
 
     verify(refreshTokenJpaRepository).deleteByUser(userJpa);
     verify(refreshTokenJpaRepository).save(any());
@@ -74,52 +70,35 @@ class RefreshTokenUseCaseTest {
 
   @Test
   void shouldThrowIfRefreshTokenNotFound() {
-    final var dto = new RefreshTokenDto("invalid_token");
-
-    when(refreshTokenJpaRepository.findWithUserByToken(dto.refreshToken()))
+    when(refreshTokenJpaRepository.findWithUserByToken("invalid_token"))
         .thenReturn(Optional.empty());
 
-    final var exception = assertThrows(UnauthorizedException.class, () -> useCase.execute(dto));
-    assertEquals("Invalid refresh token", exception.getMessage());
+    final var ex = assertThrows(UnauthorizedException.class,
+        () -> useCase.execute(new RefreshTokenDto("invalid_token")));
 
-    verify(refreshTokenService, never()).isTokenValid(any());
-    verify(userJpaRepository, never()).findById(any());
-  }
-
-  @Test
-  void shouldThrowIfRefreshTokenIsInvalid() {
-    final var user = UserTestMocks.createActiveTestUser("name", "pass");
-    final var refreshTokenValue = "invalid_token";
-    final var refreshToken = RefreshTokenTestMocks.createActiveTestRefreshToken(refreshTokenValue, user.getId());
-    final var refreshTokenJpa = RefreshTokenMapper.entityToJpa(refreshToken);
-
-    when(refreshTokenJpaRepository.findWithUserByToken(refreshTokenValue))
-        .thenReturn(Optional.of(refreshTokenJpa));
-    when(refreshTokenService.isTokenValid(refreshTokenValue))
-        .thenReturn(false);
-
-    final var exception = assertThrows(UnauthorizedException.class, () -> useCase.execute(new RefreshTokenDto(refreshTokenValue)));
-    assertEquals("Invalid refresh token", exception.getMessage());
-
-    verify(userJpaRepository, never()).findById(any());
+    assertEquals("Invalid refresh token", ex.getMessage());
   }
 
   @Test
   void shouldThrowIfUserNotFound() {
-    final var user = UserTestMocks.createActiveTestUser("name", "pass");
-    final var refreshTokenValue = "valid_token";
+    final var user = UserTestMocks.createActiveTestUser("any", "any");
+    final var tokenValue = "valid_token";
 
-    final var refreshToken = RefreshTokenTestMocks.createActiveTestRefreshToken(refreshTokenValue, user.getId());
+    final var userJpa = new UserJpaEntity();
+    userJpa.setId(user.getId());
+
+    final var refreshToken = RefreshToken.newRefreshToken(tokenValue, Instant.now().plusSeconds(3600), user.getId());
     final var refreshTokenJpa = RefreshTokenMapper.entityToJpa(refreshToken);
+    refreshTokenJpa.setUser(userJpa);
 
-    when(refreshTokenJpaRepository.findWithUserByToken(refreshTokenValue))
+    when(refreshTokenJpaRepository.findWithUserByToken(tokenValue))
         .thenReturn(Optional.of(refreshTokenJpa));
-    when(refreshTokenService.isTokenValid(refreshTokenValue))
-        .thenReturn(true);
     when(userJpaRepository.findById(user.getId()))
         .thenReturn(Optional.empty());
 
-    final var ex = assertThrows(UnauthorizedException.class, () -> useCase.execute(new RefreshTokenDto(refreshTokenValue)));
+    final var ex = assertThrows(UnauthorizedException.class,
+        () -> useCase.execute(new RefreshTokenDto(tokenValue)));
+
     assertEquals("User not found", ex.getMessage());
   }
 }
