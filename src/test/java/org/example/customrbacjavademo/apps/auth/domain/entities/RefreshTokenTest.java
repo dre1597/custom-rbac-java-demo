@@ -22,12 +22,12 @@ class RefreshTokenTest {
 
     final var refreshToken = RefreshToken.newRefreshToken(token, expiryDate, userId);
 
-    assertNotNull(refreshToken.getId());
-    assertEquals(token, refreshToken.getToken());
-    assertEquals(expiryDate, refreshToken.getExpiryDate());
-    assertNotNull(refreshToken.getCreatedAt());
-    assertNotNull(refreshToken.getUpdatedAt());
-    assertEquals(userId, refreshToken.getUserId());
+    assertNotNull(refreshToken.id());
+    assertEquals(token, refreshToken.token());
+    assertEquals(expiryDate, refreshToken.expiryDate());
+    assertNotNull(refreshToken.createdAt());
+    assertNotNull(refreshToken.updatedAt());
+    assertEquals(userId, refreshToken.userId());
   }
 
   @ParameterizedTest
@@ -36,9 +36,7 @@ class RefreshTokenTest {
     final var expiryDate = Instant.now().plusSeconds(3600);
     final var userId = UUID.randomUUID();
 
-    var exception = assertThrows(ValidationException.class, () -> {
-      RefreshToken.newRefreshToken(token, expiryDate, userId);
-    });
+    var exception = assertThrows(ValidationException.class, () -> RefreshToken.newRefreshToken(token, expiryDate, userId));
 
     assertTrue(exception.getMessage().contains("token is required"));
   }
@@ -48,9 +46,7 @@ class RefreshTokenTest {
     final var token = "valid-token";
     final var userId = UUID.randomUUID();
 
-    var exception = assertThrows(ValidationException.class, () -> {
-      RefreshToken.newRefreshToken(token, null, userId);
-    });
+    var exception = assertThrows(ValidationException.class, () -> RefreshToken.newRefreshToken(token, null, userId));
 
     assertTrue(exception.getMessage().contains("expiryDate is required"));
   }
@@ -60,9 +56,7 @@ class RefreshTokenTest {
     final var token = "valid-token";
     final var expiryDate = Instant.now().plusSeconds(3600);
 
-    var exception = assertThrows(ValidationException.class, () -> {
-      RefreshToken.newRefreshToken(token, expiryDate, null);
-    });
+    var exception = assertThrows(ValidationException.class, () -> RefreshToken.newRefreshToken(token, expiryDate, null));
 
     assertTrue(exception.getMessage().contains("userId is required"));
   }
@@ -84,30 +78,12 @@ class RefreshTokenTest {
         userId
     );
 
-    assertNotNull(refreshToken.getId());
-    assertEquals(token, refreshToken.getToken());
-    assertEquals(expiryDate, refreshToken.getExpiryDate());
-    assertEquals(createdAt, refreshToken.getCreatedAt());
-    assertEquals(updatedAt, refreshToken.getUpdatedAt());
-    assertEquals(userId, refreshToken.getUserId());
-  }
-
-  @Test
-  void shouldReturnCorrectStringRepresentation() {
-    final var token = "valid-token";
-    final var expiryDate = Instant.now().plusSeconds(3600);
-    final var userId = UUID.randomUUID();
-    final var refreshToken = RefreshToken.newRefreshToken(token, expiryDate, userId);
-
-    final var expectedToString = "RefreshToken{id=" + refreshToken.getId() +
-        ", token='" + token + '\'' +
-        ", expiryDate=" + expiryDate +
-        ", createdAt=" + refreshToken.getCreatedAt() +
-        ", updatedAt=" + refreshToken.getUpdatedAt() +
-        ", userId=" + userId +
-        '}';
-
-    assertEquals(expectedToString, refreshToken.toString());
+    assertNotNull(refreshToken.id());
+    assertEquals(token, refreshToken.token());
+    assertEquals(expiryDate, refreshToken.expiryDate());
+    assertEquals(createdAt, refreshToken.createdAt());
+    assertEquals(updatedAt, refreshToken.updatedAt());
+    assertEquals(userId, refreshToken.userId());
   }
 }
 

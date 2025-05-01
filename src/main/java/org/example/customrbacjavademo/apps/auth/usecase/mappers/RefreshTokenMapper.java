@@ -9,16 +9,16 @@ public final class RefreshTokenMapper {
   }
 
   public static RefreshTokenJpaEntity entityToJpa(final RefreshToken entity) {
-    final var user = entity.getUserId();
+    final var user = entity.userId();
     final var userJpa = new UserJpaEntity();
     userJpa.setId(user);
 
     return new RefreshTokenJpaEntity(
-        entity.getId(),
-        entity.getToken(),
-        entity.getExpiryDate(),
-        entity.getCreatedAt(),
-        entity.getUpdatedAt(),
+        entity.id(),
+        entity.token(),
+        entity.expiryDate(),
+        entity.createdAt(),
+        entity.updatedAt(),
         userJpa
     );
   }

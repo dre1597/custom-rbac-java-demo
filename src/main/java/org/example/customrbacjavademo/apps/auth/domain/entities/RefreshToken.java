@@ -6,72 +6,33 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class RefreshToken {
-  private UUID id = UUID.randomUUID();
-  private final String token;
-  private final Instant expiryDate;
-  private Instant createdAt = Instant.now();
-  private Instant updatedAt = Instant.now();
-  private final UUID userId;
+public record RefreshToken(
+    UUID id,
+    String token,
+    Instant expiryDate,
+    Instant createdAt,
+    Instant updatedAt,
+    UUID userId
+) {
+  public RefreshToken {
+    validate(token, expiryDate, userId);
 
-  public RefreshToken(
-      final UUID id,
-      final String token,
-      final Instant expiryDate,
-      final Instant createdAt,
-      final Instant updatedAt,
-      final UUID userId
-  ) {
-    this.id = id;
-    this.token = token;
-    this.expiryDate = expiryDate;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.userId = userId;
+    if (id == null) {
+      id = UUID.randomUUID();
+    }
+    if (createdAt == null) {
+      createdAt = Instant.now();
+    }
+    if (updatedAt == null) {
+      updatedAt = Instant.now();
+    }
   }
 
-  private RefreshToken(
-      final String token,
-      final Instant expiryDate,
-      final UUID userId
-  ) {
-    this.validate(token, expiryDate, userId);
-    this.token = token;
-    this.expiryDate = expiryDate;
-    this.userId = userId;
+  public RefreshToken(String token, Instant expiryDate, UUID userId) {
+    this(null, token, expiryDate, null, null, userId);
   }
 
-  public static RefreshToken with(
-      final UUID id,
-      final String token,
-      final Instant expiryDate,
-      final Instant createdAt,
-      final Instant updatedAt,
-      final UUID userId
-  ) {
-    return new RefreshToken(
-        id,
-        token,
-        expiryDate,
-        createdAt,
-        updatedAt,
-        userId
-    );
-  }
-
-  public static RefreshToken newRefreshToken(
-      final String token,
-      final Instant expiryDate,
-      final UUID userId
-  ) {
-    return new RefreshToken(token, expiryDate, userId);
-  }
-
-  private void validate(
-      final String token,
-      final Instant expiryDate,
-      final UUID userId
-  ) {
+  private void validate(String token, Instant expiryDate, UUID userId) {
     final var errors = new ArrayList<String>();
 
     if (token == null || token.isBlank()) {
@@ -91,39 +52,22 @@ public class RefreshToken {
     }
   }
 
-  public UUID getId() {
-    return this.id;
+  public static RefreshToken with(
+      final UUID id,
+      final String token,
+      final Instant expiryDate,
+      final Instant createdAt,
+      final Instant updatedAt,
+      final UUID userId
+  ) {
+    return new RefreshToken(id, token, expiryDate, createdAt, updatedAt, userId);
   }
 
-  public String getToken() {
-    return this.token;
-  }
-
-  public Instant getExpiryDate() {
-    return expiryDate;
-  }
-
-  public Instant getCreatedAt() {
-    return this.createdAt;
-  }
-
-  public Instant getUpdatedAt() {
-    return this.updatedAt;
-  }
-
-  public UUID getUserId() {
-    return this.userId;
-  }
-
-  @Override
-  public String toString() {
-    return "RefreshToken{" +
-        "id=" + id +
-        ", token='" + token + '\'' +
-        ", expiryDate=" + expiryDate +
-        ", createdAt=" + createdAt +
-        ", updatedAt=" + updatedAt +
-        ", userId=" + userId +
-        '}';
+  public static RefreshToken newRefreshToken(
+      final String token,
+      final Instant expiryDate,
+      final UUID userId
+  ) {
+    return new RefreshToken(token, expiryDate, userId);
   }
 }
