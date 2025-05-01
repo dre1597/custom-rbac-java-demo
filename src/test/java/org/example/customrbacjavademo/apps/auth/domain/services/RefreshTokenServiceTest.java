@@ -19,7 +19,7 @@ class RefreshTokenServiceTest {
     final var token = refreshTokenService.generateToken();
 
     assertNotNull(token);
-    assertEquals(12, token.length());
+    assertEquals(36, token.length());
   }
 
   @Test

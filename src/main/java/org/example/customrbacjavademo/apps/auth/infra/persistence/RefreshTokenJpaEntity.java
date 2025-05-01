@@ -6,8 +6,8 @@ import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaEntity;
 import java.time.Instant;
 import java.util.UUID;
 
-@Entity
-@Table(name = "refresh_tokens")
+@Entity(name = "refresh_tokens")
+@Table
 public class RefreshTokenJpaEntity {
   @Id
   private UUID id = UUID.randomUUID();
@@ -20,11 +20,12 @@ public class RefreshTokenJpaEntity {
 
   @Column(nullable = false)
   private Instant createdAt;
+
   @Column(nullable = false)
   private Instant updatedAt;
 
   @OneToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @JoinColumn(name = "user_id")
   private UserJpaEntity user;
 
   public RefreshTokenJpaEntity() {
@@ -50,7 +51,7 @@ public class RefreshTokenJpaEntity {
     return this.id;
   }
 
-  public void setId(UUID id) {
+  public void setId(final UUID id) {
     this.id = id;
   }
 
@@ -58,7 +59,7 @@ public class RefreshTokenJpaEntity {
     return this.token;
   }
 
-  public void setToken(String token) {
+  public void setToken(final String token) {
     this.token = token;
   }
 
@@ -66,7 +67,7 @@ public class RefreshTokenJpaEntity {
     return this.expiryDate;
   }
 
-  public void setExpiryDate(Instant expiryDate) {
+  public void setExpiryDate(final Instant expiryDate) {
     this.expiryDate = expiryDate;
   }
 
@@ -74,7 +75,7 @@ public class RefreshTokenJpaEntity {
     return this.createdAt;
   }
 
-  public void setCreatedAt(Instant createdAt) {
+  public void setCreatedAt(final Instant createdAt) {
     this.createdAt = createdAt;
   }
 
@@ -82,7 +83,7 @@ public class RefreshTokenJpaEntity {
     return this.updatedAt;
   }
 
-  public void setUpdatedAt(Instant updatedAt) {
+  public void setUpdatedAt(final Instant updatedAt) {
     this.updatedAt = updatedAt;
   }
 
@@ -90,7 +91,19 @@ public class RefreshTokenJpaEntity {
     return this.user;
   }
 
-  public void setUser(UserJpaEntity user) {
+  public void setUser(final UserJpaEntity user) {
     this.user = user;
+  }
+
+  @Override
+  public String toString() {
+    return "RefreshTokenJpaEntity{" +
+        "id=" + id +
+        ", token='" + token + '\'' +
+        ", expiryDate=" + expiryDate +
+        ", createdAt=" + createdAt +
+        ", updatedAt=" + updatedAt +
+        ", user=" + user +
+        '}';
   }
 }

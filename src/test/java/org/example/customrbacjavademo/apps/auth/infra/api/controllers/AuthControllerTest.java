@@ -1,7 +1,9 @@
 package org.example.customrbacjavademo.apps.auth.infra.api.controllers;
 
 import org.example.customrbacjavademo.apps.auth.domain.dto.LoginDto;
+import org.example.customrbacjavademo.apps.auth.domain.dto.RefreshTokenDto;
 import org.example.customrbacjavademo.apps.auth.infra.api.dto.requests.LoginRequest;
+import org.example.customrbacjavademo.apps.auth.infra.api.dto.requests.RefreshTokenRequest;
 import org.example.customrbacjavademo.apps.auth.infra.api.dto.responses.LoginResponse;
 import org.example.customrbacjavademo.apps.auth.infra.api.dto.responses.UserLoginResponse;
 import org.example.customrbacjavademo.apps.auth.usecase.LoginUseCase;
@@ -36,5 +38,16 @@ class AuthControllerTest {
     controller.login(input);
 
     verify(loginUseCase).execute(LoginDto.from(input));
+  }
+
+  @Test
+  void shouldRefresh() {
+    final var input = new RefreshTokenRequest("any_refresh_token");
+    final var expectedResponse = new LoginResponse(new UserLoginResponse("any_id", "any_name", "any_role_id", "any_role_name"), "any_token", "any_refresh_token");
+
+    when(refreshTokenUseCase.execute(RefreshTokenDto.from(input))).thenReturn(expectedResponse);
+    controller.refresh(input);
+
+    verify(refreshTokenUseCase).execute(RefreshTokenDto.from(input));
   }
 }

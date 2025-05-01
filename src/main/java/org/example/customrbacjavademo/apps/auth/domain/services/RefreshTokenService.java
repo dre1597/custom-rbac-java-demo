@@ -8,7 +8,7 @@ import java.util.UUID;
 @Service
 public class RefreshTokenService {
   public String generateToken() {
-    return UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+    return UUID.randomUUID().toString();
   }
 
   public boolean isTokenExpired(final Instant expiryDate) {

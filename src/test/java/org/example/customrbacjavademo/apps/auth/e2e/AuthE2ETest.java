@@ -1,6 +1,8 @@
 package org.example.customrbacjavademo.apps.auth.e2e;
 
 import org.example.customrbacjavademo.E2ETest;
+import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
+import org.example.customrbacjavademo.apps.auth.usecase.mappers.RefreshTokenMapper;
 import org.example.customrbacjavademo.apps.user.domain.mocks.PermissionTestMocks;
 import org.example.customrbacjavademo.apps.user.domain.mocks.RoleTestMocks;
 import org.example.customrbacjavademo.apps.user.domain.mocks.UserTestMocks;
@@ -16,6 +18,7 @@ import org.junit.jupiter.params.provider.EmptySource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,6 +38,9 @@ class AuthE2ETest {
 
   @Autowired
   private PermissionJpaRepository permissionRepository;
+
+  @Autowired
+  private RefreshTokenJpaRepository refreshTokenRepository;
 
   @Test
   void shouldLogin() throws Exception {
@@ -201,5 +207,87 @@ class AuthE2ETest {
             .content(json))
         .andExpect(status().isUnprocessableEntity())
         .andExpect(jsonPath("$.message").value("name is required, password is required"));
+  }
+
+  @Test
+  void shouldRefreshToken() throws Exception {
+    final var permission = permissionRepository.save(
+        PermissionMapper.entityToJpa(PermissionTestMocks.createActiveTestPermission())
+    );
+    final var role = roleRepository.save(
+        RoleMapper.entityToJpa(RoleTestMocks.createActiveTestRole(List.of(permission.getId())))
+    );
+    final var user = userRepository.save(
+        UserMapper.entityToJpa(UserTestMocks.createActiveTestUser(role.getId()))
+    );
+
+    final var token = "valid_refresh_token";
+    final var refreshToken = RefreshTokenMapper.entityToJpa(
+        org.example.customrbacjavademo.apps.auth.domain.entities.RefreshToken.newRefreshToken(
+            token, Instant.now().plusSeconds(3600), user.getId()
+        )
+    );
+    refreshToken.setUser(user);
+    refreshTokenRepository.save(refreshToken);
+
+    final var json = """
+        {
+          "refreshToken": "%s"
+        }
+        """.formatted(token);
+
+    mvc.perform(post("/auth/refresh")
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.token").exists())
+        .andExpect(jsonPath("$.refreshToken").exists())
+        .andExpect(jsonPath("$.user.id").value(user.getId().toString()));
+  }
+
+  @Test
+  void shouldThrowWhenRefreshTokenIsInvalid() throws Exception {
+    final var json = """
+        {
+          "refreshToken": "invalid_token"
+        }
+        """;
+
+    mvc.perform(post("/auth/refresh")
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+  }
+
+  @Test
+  void shouldThrowWhenRefreshTokenIsNull() throws Exception {
+    final var json = """
+        {
+          "refreshToken": null
+        }
+        """;
+
+    mvc.perform(post("/auth/refresh")
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("Invalid refresh token"));
+  }
+
+  @ParameterizedTest
+  @EmptySource
+  void shouldThrowWhenRefreshTokenIsEmpty(final String refreshToken) throws Exception {
+    final var json = """
+        {
+          "refreshToken": "%s"
+        }
+        """.formatted(refreshToken);
+
+    mvc.perform(post("/auth/refresh")
+            .contentType("application/json")
+            .content(json))
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.message").value("Invalid refresh token"));
   }
 }

@@ -15,16 +15,22 @@ import java.util.stream.Collectors;
 public class RoleJpaEntity {
   @Id
   private UUID id = UUID.randomUUID();
+
   @Column(nullable = false)
   private String name;
+
   @Column(nullable = false)
   private String description;
+
   @Column(nullable = false)
   private String status;
+
   @Column(nullable = false)
   private Instant createdAt;
+
   @Column(nullable = false)
   private Instant updatedAt;
+  
   @ManyToMany
   @JoinTable(
       name = "role_permissions",

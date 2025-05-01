@@ -13,18 +13,27 @@ import java.util.UUID;
 public class PermissionJpaEntity {
   @Id
   private UUID id = UUID.randomUUID();
+
   @Column(nullable = false)
   private String name;
+
   @Column(nullable = false)
   private String scope;
+
   @Column(nullable = false)
   private String description;
+
   @Column(nullable = false)
   private String status;
+
   @Column(nullable = false)
   private Instant createdAt;
+
   @Column(nullable = false)
   private Instant updatedAt;
+
+  public PermissionJpaEntity() {
+  }
 
   public PermissionJpaEntity(
       final UUID id,
@@ -42,9 +51,6 @@ public class PermissionJpaEntity {
     this.status = status;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-  }
-
-  public PermissionJpaEntity() {
   }
 
   public UUID getId() {

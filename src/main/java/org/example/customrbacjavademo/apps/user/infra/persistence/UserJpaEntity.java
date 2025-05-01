@@ -1,7 +1,6 @@
 package org.example.customrbacjavademo.apps.user.infra.persistence;
 
 import jakarta.persistence.*;
-import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,9 +34,6 @@ public class UserJpaEntity implements UserDetails {
   @ManyToOne
   @JoinColumn(name = "role_id")
   private RoleJpaEntity role;
-
-  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private RefreshTokenJpaEntity refreshToken = null;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

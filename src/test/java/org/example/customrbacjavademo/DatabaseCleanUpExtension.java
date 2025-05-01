@@ -1,10 +1,12 @@
 package org.example.customrbacjavademo;
 
+import org.example.customrbacjavademo.apps.auth.infra.persistence.RefreshTokenJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.PermissionJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.RoleJpaRepository;
 import org.example.customrbacjavademo.apps.user.infra.persistence.UserJpaRepository;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -17,13 +19,14 @@ public class DatabaseCleanUpExtension implements BeforeEachCallback {
     final var applicationContext = SpringExtension.getApplicationContext(context);
 
     cleanUp(List.of(
+        applicationContext.getBean(RefreshTokenJpaRepository.class),
         applicationContext.getBean(UserJpaRepository.class),
         applicationContext.getBean(RoleJpaRepository.class),
         applicationContext.getBean(PermissionJpaRepository.class)
     ));
   }
 
-  private void cleanUp(final Collection<CrudRepository> repositories) {
+  private void cleanUp(final Collection<JpaRepository> repositories) {
     repositories.forEach(CrudRepository::deleteAll);
   }
 }
