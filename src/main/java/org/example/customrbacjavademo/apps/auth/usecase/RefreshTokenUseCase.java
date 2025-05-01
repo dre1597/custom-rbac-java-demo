@@ -50,6 +50,9 @@ public class RefreshTokenUseCase {
     final var user = userJpaRepository.findById(refreshTokenJpa.get().getUser().getId())
         .orElseThrow(() -> new UnauthorizedException("User not found"));
 
+    System.out.println("user");
+    System.out.println(user);
+
     this.refreshTokenJpaRepository.deleteByUser(user);
 
     final var jwtToken = jwtService.generateToken(user);
