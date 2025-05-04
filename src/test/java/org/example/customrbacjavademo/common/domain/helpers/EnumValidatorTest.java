@@ -2,11 +2,9 @@ package org.example.customrbacjavademo.common.domain.helpers;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-enum DummyEnum {
-  FOO, BAR, BAZ
-}
 
 class EnumValidatorTest {
   @Test
@@ -20,11 +18,5 @@ class EnumValidatorTest {
     assertTrue(EnumValidator.isInvalidEnum("INVALID", DummyEnum.class));
     assertTrue(EnumValidator.isInvalidEnum("foo", DummyEnum.class));
     assertTrue(EnumValidator.isInvalidEnum(null, DummyEnum.class));
-  }
-
-  @Test
-  void shouldReturnAllEnumValuesAsCommaSeparatedString() {
-    var result = EnumUtils.enumValuesAsString(DummyEnum.class);
-    assertEquals("FOO, BAR, BAZ", result);
   }
 }
